@@ -1,0 +1,5 @@
+minio:
+  endpoint: http://122.51.144.162:9001
+  access-key: xKaOYg8qWjtn41Vi6obp
+  secret-key: V0jaGYouOa5JPhH0E76kEvE3mVHRVUL5aKRxe346
+  bucket-name: files

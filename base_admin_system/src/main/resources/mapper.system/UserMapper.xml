@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.clm.system.mapper.UserMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        user_id, dept_id, user_name, nick_name, user_type, email, phone,
+        sex, avatar, password, status, login_ip, login_date, create_by, 
+        create_time, update_by, update_time, del_flag
+    </sql>
+
+    <!-- 分页查询用户 -->
+    <select id="selectUserPage" resultType="com.clm.system.domain.vo.UserPageVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sys_user
+        <where>
+            <if test="param != null">
+                <if test="param.userName != null and param.userName != ''">
+                    AND user_name LIKE CONCAT('%', #{param.userName}, '%')
+                </if>
+                <if test="param.nickName != null and param.nickName != ''">
+                    AND nick_name LIKE CONCAT('%', #{param.nickName}, '%')
+                </if>
+                <if test="param.phone != null and param.phone != ''">
+                    AND phone LIKE CONCAT('%', #{param.phone}, '%')
+                </if>
+                <if test="param.status != null and param.status != ''">
+                    AND status = #{param.status}
+                </if>
+                <if test="param.deptId != null">
+                    AND dept_id = #{param.deptId}
+                </if>
+            </if>
+            AND del_flag = '0'
+        </where>
+        ORDER BY create_time ASC
+    </select>
+    
+    <!-- 根据ID查询用户详情 -->
+    <select id="selectUserById" resultType="com.clm.system.domain.vo.UserVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sys_user
+        WHERE user_id = #{userId}
+        AND del_flag = '0'
+    </select>
+</mapper>
+

@@ -1,0 +1,30 @@
+#server:
+#  port: 8080
+#  servlet:
+#    context-path: /api
+spring:
+  profiles:
+    active: @profiles.active@
+  config:
+    import:
+      - classpath:config/${spring.profiles.active}/sa-token.yml
+      - classpath:config/${spring.profiles.active}/redis.yml
+      - classpath:config/${spring.profiles.active}/mysql.yml
+      - classpath:config/${spring.profiles.active}/mybatis-plus.yml
+      - classpath:config/${spring.profiles.active}/system.yml
+      - classpath:config/${spring.profiles.active}/rabbitmq.yml
+      - classpath:config/${spring.profiles.active}/minio.yml
+  jackson:
+    time-zone: GMT+8
+#  application:
+#    name: spring-boot-demo
+#    version: 1.0.0
+#    profile: dev
+#    description: Spring Boot Demo
+#    author: 陈黎明
+
+#logging:
+#  level:
+#    root: DEBUG
+ip:
+  xdbPath: E:\project\base_admin\src\main\resources\static\ip\csdn-ip2region.xdb

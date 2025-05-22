@@ -1,0 +1,30 @@
+mybatis-plus:
+  # 搜索指定包别名
+#  typeAliasesPackage: com.clm.base_admin.**.entity
+  # 配置mapper的扫描，找到所有的mapper.xml映射文件
+  mapperLocation: classpath:mapper/**/*Mapper.xml
+  # 全局配置
+  global-config:
+    # 数据库相关配置
+    db-config:
+      # 主键类型
+      id-type: AUTO
+      # 逻辑删除的字段名
+      logic-delete-field: delFlag
+      # 逻辑删除值：未删除为0
+      logic-not-delete-value: 0
+      # 逻辑删除值：删除为1
+      logic-delete-value: 1
+  configuration:
+    # 驼峰命名
+    map-underscore-to-camel-case: true
+    # 打印sql语句,调试用
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  sql-log:
+    min-time: 0
+    slow-sql-time: 1000
+    very-slow-sql-time: 5000
+    show-original-sql: false
+    print-result: true
+    print-sql-parameter: true
+    maxResultCount: 10
