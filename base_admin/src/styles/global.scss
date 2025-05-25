@@ -1,0 +1,82 @@
+@import './variables.scss';
+
+// 重置样式
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  font-size: 14px;
+  line-height: 1.5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
+  background-color: $bg-color;
+}
+
+// 滚动条样式
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.08);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.16);
+  border-radius: 3px;
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+// 通用样式类
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.text-ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+// 暗黑模式
+.dark-mode {
+  filter: invert(1) hue-rotate(180deg);
+  
+  img, video, .no-dark {
+    filter: invert(1) hue-rotate(180deg);
+  }
+}
+
+// 响应式布局
+@media screen and (max-width: $screen-xs) {
+  html {
+    font-size: 12px;
+  }
+}
+
+@media screen and (min-width: $screen-xl) {
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+} 
