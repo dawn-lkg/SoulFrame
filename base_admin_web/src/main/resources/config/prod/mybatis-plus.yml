@@ -2,7 +2,8 @@ mybatis-plus:
   # 搜索指定包别名
 #  typeAliasesPackage: com.clm.base_admin.**.entity
   # 配置mapper的扫描，找到所有的mapper.xml映射文件
-  mapperLocation: classpath:mapper/**/*Mapper.xml
+  mapper-locations: classpath*:mapper/**/*.xml
+#  mapperLocation: classpath*:mapper/**/*Mapper.xml
   # 全局配置
   global-config:
     # 数据库相关配置
