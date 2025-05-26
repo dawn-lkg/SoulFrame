@@ -1,7 +1,7 @@
 package com.clm.framework.listener;
 
 import cn.dev33.satoken.listener.SaTokenListener;
-import cn.dev33.satoken.stp.parameter.SaLoginParameter;
+import cn.dev33.satoken.stp.SaLoginModel;
 import com.clm.common.utils.RedisUtils;
 import com.clm.system.service.OnlineUserService;
 import lombok.RequiredArgsConstructor;
@@ -35,8 +35,13 @@ public class UserLogoutListener implements SaTokenListener {
 //
 //    }
 
+//    @Override
+//    public void doLogin(String s, Object o, String s1, SaLoginParameter saLoginParameter) {
+//        log.debug("用户登录成功，loginId={}, token={}", o, s1);
+//    }
+
     @Override
-    public void doLogin(String s, Object o, String s1, SaLoginParameter saLoginParameter) {
+    public void doLogin(String s, Object o, String s1, SaLoginModel saLoginModel) {
         log.debug("用户登录成功，loginId={}, token={}", o, s1);
     }
 
