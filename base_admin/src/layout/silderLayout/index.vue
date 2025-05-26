@@ -17,18 +17,20 @@
       </a-layout-content>
     </a-layout>
     <!-- <a-layout-footer :style="footerStyle">Footer</a-layout-footer> -->
+    <setting-drawer />
   </a-layout>
 </template>
 
 <script setup>
 import { ref, computed } from "vue";
-import { useThemeStore } from "@/stores/theme";
+import { useThemeStore, useAppStore } from "@/stores";
 import { BellOutlined } from '@ant-design/icons-vue';
 import globalSider from "../common/global-sider/index.vue";
 import globalLogo from "../common/global-logo/index.vue";
 import GlobalHeader from "../common/global-header/index.vue";
-
+import SettingDrawer from "../common/setting-drawer/index.vue";
 const themeStore = useThemeStore();
+const app = useAppStore()
 const collapsed = ref(false);
 
 // 计算布局样式
@@ -67,10 +69,8 @@ const siderStyle = computed(() => ({
     justify-content: space-between;
     border-bottom: 1px solid $border-color;
     height: $header-height;
-    position: sticky;
-    top: 0;
     z-index: 100;
-    transition: all $animation-duration-base;
+    // transition: all $animation-duration-base;
 
     .header-left {
       .ant-breadcrumb {

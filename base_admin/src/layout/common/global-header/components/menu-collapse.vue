@@ -1,9 +1,11 @@
 <template>
   <transition name="fade" mode="out-in">
-    <div class="menu-collapse" :class="{ 'menu-collapse-collapsed': collapsed }">
-      <MenuFoldOutlined v-if="collapsed" @click="toggleCollapsed" />
-      <MenuUnfoldOutlined v-else @click="toggleCollapsed" />
-    </div>
+    <hover-container>
+      <div class="menu-collapse" :class="{ 'menu-collapse-collapsed': collapsed }">
+        <MenuFoldOutlined v-if="collapsed" @click="toggleCollapsed" />
+        <MenuUnfoldOutlined v-else @click="toggleCollapsed" />
+      </div>
+    </hover-container>
   </transition>
 </template>
 
@@ -25,8 +27,5 @@ const toggleCollapsed = () => {
   cursor: pointer;
   width: 40px;
   text-align: center;
-}
-.menu-collapse:hover {
-  background-color: #f0f0f0;
 }
 </style>
