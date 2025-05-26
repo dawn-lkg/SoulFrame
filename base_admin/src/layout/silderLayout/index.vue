@@ -1,12 +1,7 @@
 <template>
   <a-layout :class="layoutClass">
     <!-- 左侧菜单 -->
-    <a-layout-sider
-      v-model:collapsed="collapsed"
-      :style="siderStyle"
-      :theme="themeStore.menuTheme"
-      collapsible
-    >
+    <a-layout-sider v-model:collapsed="collapsed" :style="siderStyle" :theme="themeStore.menuTheme" collapsible>
       <global-logo />
       <global-sider />
     </a-layout-sider>
@@ -56,14 +51,14 @@ const siderStyle = computed(() => ({
 </script>
 
 <style lang="scss" scoped>
-@import '@/styles/variables.scss';
+@use '@/styles/variables' as *;
 
 .layout-container {
   :deep(.ant-layout-sider) {
     background: $component-bg;
     transition: all $animation-duration-base;
   }
-  
+
   .layout-header {
     background: $component-bg;
     padding: 0;
@@ -76,19 +71,19 @@ const siderStyle = computed(() => ({
     top: 0;
     z-index: 100;
     transition: all $animation-duration-base;
-    
+
     .header-left {
       .ant-breadcrumb {
         line-height: 64px;
       }
     }
-    
+
     .header-right {
       display: flex;
       align-items: center;
     }
   }
-  
+
   .layout-content {
     margin: 24px 24px 0;
     padding: 24px;
@@ -97,11 +92,11 @@ const siderStyle = computed(() => ({
     min-height: calc(100vh - $header-height - 48px);
     transition: all $animation-duration-base;
   }
-  
+
   :deep(.ant-layout) {
     margin-left: $sidebar-width;
     transition: margin-left $animation-duration-base;
-    
+
     &.ant-layout-has-sider {
       margin-left: $sidebar-collapsed-width;
     }
