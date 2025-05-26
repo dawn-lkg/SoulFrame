@@ -2,6 +2,8 @@ package com.clm.framework.config;
 
 import cn.dev33.satoken.filter.SaServletFilter;
 import cn.dev33.satoken.interceptor.SaInterceptor;
+import cn.dev33.satoken.jwt.StpLogicJwtForSimple;
+import cn.dev33.satoken.stp.StpLogic;
 import cn.dev33.satoken.stp.StpUtil;
 import com.clm.framework.config.properties.WhitelistProperties;
 import jakarta.annotation.Resource;
@@ -47,5 +49,11 @@ public class SecurityConfig implements WebMvcConfigurer  {
         registrationBean.addUrlPatterns("/**");
         registrationBean.setOrder(1);
         return registrationBean;
+    }
+
+    @Bean
+    public StpLogic getStpLogicJwt() {
+        // Sa-Token 整合 jwt (简单模式)
+        return new StpLogicJwtForSimple();
     }
 }
