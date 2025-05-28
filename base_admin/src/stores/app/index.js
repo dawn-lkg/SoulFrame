@@ -1,5 +1,6 @@
 export const useAppStore = defineStore('app',{
     state:()=> reactive({
+        siderCollapse: false,
         settingDrawerVisible: false,
     }),
     actions: {
@@ -14,6 +15,10 @@ export const useAppStore = defineStore('app',{
         // 切换设置抽屉
         toggleSettingDrawer(){
             this.settingDrawerVisible = !this.settingDrawerVisible
+        },
+        // 切换侧边栏
+        toggleSiderCollapse(){
+            this.siderCollapse = !this.siderCollapse
         }
     }
 })

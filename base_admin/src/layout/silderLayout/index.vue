@@ -1,7 +1,7 @@
 <template>
   <a-layout :class="layoutClass">
     <!-- 左侧菜单 -->
-    <a-layout-sider v-model:collapsed="collapsed" :style="siderStyle" :theme="themeStore.menuTheme" collapsible>
+    <a-layout-sider v-model:collapsed="app.siderCollapse" :style="siderStyle" :theme="themeStore.menuTheme" collapsible>
       <global-logo />
       <global-sider />
     </a-layout-sider>
@@ -31,7 +31,7 @@ import GlobalHeader from "../common/global-header/index.vue";
 import SettingDrawer from "../common/setting-drawer/index.vue";
 const themeStore = useThemeStore();
 const app = useAppStore()
-const collapsed = ref(false);
+
 
 // 计算布局样式
 const layoutClass = computed(() => ({
@@ -40,16 +40,16 @@ const layoutClass = computed(() => ({
 }));
 
 // 侧边栏样式
-const siderStyle = computed(() => ({
-  borderRight: `1px solid ${themeStore.isDarkMode ? '#303030' : '#f0f0f0'}`,
-  overflow: 'auto',
-  height: '100vh',
-  position: 'fixed',
-  left: 0,
-  top: 0,
-  bottom: 0,
-  backgroundColor: themeStore.isDarkMode ? '#141414' : '#fff'
-}));
+// const siderStyle = computed(() => ({
+//   borderRight: `1px solid ${themeStore.isDarkMode ? '#303030' : '#f0f0f0'}`,
+//   overflow: 'auto',
+//   height: '100vh',
+//   position: 'fixed',
+//   left: 0,
+//   top: 0,
+//   bottom: 0,
+//   backgroundColor: themeStore.isDarkMode ? '#141414' : '#fff'
+// }));
 </script>
 
 <style lang="scss" scoped>
@@ -70,7 +70,8 @@ const siderStyle = computed(() => ({
     border-bottom: 1px solid $border-color;
     height: $header-height;
     z-index: 100;
-    // transition: all $animation-duration-base;
+    transition: all $animation-duration-base;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 
     .header-left {
       .ant-breadcrumb {
@@ -94,12 +95,12 @@ const siderStyle = computed(() => ({
   }
 
   :deep(.ant-layout) {
-    margin-left: $sidebar-width;
-    transition: margin-left $animation-duration-base;
+    // margin-left: $sidebar-width;
+    // transition: margin-left $animation-duration-base;
 
-    &.ant-layout-has-sider {
-      margin-left: $sidebar-collapsed-width;
-    }
+    // &.ant-layout-has-sider {
+    //   margin-left: $sidebar-collapsed-width;
+    // }
   }
 }
 </style>

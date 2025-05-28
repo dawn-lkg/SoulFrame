@@ -1,6 +1,6 @@
 <template>
   <transition name="fade" mode="out-in">
-    <hover-container>
+    <hover-container @click="app.toggleSiderCollapse">
       <div class="menu-collapse" :class="{ 'menu-collapse-collapsed': collapsed }">
         <MenuFoldOutlined v-if="collapsed" @click="toggleCollapsed" />
         <MenuUnfoldOutlined v-else @click="toggleCollapsed" />
@@ -12,12 +12,11 @@
 <script setup>  
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons-vue';
 import { ref } from 'vue';
+import { useAppStore } from '@/stores';
+const app = useAppStore();
 
 const collapsed = ref(false);
 
-const toggleCollapsed = () => {
-  collapsed.value = !collapsed.value;
-};
 
 </script>
 

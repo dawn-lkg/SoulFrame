@@ -24,12 +24,14 @@ declare module 'vue' {
     GlobalLogo: typeof import('./layout/common/global-logo/index.vue')['default']
     GlobalSider: typeof import('./layout/common/global-sider/index.vue')['default']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']
-    HoverContainer: typeof import('./components/hover-container.vue')['default']
+    HoverContainer: typeof import('./components/common/hover-container.vue')['default']
     MenuCollapse: typeof import('./layout/common/global-header/components/menu-collapse.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SettingButton: typeof import('./layout/common/global-header/components/setting-button.vue')['default']
     SettingDrawer: typeof import('./layout/common/setting-drawer/index.vue')['default']
     SilderLayout: typeof import('./layout/silderLayout/index.vue')['default']
+    ThemeIcon: typeof import('./components/ThemeIcon.vue')['default']
+    ThemeMode: typeof import('./layout/common/global-header/components/theme-mode.vue')['default']
   }
 }
