@@ -1,7 +1,7 @@
 <template>
   <a-layout :class="layoutClass">
     <!-- 左侧菜单 -->
-    <a-layout-sider v-model:collapsed="app.siderCollapse" :style="siderStyle" :theme="themeStore.menuTheme" collapsible>
+    <a-layout-sider v-model:collapsed="app.siderCollapse"  :theme="themeStore.menuTheme" collapsible>
       <global-logo />
       <global-sider />
     </a-layout-sider>

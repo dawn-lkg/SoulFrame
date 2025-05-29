@@ -8,15 +8,18 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AAvatar: typeof import('ant-design-vue/es')['Avatar']
     ABreadcrumb: typeof import('ant-design-vue/es')['Breadcrumb']
     ABreadcrumbItem: typeof import('ant-design-vue/es')['BreadcrumbItem']
     AConfigProvider: typeof import('ant-design-vue/es')['ConfigProvider']
     ADrawer: typeof import('ant-design-vue/es')['Drawer']
+    ADropdown: typeof import('ant-design-vue/es')['Dropdown']
     ALayout: typeof import('ant-design-vue/es')['Layout']
     ALayoutContent: typeof import('ant-design-vue/es')['LayoutContent']
     ALayoutHeader: typeof import('ant-design-vue/es')['LayoutHeader']
     ALayoutSider: typeof import('ant-design-vue/es')['LayoutSider']
     AMenu: typeof import('ant-design-vue/es')['Menu']
+    AMenuItem: typeof import('ant-design-vue/es')['MenuItem']
     ATooltip: typeof import('ant-design-vue/es')['Tooltip']
     GlobalBreadcrumb: typeof import('./layout/common/global-header/components/global-breadcrumb.vue')['default']
     GlobalHeader: typeof import('./layout/common/global-header/index.vue')['default']
@@ -31,5 +34,6 @@ declare module 'vue' {
     SilderLayout: typeof import('./layout/silderLayout/index.vue')['default']
     SvgIcon: typeof import('./components/common/svg-icon.vue')['default']
     ThemeMode: typeof import('./layout/common/global-header/components/theme-mode.vue')['default']
+    UserAvatar: typeof import('./layout/common/global-header/components/user-avatar.vue')['default']
   }
 }

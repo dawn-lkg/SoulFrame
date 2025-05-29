@@ -5,8 +5,9 @@
       <GlobalBreadcrumb />
     </div>
     <div class="header-right">
-      <svg-icon name="icon-bell" />
+      <ThemeMode />
       <SettingButton />
+      <user-avatar />
     </div>
   </div>
 </template>
@@ -15,6 +16,8 @@
 import MenuCollapse from './components/menu-collapse.vue';
 import GlobalBreadcrumb from './components/global-breadcrumb.vue';
 import SettingButton from './components/setting-button.vue';
+import ThemeMode from './components/theme-mode.vue';
+import userAvatar from './components/user-avatar.vue';
 </script>
 
 <style lang="scss" scoped>

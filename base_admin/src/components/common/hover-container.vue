@@ -33,6 +33,7 @@ console.log(showTooltip.value);
 
 <style lang="scss" scoped>
 .hover-container {
+  cursor: pointer;
   .hover-container-content {
     display: flex;
     flex-direction: column;
@@ -40,7 +41,7 @@ console.log(showTooltip.value);
     justify-content: center;
     width: 100%;
     height: 100%;
-    cursor: pointer;
+    
   }
 }
 .hover-container:hover {

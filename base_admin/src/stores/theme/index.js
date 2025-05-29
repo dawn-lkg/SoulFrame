@@ -1,52 +1,35 @@
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
-
-export const useThemeStore = defineStore('theme', () => {
-  // 主题相关状态
-  const primaryColor = ref('#1890ff')
-  const isDarkMode = ref(false)
-  const menuTheme = ref('light')
-  const layout = ref('side') // side | top | mix
-
-  // 布局配置
-  const layoutConfig = ref({
-    showBreadcrumb: true,
-    fixedHeader: true,
-    fixedSidebar: true,
-    splitMenus: false,
-    showLogo: true,
-    showTagsView: true,
-    showFooter: false,
-    contentWidth: 'fluid', // fluid | fixed
-  })
-
-  // 修改主题色
-  function changePrimaryColor(color) {
-    primaryColor.value = color
-    // 这里可以添加动态修改主题色的逻辑
-  }
-
-  // 切换暗黑模式
-  function toggleDarkMode() {
-    isDarkMode.value = !isDarkMode.value
-  }
-
-  // 修改布局配置
-  function updateLayoutConfig(config) {
-    layoutConfig.value = {
-      ...layoutConfig.value,
-      ...config
+export const useThemeStore = defineStore('theme',{
+  state:()=>reactive({
+    primaryColor:'#1890ff',
+    isDarkMode: false,
+    menuTheme: 'light',
+    layout: 'side', // side | top | mix
+    layoutConfig: {
+      showBreadcrumb: true,
+      fixedHeader: true, 
+      fixedSidebar: true,
+      splitMenus: false,
+      showLogo: true,
+      showTagsView: true,
+      showFooter: false,
+      contentWidth: 'fluid' // fluid | fixed
     }
-  }
-
-  return {
-    primaryColor,
-    isDarkMode,
-    menuTheme,
-    layout,
-    layoutConfig,
-    changePrimaryColor,
-    toggleDarkMode,
-    updateLayoutConfig
+  }),
+  actions:{
+    // 切换主题色
+    changePrimaryColor(color) {
+      this.primaryColor = color
+      // 这里可以添加动态修改主题色的逻辑
+    },
+    //切换主题模式
+    toggleDarkMode() {
+      this.isDarkMode = !this.isDarkMode
+    },
+    changeLayout(layout) {
+      this.layout = layout
+    },
+    changeMenuTheme(theme) {
+      this.menuTheme = theme
+    }
   }
 }) 

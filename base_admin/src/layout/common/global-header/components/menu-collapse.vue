@@ -2,8 +2,8 @@
   <transition name="fade" mode="out-in">
     <hover-container @click="app.toggleSiderCollapse">
       <div class="menu-collapse" :class="{ 'menu-collapse-collapsed': collapsed }">
-        <MenuFoldOutlined v-if="collapsed" @click="toggleCollapsed" />
-        <MenuUnfoldOutlined v-else @click="toggleCollapsed" />
+        <MenuFoldOutlined v-if="collapsed"  />
+        <MenuUnfoldOutlined v-else />
       </div>
     </hover-container>
   </transition>
