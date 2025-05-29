@@ -10,7 +10,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     ABreadcrumb: typeof import('ant-design-vue/es')['Breadcrumb']
     ABreadcrumbItem: typeof import('ant-design-vue/es')['BreadcrumbItem']
-    AButton: typeof import('ant-design-vue/es')['Button']
     AConfigProvider: typeof import('ant-design-vue/es')['ConfigProvider']
     ADrawer: typeof import('ant-design-vue/es')['Drawer']
     ALayout: typeof import('ant-design-vue/es')['Layout']
@@ -23,7 +22,6 @@ declare module 'vue' {
     GlobalHeader: typeof import('./layout/common/global-header/index.vue')['default']
     GlobalLogo: typeof import('./layout/common/global-logo/index.vue')['default']
     GlobalSider: typeof import('./layout/common/global-sider/index.vue')['default']
-    HelloWorld: typeof import('./components/HelloWorld.vue')['default']
     HoverContainer: typeof import('./components/common/hover-container.vue')['default']
     MenuCollapse: typeof import('./layout/common/global-header/components/menu-collapse.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
@@ -31,7 +29,7 @@ declare module 'vue' {
     SettingButton: typeof import('./layout/common/global-header/components/setting-button.vue')['default']
     SettingDrawer: typeof import('./layout/common/setting-drawer/index.vue')['default']
     SilderLayout: typeof import('./layout/silderLayout/index.vue')['default']
-    ThemeIcon: typeof import('./components/ThemeIcon.vue')['default']
+    SvgIcon: typeof import('./components/common/svg-icon.vue')['default']
     ThemeMode: typeof import('./layout/common/global-header/components/theme-mode.vue')['default']
   }
 }
