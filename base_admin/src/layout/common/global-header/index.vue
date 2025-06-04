@@ -29,7 +29,7 @@ import userAvatar from './components/user-avatar.vue';
   height: 64px;
   width: 100%;
   background-color: #fff;
-  border-bottom: 1px solid #f0f0f0;
+  // border-bottom: 1px solid #f0f0f0;
 
   .header-left {
     height: 100%;

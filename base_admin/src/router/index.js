@@ -4,23 +4,13 @@ const routes = [
   {
     path: '/',
     name: 'layout',
-    component: () => import('../layout/silderLayout/index.vue')
+    component: () => import('../layout/silderLayout/index.vue'),
   },
-  {
-    path: '/about',
-    name: 'About',
-    component: () => import('../views/About.vue')
-  },
-  {
-    path: '/test',
-    name: 'Test',
-    component: () => import('../views/test.vue')
-  }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
 })
 
-export default router 
+export default router

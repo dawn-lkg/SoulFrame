@@ -1,13 +1,7 @@
 <template>
-  <div style="">
-    <a-menu
-      v-model:openKeys="state.openKeys"
-      v-model:selectedKeys="state.selectedKeys"
-      mode="inline"
-      theme="light"
-      :inline-collapsed="state.collapsed"
-      :items="items"
-    ></a-menu>
+  <div class="global-sider">
+    <a-menu v-model:openKeys="state.openKeys" v-model:selectedKeys="state.selectedKeys" mode="inline"
+      :theme="themeStore.menuTheme" :inline-collapsed="state.collapsed" :items="items"></a-menu>
   </div>
 </template>
 <script setup>
@@ -19,6 +13,10 @@ import {
   InboxOutlined,
   AppstoreOutlined,
 } from '@ant-design/icons-vue';
+import { useThemeStore } from '@/stores/theme';
+
+const themeStore = useThemeStore();
+
 const state = reactive({
   collapsed: false,
   selectedKeys: ['1'],
@@ -119,3 +117,9 @@ const toggleCollapsed = () => {
   state.openKeys = state.collapsed ? [] : state.preOpenKeys;
 };
 </script>
+
+<style lang="scss" scoped>
+.global-sider {
+  height: 100%;
+}
+</style>

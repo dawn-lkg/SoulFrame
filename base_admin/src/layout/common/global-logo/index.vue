@@ -1,13 +1,65 @@
 <template>
   <div class="global-logo">
-    <span class="logo-icon">B</span>
-    <h1 v-if="!app.siderCollapse">Base Admin</h1>
+    <span class="logo-icon" ref="logoIcon">B</span>
+    <h1 v-if="!app.siderCollapse" ref="logoText">Base Admin</h1>
   </div>
 </template>
 
 <script setup>
 import { useAppStore } from "@/stores";
+import { ref, onMounted, watch } from 'vue';
+import gsap from 'gsap';
+
 const app = useAppStore();
+const logoIcon = ref(null);
+const logoText = ref(null);
+
+// 初始动画
+onMounted(() => {
+  // Logo 图标动画
+  gsap.from(logoIcon.value, {
+    duration: 1,
+    scale: 0,
+    rotation: 360,
+    ease: "elastic.out(1, 0.3)"
+  });
+
+  // Logo 文字动画
+  if (!app.siderCollapse) {
+    gsap.from(logoText.value, {
+      duration: 0.8,
+      x: -50,
+      opacity: 0,
+      delay: 0.3,
+      ease: "power2.out"
+    });
+  }
+});
+
+// 监听侧边栏折叠状态
+watch(() => app.siderCollapse, (newValue) => {
+  if (newValue) {
+    // 折叠时的动画
+    gsap.to(logoIcon.value, {
+      duration: 0.3,
+      scale: 0.8,
+      ease: "power2.inOut"
+    });
+  } else {
+    // 展开时的动画
+    gsap.to(logoIcon.value, {
+      duration: 0.3,
+      scale: 1,
+      ease: "power2.inOut"
+    });
+    gsap.from(logoText.value, {
+      duration: 0.3,
+      x: -20,
+      opacity: 0,
+      ease: "power2.out"
+    });
+  }
+});
 </script>
 
 <style scoped lang="scss">
@@ -20,6 +72,8 @@ const app = useAppStore();
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
+  overflow: hidden;
 
   h1 {
     margin: 0;
@@ -28,9 +82,9 @@ const app = useAppStore();
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    -webkit-background-clip: text;
-    // -webkit-text-fill-color: transparent;
+    color: inherit;
   }
+
   .logo-icon {
     height: 32px;
     width: 32px;
@@ -42,6 +96,7 @@ const app = useAppStore();
     font-size: 20px;
     font-weight: bold;
     border-radius: 4px;
+    flex-shrink: 0;
   }
 }
 </style>

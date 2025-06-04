@@ -1,18 +1,9 @@
 <template>
-  <hover-container
-    class="theme-mode"
-    @click="toggleDarkMode"
-    :tooltipContent="tooltipContent"
-  >
+  <hover-container class="theme-mode" @click="toggleDarkMode" :tooltipContent="tooltipContent">
     <transition name="slide-fade" mode="out-in">
       <div :key="themeStore.isDarkMode">
-        <svg-icon
-          name="yueliang"
-          size="30"
-          v-if="!themeStore.isDarkMode"
-          class="icon-rotate"
-        />
-        <svg-icon name="taiyang" size="30" v-else />
+        <svg-icon name="yueliang" size="30" type="svg" v-if="!themeStore.isDarkMode" class="icon-rotate" />
+        <svg-icon name="taiyang" size="30" type="svg" v-else />
       </div>
     </transition>
   </hover-container>
@@ -22,7 +13,9 @@
 import { useThemeStore } from "@/stores/theme";
 const themeStore = useThemeStore();
 const toggleDarkMode = () => {
-  themeStore.toggleDarkMode();
+  setTimeout(() => {
+    themeStore.toggleDarkMode();
+  }, 100);
 };
 const tooltipContent = computed(() => {
   return themeStore.isDarkMode ? "浅色模式" : "深色模式";
@@ -38,9 +31,11 @@ const tooltipContent = computed(() => {
   height: 100%;
   padding: 0 10px;
 }
+
 .icon-rotate {
   transform: scaleX(-1);
 }
+
 /* .icon-rotate:hover {
   transform: scaleX(-1);
 } */

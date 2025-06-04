@@ -1,8 +1,8 @@
 <template>
-    <svg class="icon" :style="styles">
-      <use :xlink:href="`#icon-${name}`"></use>
-    </svg>
-    <!-- <i :class="['iconfont', `icon-${name}`]" :style="styles"></i> -->
+  <i :class="['iconfont', `icon-${name}`]" :style="styles" v-if="type == 'icon'"></i>
+  <svg class="icon" :style="styles" v-else>
+    <use :xlink:href="`#icon-${name}`"></use>
+  </svg>
 </template>
 
 <script setup>
@@ -22,20 +22,26 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  // svg图标还是icon
+  type: {
+    type: String,
+    default: "icon"
+  }
 });
 
 const styles = computed(() => {
   return {
     fontSize: `${props.size}px`,
     color: props.color,
-    width:`${props.size}px`,
-    height:`${props.size}px`
+    width: `${props.size}px`,
+    height: `${props.size}px`
   };
 });
 </script>
 
 <style>
 @import "@/assets/icons/iconfont.css";
+
 .icon {
   /* vertical-align: -1.15em; */
   fill: currentColor;

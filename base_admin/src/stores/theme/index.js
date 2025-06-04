@@ -1,21 +1,22 @@
-export const useThemeStore = defineStore('theme',{
-  state:()=>reactive({
-    primaryColor:'#1890ff',
-    isDarkMode: false,
-    menuTheme: 'light',
-    layout: 'side', // side | top | mix
-    layoutConfig: {
-      showBreadcrumb: true,
-      fixedHeader: true, 
-      fixedSidebar: true,
-      splitMenus: false,
-      showLogo: true,
-      showTagsView: true,
-      showFooter: false,
-      contentWidth: 'fluid' // fluid | fixed
-    }
-  }),
-  actions:{
+export const useThemeStore = defineStore('theme', {
+  state: () =>
+    reactive({
+      primaryColor: '#1890ff',
+      isDarkMode: false,
+      menuTheme: 'dark',
+      layout: 'side', // side | top | mix
+      layoutConfig: {
+        showBreadcrumb: true,
+        fixedHeader: true,
+        fixedSidebar: true,
+        splitMenus: false,
+        showLogo: true,
+        showTagsView: true,
+        showFooter: false,
+        contentWidth: 'fluid', // fluid | fixed
+      },
+    }),
+  actions: {
     // 切换主题色
     changePrimaryColor(color) {
       this.primaryColor = color
@@ -30,6 +31,6 @@ export const useThemeStore = defineStore('theme',{
     },
     changeMenuTheme(theme) {
       this.menuTheme = theme
-    }
-  }
-}) 
+    },
+  },
+})
