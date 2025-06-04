@@ -28,7 +28,7 @@ import {
 } from '@ant-design/icons-vue'
 </script>
 
-<style>
+<style lang="scss" scoped>
 .user-avatar {
   padding: 0 12px;
 

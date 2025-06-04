@@ -2,7 +2,7 @@
   <div class="global-header">
     <div class="header-left">
       <MenuCollapse />
-      <GlobalBreadcrumb />
+      <GlobalBreadcrumb v-if="themeStore.layoutConfig.showBreadcrumb" />
     </div>
     <div class="header-right">
       <ThemeMode />
@@ -18,6 +18,8 @@ import GlobalBreadcrumb from './components/global-breadcrumb.vue';
 import SettingButton from './components/setting-button.vue';
 import ThemeMode from './components/theme-mode.vue';
 import userAvatar from './components/user-avatar.vue';
+import { useThemeStore, useAppStore } from "@/stores";
+const themeStore = useThemeStore();
 </script>
 
 <style lang="scss" scoped>

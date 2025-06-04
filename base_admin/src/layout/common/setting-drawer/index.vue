@@ -3,7 +3,7 @@
     <a-divider class="divider">主题模式</a-divider>
     <a-form :labelCol="{ span: 20 }" :wrapperCol="{ span: 4 }" labelAlign="left">
       <a-form-item label="暗黑模式">
-        <a-switch :checked="themeStore.isDarkMode" @click="toggleDarkMode" :checkedValue="true" :unCheckedValue="false">
+        <a-switch v-model:checked="themeStore.isDarkMode"  :checkedValue="true" :unCheckedValue="false">
           <template #checkedChildren>
             <svgIcon name="yueliang" />
           </template>
@@ -14,9 +14,6 @@
       </a-form-item>
       <a-form-item label="侧边栏深色">
         <a-switch v-model:checked="themeStore.menuTheme" checkedValue="dark" unCheckedValue="light"></a-switch>
-      </a-form-item>
-      <a-form-item label="折叠侧边栏">
-        <a-switch v-model:checked="app.siderCollapse"></a-switch>
       </a-form-item>
     </a-form>
 
@@ -57,10 +54,6 @@ import { useThemeStore } from '@/stores/theme';
 
 const app = useAppStore();
 const themeStore = useThemeStore();
-
-const toggleDarkMode = (value) => {
-  themeStore.toggleDarkMode();
-}
 
 </script>
 

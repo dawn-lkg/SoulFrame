@@ -6,7 +6,7 @@ export const useThemeStore = defineStore('theme', {
       menuTheme: 'dark',
       layout: 'side', // side | top | mix
       layoutConfig: {
-        showBreadcrumb: true,
+        showBreadcrumb: false,
         fixedHeader: true,
         fixedSidebar: true,
         splitMenus: false,
@@ -32,5 +32,9 @@ export const useThemeStore = defineStore('theme', {
     changeMenuTheme(theme) {
       this.menuTheme = theme
     },
+    // 设置面包屑显示
+    setShowBreadcrumb(showBreadcrumb){
+      this.layoutConfig.showBreadcrumb=showBreadcrumb;
+    }
   },
 })

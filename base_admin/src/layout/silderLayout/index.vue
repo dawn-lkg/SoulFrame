@@ -1,7 +1,7 @@
 <template>
   <a-layout :class="layoutClass">
     <!-- 左侧菜单 -->
-    <a-layout-sider v-model:collapsed="app.siderCollapse" :theme="themeStore.menuTheme" collapsible :style="siderStyle"
+    <a-layout-sider v-model:collapsed="app.siderCollapse" :theme="themeStore.menuTheme" :collapsedWidth="app.collapsedWidth" collapsible :style="siderStyle"
       class="layout-sider">
       <global-logo />
       <global-sider />
@@ -13,7 +13,7 @@
         <global-header />
       </a-layout-header>
       <!-- 头部tab-->
-      <global-tab />
+      <global-tab v-if="themeStore.layoutConfig.showTagsView" />
       <!-- 内容 -->
       <a-layout-content class="layout-content">
         <router-view />
@@ -48,6 +48,7 @@ const siderStyle = computed(() => ({
   backgroundColor: themeStore.menuTheme === 'dark' ? '#001529' : '#fff',
   borderRight: `1px solid ${themeStore.menuTheme === 'dark' ? '#1e1e1e' : '#f0f0f0'}`,
   color: themeStore.menuTheme === 'dark' ? '#fff' : '#000',
+
 }));
 </script>
 
