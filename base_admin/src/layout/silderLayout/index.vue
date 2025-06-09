@@ -1,13 +1,13 @@
 <template>
   <a-layout :class="layoutClass">
     <!-- 左侧菜单 -->
-    <a-layout-sider v-model:collapsed="app.siderCollapse" :theme="themeStore.menuTheme" :collapsedWidth="app.collapsedWidth" collapsible :style="siderStyle"
-      class="layout-sider">
+    <a-layout-sider v-model:collapsed="app.siderCollapse" :theme="themeStore.menuTheme"
+      :collapsedWidth="app.collapsedWidth" collapsible :style="siderStyle" class="layout-sider">
       <global-logo />
       <global-sider />
     </a-layout-sider>
     <!-- 右侧内容 -->
-    <a-layout>
+    <a-layout :style="layoutStyle">
       <!-- 头部 -->
       <a-layout-header class="layout-header">
         <global-header />
@@ -48,7 +48,13 @@ const siderStyle = computed(() => ({
   backgroundColor: themeStore.menuTheme === 'dark' ? '#001529' : '#fff',
   borderRight: `1px solid ${themeStore.menuTheme === 'dark' ? '#1e1e1e' : '#f0f0f0'}`,
   color: themeStore.menuTheme === 'dark' ? '#fff' : '#000',
-
+  position: themeStore.layoutConfig.fixedSidebar ? 'fixed' : 'static',
+  left: themeStore.layoutConfig.fixedSidebar ? 0 : 'auto',
+  width: app.siderCollapse ? `${app.collapsedWidth}px` : `${app.siderWidth}px`,
+}));
+// 布局样式
+const layoutStyle = computed(() => ({
+  marginLeft: themeStore.layoutConfig.fixedSidebar ? `${app.siderCollapse ? app.collapsedWidth : app.siderWidth}px` : '0',
 }));
 </script>
 
@@ -57,8 +63,6 @@ const siderStyle = computed(() => ({
 
 .layout-container {
   .layout-sider {
-    // position: fixed;
-    // left: 0;
     height: 100vh;
     z-index: 101;
     transition: all $animation-duration-base;
