@@ -49,10 +49,11 @@ const toggleCollapse = () => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/variables' as *;
 .menu-collapse {
   font-size: 20px;
   width: 40px;
-  height: 64px;
+  height: $header-height;
   display: flex;
   align-items: center;
   justify-content: center;

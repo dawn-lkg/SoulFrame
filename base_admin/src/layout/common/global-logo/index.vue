@@ -63,8 +63,9 @@ watch(() => app.siderCollapse, (newValue) => {
 </script>
 
 <style scoped lang="scss">
+@use '@/styles/variables' as *;
 .global-logo {
-  height: 64px;
+  height: $header-height;
   padding: 16px;
   text-align: center;
   margin-bottom: 4px;
@@ -73,7 +74,7 @@ watch(() => app.siderCollapse, (newValue) => {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  overflow: hidden;
+  // overflow: hidden;
 
   h1 {
     margin: 0;

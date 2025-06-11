@@ -16,7 +16,7 @@
       <global-tab v-if="themeStore.layoutConfig.showTagsView" />
       <!-- 内容 -->
       <a-layout-content class="layout-content">
-        <router-view />
+        <global-content />
       </a-layout-content>
     </a-layout>
     <!-- <a-layout-footer :style="footerStyle">Footer</a-layout-footer> -->
@@ -33,6 +33,7 @@ import globalLogo from "../common/global-logo/index.vue";
 import GlobalHeader from "../common/global-header/index.vue";
 import SettingDrawer from "../common/setting-drawer/index.vue";
 import globalTab from "../common/global-tab/index.vue"
+import globalContent from "../common/global-content/index.vue";
 
 const themeStore = useThemeStore();
 const app = useAppStore()
@@ -113,13 +114,14 @@ const layoutStyle = computed(() => ({
     align-items: center;
     justify-content: space-between;
     height: $header-height;
+    line-height: $header-height;
     z-index: 100;
     transition: all $animation-duration-base;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 
     .header-left {
       .ant-breadcrumb {
-        line-height: 64px;
+        line-height: $header-height;
       }
     }
 
