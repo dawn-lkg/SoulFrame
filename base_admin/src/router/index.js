@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+// import { getToken, removeToken } from '@/utils/auth';
 
 const routes = [
   {
@@ -18,8 +19,6 @@ const router = createRouter({
   routes,
 })
 
-// router/guards.js
-import { getToken, removeToken } from '@/utils/auth';
 
 // 配置
 const WHITE_LIST = ['/login', '/register', '/404', '/403'];
