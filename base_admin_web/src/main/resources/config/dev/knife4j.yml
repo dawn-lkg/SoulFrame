@@ -1,0 +1,76 @@
+# Knife4j配置
+knife4j:
+  # 是否开启增强模式
+  enable: true
+  # 开启生产环境屏蔽
+  production: false
+  # 基础认证
+  basic:
+    enable: false
+    username: admin
+    password: admin123
+  # 是否开启Swagger的深色模式
+  setting:
+    enableDarkMode: false
+    # 是否开启调试
+    enableDebug: true
+    # 是否开启主页自定义
+    enableHomeCustom: true
+    # 主页标题
+    homeCustomLocation: classpath:markdown/home.md
+    # 是否开启Footer
+    enableFooter: true
+    # 是否开启响应状态过滤
+    enableFilterMultipartApis: false
+    # 是否开启RequestMapping接口排序
+    enableFilterMultipartApiMethodType: false
+    # 是否开启OpenApi结构显示
+    enableOpenApi: false
+    # 是否开启组文档显示
+    enableGroup: true
+  # 兼容Springfox的Swagger资源
+  swagger:
+    enabled: true
+    resources:
+      - name: 默认
+        url: /v3/api-docs
+        swaggerVersion: 3.0
+      - name: 系统服务
+        url: /v3/api-docs/系统服务
+        swaggerVersion: 3.0
+      - name: 用户服务
+        url: /v3/api-docs/用户服务
+        swaggerVersion: 3.0
+
+# Swagger配置（OpenAPI 3.0）
+springdoc:
+  api-docs:
+    # 是否开启API文档
+    enabled: true
+    # 自定义API文档路径
+    path: /v3/api-docs
+  swagger-ui:
+    # 是否开启Swagger UI
+    enabled: true
+    # 默认的模型渲染
+    defaultModelsExpandDepth: -1
+    # 默认的API渲染
+    defaultModelExpandDepth: 1
+    # 支持的提交方法
+    supportedSubmitMethods: ["get", "post", "put", "delete", "patch"]
+    # 文档分组
+    groups-order: DESC
+    # 接口排序
+    operationsSorter: method
+    # 标签排序
+    tagsSorter: alpha
+    # 禁用Swagger UI的默认petstore示例
+    disable-swagger-default-url: true
+  # 分组配置
+  group-configs:
+    - group: '系统服务'
+      paths-to-match: ['/system/**']
+    - group: '用户服务'
+      paths-to-match: ['/auth/**']
+  # 包扫描路径
+  packages-to-scan: com.clm.web.controller 

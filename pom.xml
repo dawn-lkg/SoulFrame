@@ -28,12 +28,13 @@
         <easy-captcha.version>1.6.2</easy-captcha.version>
         <hutool.version>5.8.26</hutool.version>
         <lombok.version>1.18.22</lombok.version>
-        <knife4j.version>4.1.0</knife4j.version>
+        <knife4j.version>4.4.0</knife4j.version>
         <minio.version>8.5.17</minio.version>
         <druid.version>1.2.16</druid.version>
         <mysql.version>8.0.33</mysql.version>
         <tomcat.version>10.1.15</tomcat.version>
         <commons-pool2.version>2.11.1</commons-pool2.version>
+        <javax.servlet.version>4.0.1</javax.servlet.version>
     </properties>
 
     <parent>
@@ -132,7 +133,7 @@
             <!-- API文档 -->
             <dependency>
                 <groupId>com.github.xiaoymin</groupId>
-                <artifactId>knife4j-openapi3-spring-boot-starter</artifactId>
+                <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
                 <version>${knife4j.version}</version>
             </dependency>
 
@@ -170,6 +171,15 @@
                 <artifactId>mysql-connector-j</artifactId>
                 <version>${mysql.version}</version>
             </dependency>
+
+            <!-- Servlet API -->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>${javax.servlet.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
 
             <dependency>
                 <groupId>junit</groupId>

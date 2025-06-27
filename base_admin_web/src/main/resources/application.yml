@@ -10,6 +10,7 @@ spring:
       - classpath:config/${spring.profiles.active}/system.yml
       - classpath:config/${spring.profiles.active}/rabbitmq.yml
       - classpath:config/${spring.profiles.active}/minio.yml
+      - classpath:config/${spring.profiles.active}/knife4j.yml
   jackson:
     time-zone: GMT+8
 #  application:
