@@ -2,6 +2,7 @@ package com.clm.system.domain.param;
 
 
 import com.clm.common.core.domain.BasePageParam;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -18,10 +19,12 @@ public class OnlineUserQueryParam extends BasePageParam {
     /**
      * 用户账号
      */
+    @Schema(description = "用户账号")
     private String userName;
     
     /**
      * IP地址
      */
+    @Schema(description = "IP地址")
     private String ipaddr;
 } 

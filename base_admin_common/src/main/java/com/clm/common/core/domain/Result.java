@@ -1,6 +1,7 @@
 package com.clm.common.core.domain;
 
 import com.clm.common.enums.HttpCodeEnum;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -14,22 +15,23 @@ import java.io.Serializable;
 
 @Data
 @Accessors(chain = true)
+@Schema(description = "统一响应结果")
 public class Result<T> implements Serializable {
     private static final long serialVersionUID = 1581329103599839148L;
 
-    /** 是否成功 */
+    @Schema(description = "是否成功", example = "true")
     private Boolean success;
 
-    /** 状态码 */
+    @Schema(description = "状态码", example = "200")
     private Integer code;
 
-    /** 返回消息 */
+    @Schema(description = "返回消息", example = "成功")
     private String msg;
 
-    /** 返回数据 */
+    @Schema(description = "返回数据")
     private T data;
 
-    /** 时间戳 */
+    @Schema(description = "时间戳", example = "1648291200000")
     private Long timestamp;
 
     /** 成功状态码 */

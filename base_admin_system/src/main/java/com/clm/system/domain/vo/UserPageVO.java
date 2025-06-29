@@ -1,5 +1,6 @@
 package com.clm.system.domain.vo;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.List;
@@ -13,5 +14,6 @@ public class UserPageVO extends UserVO{
     /**
      * 角色id列表
      */
+    @Schema(description = "角色id列表")
     private List<Long> roleIds;
 }

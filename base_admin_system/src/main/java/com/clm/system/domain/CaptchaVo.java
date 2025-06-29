@@ -1,5 +1,6 @@
 package com.clm.system.domain;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -9,13 +10,11 @@ import lombok.Data;
 
 @Data
 public class CaptchaVo {
-    /**
-     * 验证码图片
-     */
+
+    @Schema(description = "验证码图片Base64")
     private String captchaSvg;
-    /**
-     * 验证码key
-     */
+
+    @Schema(description = "验证码key")
     private String captchaCode;
 
     public CaptchaVo(){}

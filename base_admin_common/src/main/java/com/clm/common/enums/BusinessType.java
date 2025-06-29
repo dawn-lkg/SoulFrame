@@ -49,7 +49,10 @@ public enum BusinessType {
      * 强制操作
      */
     FORCE(7,"强制操作"),
-    
+    /**
+     * 校验
+     */
+    CHECK(8, "校验"),
     /**
      * 其他
      */

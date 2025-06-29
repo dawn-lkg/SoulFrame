@@ -7,6 +7,9 @@ import com.clm.common.core.domain.Result;
 import com.clm.system.domain.param.OperLogQueryParam;
 import com.clm.system.domain.vo.OperLogVO;
 import com.clm.system.service.OperLogService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,33 +21,28 @@ import java.util.List;
  * @author 陈黎明
  * @since 2025-03-08
  */
+@Tag(name = "操作日志管理")
 @RestController
 @RequestMapping("/system/operLog")
 @RequiredArgsConstructor
 public class OperLogController extends BaseController {
     
     private final OperLogService operLogService;
-    
-    /**
-     * 查询操作日志列表
-     */
+
+    @Operation(summary = "查询操作日志列表")
     @GetMapping("/page")
     public Result<IPage<OperLogVO>> list(OperLogQueryParam param) {
         IPage<OperLogVO> page = operLogService.pageOperLog(param);
         return success(page);
     }
-    
-    /**
-     * 获取操作日志详细信息
-     */
+
+    @Operation(summary = "获取操作日志详细信息")
     @GetMapping("/{operId}")
-    public Result<OperLogVO> getInfo(@PathVariable Long operId) {
+    public Result<OperLogVO> getInfo(@Schema(description = "操作日志ID") @PathVariable Long operId) {
         return success(operLogService.getOperLogById(operId));
     }
-    
-    /**
-     * 删除操作日志
-     */
+
+    @Operation(summary = "删除操作日志")
     @DeleteMapping("/{operIds}")
     public Result<?> remove(@PathVariable List<Long> operIds) {
         if (operLogService.deleteOperLogByIds(operIds)) {
@@ -52,10 +50,8 @@ public class OperLogController extends BaseController {
         }
         return error("删除操作日志失败");
     }
-    
-    /**
-     * 清空操作日志
-     */
+
+    @Operation(summary = "清空操作日志")
     @DeleteMapping("/clean")
     public Result<?> clean() {
         if (operLogService.cleanOperLog()) {
@@ -63,10 +59,8 @@ public class OperLogController extends BaseController {
         }
         return error("清空操作日志失败");
     }
-    
-    /**
-     * 导出操作日志
-     */
+
+    @Operation(summary = "导出操作日志")
     @GetMapping("/export")
     public Result<List<OperLogVO>> export(OperLogQueryParam param) {
         List<OperLogVO> list = operLogService.exportOperLog(param);

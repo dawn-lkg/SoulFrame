@@ -10,6 +10,9 @@ import com.clm.system.domain.dto.RoleDTO;
 import com.clm.system.domain.param.RoleQueryParam;
 import com.clm.system.domain.vo.RoleVO;
 import com.clm.system.service.RoleService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -23,6 +26,8 @@ import java.util.List;
  * @author 陈黎明
  * @since 2025-03-08 10:57:22
  */
+
+@Tag(name = "角色管理")
 @RestController
 @RequestMapping("/system/role")
 @RequiredArgsConstructor
@@ -30,85 +35,58 @@ import java.util.List;
 public class RoleController extends BaseController {
     
     private final RoleService roleService;
-    
-    /**
-     * 分页查询角色列表
-     * @param param 查询参数
-     * @return 分页结果
-     */
+
 //    @SaCheckPermission("system:role:query")
-    @Log(value = "分页查询角色列表",businessType = BusinessType.QUERY)
+    @Log(businessType = BusinessType.QUERY)
+    @Operation(summary = "分页查询角色列表")
     @GetMapping("/page")
     public Result<IPage<RoleVO>> page(RoleQueryParam param) {
         return success(roleService.pageRoleList(param));
     }
 
-
-    /**
-     * 获取所有角色列表
-     * @return 角色列表
-     */
-    @Log(value = "获取所有角色列表",businessType = BusinessType.QUERY)
+    @Log(businessType = BusinessType.QUERY)
+    @Operation(summary = "获取所有角色列表")
     @GetMapping("/list")
     public Result<List<Role>> list() {
         return success(roleService.list());
     }
 
-    /**
-     * 获取角色详情
-     * @param roleId 角色ID
-     * @return 角色详情
-     */
-    @Log(value = "获取角色详情",businessType = BusinessType.QUERY)
+
+    @Log(businessType = BusinessType.QUERY)
+    @Operation(summary = "获取角色详情")
     @GetMapping("/{roleId}")
-    public Result<RoleVO> getInfo(@PathVariable Long roleId) {
+    public Result<RoleVO> getInfo(@Schema(description = "角色ID") @PathVariable Long roleId) {
         return success(roleService.getRoleInfo(roleId));
     }
-    
-    /**
-     * 新增角色
-     * @param param 角色参数
-     * @return 操作结果
-     */
-    @Log(value = "新增角色",businessType = BusinessType.INSERT)
+
+    @Log(businessType = BusinessType.INSERT)
+    @Operation(summary = "新增角色")
     @PostMapping
     public Result<?> add(@RequestBody @Valid RoleDTO param) {
         roleService.addRole(param);
         return success();
     }
-    
-    /**
-     * 修改角色
-     * @param param 角色参数
-     * @return 操作结果
-     */
-    @Log(value = "修改角色",businessType = BusinessType.UPDATE)
+
+    @Log(businessType = BusinessType.UPDATE)
+    @Operation(summary = "修改角色")
     @PutMapping
     public Result<?> update(@RequestBody @Valid RoleDTO param) {
         roleService.updateRole(param);
         return success();
     }
-    
-    /**
-     * 删除角色
-     * @param roleId 角色ID
-     * @return 操作结果
-     */
-    @Log(value = "删除角色",businessType = BusinessType.DELETE)
+
+    @Log(businessType = BusinessType.DELETE)
+    @Operation(summary = "删除角色")
     @DeleteMapping("/{roleId}")
-    public Result<?> delete(@PathVariable Long roleId) {
+    public Result<?> delete(@Schema(description = "角色ID") @PathVariable Long roleId) {
         if (roleService.deleteRole(roleId)) {
             return success();
         }
         return error("删除角色失败");
     }
-    
-    /**
-     * 批量删除角色
-     * @param roleIds 角色ID列表
-     * @return 操作结果
-     */
-    @Log(value = "批量删除角色",businessType = BusinessType.DELETE)
+
+    @Log(businessType = BusinessType.DELETE)
+    @Operation(summary = "批量删除角色")
     @DeleteMapping("/batch")
     public Result<?> batchDelete(@RequestBody List<Long> roleIds) {
         if (roleService.batchDeleteRole(roleIds)) {
@@ -116,66 +94,43 @@ public class RoleController extends BaseController {
         }
         return error("批量删除角色失败");
     }
-    
-    /**
-     * 修改角色状态
-     * @param roleId 角色ID
-     * @param status 状态
-     * @return 操作结果
-     */
+
     @Log("修改角色状态")
+    @Operation(summary = "修改角色状态")
     @PutMapping("/{roleId}/status/{status}")
-    public Result<?> changeStatus(@PathVariable Long roleId, @PathVariable String status) {
+    public Result<?> changeStatus(@Schema(description = "角色ID") @PathVariable Long roleId,@Schema(description = "角色状态") @PathVariable String status) {
         if (roleService.changeRoleStatus(roleId, status)) {
             return success();
         }
         return error("修改角色状态失败");
     }
-    
-    /**
-     * 校验角色名称是否唯一
-     * @param roleName 角色名称
-     * @param roleId 角色ID
-     * @return 校验结果
-     */
-    @Log("校验角色名称是否唯一")
+
+    @Log
+    @Operation(summary = "校验角色名称是否唯一")
     @GetMapping("/check-name-unique")
-    public Result<Boolean> checkNameUnique(String roleName, Long roleId) {
+    public Result<Boolean> checkNameUnique(@Schema(description = "角色名称") String roleName,@Schema(description = "角色ID") Long roleId) {
         return success(roleService.checkRoleNameUnique(roleName, roleId));
     }
-    
-    /**
-     * 校验角色权限是否唯一
-     * @param roleKey 角色权限
-     * @param roleId 角色ID
-     * @return 校验结果
-     */
-    @Log("校验角色权限是否唯一")
+
+    @Log
+    @Operation(summary = "校验角色权限是否唯一")
     @GetMapping("/check-key-unique")
-    public Result<Boolean> checkKeyUnique(String roleKey, Long roleId) {
+    public Result<Boolean> checkKeyUnique(@Schema(description = "角色权限") String roleKey,@Schema(description = "角色ID") Long roleId) {
         return success(roleService.checkRoleKeyUnique(roleKey, roleId));
     }
 
-    /**
-     * 分配权限
-     * @param roleId 角色ID
-     * @param permissionIds 权限ID列表
-     */
-    @Log("分配权限")
+    @Log
+    @Operation(summary = "分配权限")
     @PutMapping("/{roleId}/permission")
-    public Result<?> assignPermission(@PathVariable Long roleId, @RequestBody List<Long> permissionIds) {
+    public Result<?> assignPermission(@Schema(description = "角色ID") @PathVariable Long roleId, @RequestBody List<Long> permissionIds) {
         roleService.assignPermission(roleId, permissionIds);
         return success();
     }
 
-    /**
-     * 根据角色id查询菜单
-     * @param roleId 角色ID
-     * @return 菜单id列表
-     */
-    @Log("根据角色id查询菜单id列表")
+    @Log
+    @Operation(summary = "根据角色id查询菜单id列表")
     @GetMapping("/{roleId}/menu")
-    public Result<List<Long>> getRoleMenu(@PathVariable Long roleId) {
+    public Result<List<Long>> getRoleMenu(@Schema(description = "角色ID") @PathVariable Long roleId) {
         return success(roleService.getPermissionIdsByRoleId(roleId));
     }
 }

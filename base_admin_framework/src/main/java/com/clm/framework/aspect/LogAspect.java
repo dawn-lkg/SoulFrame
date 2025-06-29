@@ -10,9 +10,10 @@ import com.clm.common.security.LoginHelper;
 import com.clm.common.utils.IpUtils;
 import com.clm.common.utils.ServletUtils;
 import com.clm.common.utils.UserAgentUtils;
-import com.clm.system.domain.OperLog;
 import com.clm.framework.annotation.Log;
+import com.clm.system.domain.OperLog;
 import com.clm.system.service.OperLogService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +23,14 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -102,6 +105,9 @@ public class LogAspect {
             OperLog operLog = new OperLog();
             // 默认为成功
             operLog.setStatus(0);
+            // 获取方法摘要
+            MethodSignature signature =(MethodSignature) joinPoint.getSignature();
+            Method method = signature.getMethod();
 
             // 记录操作时间和耗时
             long endTime = System.currentTimeMillis();
@@ -137,7 +143,7 @@ public class LogAspect {
             operLog.setBrowser(UserAgentUtils.getBrowser(userAgent));
             
             // 记录操作类型、标题等
-            operLog.setTitle(controllerLog.value());
+            operLog.setTitle(getSummary(method, controllerLog));
             operLog.setBusinessType(controllerLog.businessType().getCode());
             operLog.setOperatorType(controllerLog.operatorType().getCode());
 
@@ -207,5 +213,22 @@ public class LogAspect {
         // 不记录以下类型的参数
         return !(arg instanceof HttpServletRequest || arg instanceof HttpServletResponse
                 || arg instanceof MultipartFile || arg instanceof BindingResult);
+    }
+
+    /**
+     * 获取文档注解的操作描述
+     * @param method 方法
+     * @param log 日志注解
+     * @return 操作描述
+     */
+    private String getSummary(Method method, Log log) {
+        if(StrUtil.isNotBlank(log.value())){
+            return log.value();
+        }
+        Operation annotation = method.getAnnotation(Operation.class);
+        if(annotation != null && StrUtil.isNotBlank(annotation.summary())){
+            return annotation.summary();
+        }
+        return null;
     }
 } 
