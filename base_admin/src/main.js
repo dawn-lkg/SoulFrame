@@ -1,19 +1,31 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import Antd from 'ant-design-vue'
+import './assets/icons/iconfont.js'
 import 'ant-design-vue/dist/reset.css'
+import './styles/global.scss'
 import zhCN from 'ant-design-vue/es/locale/zh_CN'
 import { ConfigProvider } from 'ant-design-vue'
-import './styles/global.scss'
 import App from './App.vue'
-import router from './router'
-import './assets/icons/iconfont.js'
+import router, { setupRouterGuards } from './router'
+import Antd from 'ant-design-vue'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+import { message } from 'ant-design-vue'
+import { useAuthStore } from '@/stores/auth'
+
+const pinia = createPinia()
+pinia.use(piniaPluginPersistedstate)
 
 const app = createApp(App)
-const pinia = createPinia()
 
+// 全局配置消息提示
+app.config.globalProperties.$message = message
 app.use(pinia)
 app.use(Antd)
+// 初始化 store
+const store = useAuthStore()
+// 设置路由守卫
+setupRouterGuards(router, store)
+
 app.use(router)
 app.provide('antLocale', zhCN)
 app.component('ConfigProvider', ConfigProvider)
