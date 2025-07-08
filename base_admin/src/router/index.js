@@ -1,29 +1,21 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import NProgress from 'nprogress'
-// import { getToken, removeToken } from '@/utils/auth';
+import { staticRouter, errorRoute } from './modules/staticRouter'
+import { dynamicRouter } from './modules/dynamicRouter'
+import { useAuthStore } from '@/stores/auth'
+import { WHITE_LIST, HOME_PATH, LOGIN_PATH } from '@/config'
 
 NProgress.configure({ showSpinner: false })
 
 const routes = [
-  {
-    path: '/login',
-    name: 'login',
-    component: () => import('../views/login/index.vue'),
-  },
-  {
-    path: '/',
-    name: 'layout',
-    component: () => import('../layout/silderLayout/index.vue'),
-  },
+  ...staticRouter,
+  ...errorRoute,
 ]
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
 })
-
-// 配置
-const WHITE_LIST = ['/login', '/register', '/404', '/403']
 
 // 工具函数
 const startProgress = () => NProgress.start()
@@ -32,7 +24,7 @@ const finishProgress = () => NProgress.done()
 const setPageTitle = (to) => {
   const title = to.meta?.title
   if (title) {
-    document.title = `${title} - 趣问系统`
+    document.title = `${title}`
   }
 }
 
@@ -43,7 +35,7 @@ const logRouteAccess = (to, from) => {
     toPath: to.path,
     userAgent: navigator.userAgent,
   }
-  console.log('路由访问日志:', logData)
+  // console.log('路由访问日志:', logData)
 }
 
 const isRateLimited = (to) => {
@@ -65,13 +57,25 @@ const hasPermission = (userRoles, routeRoles) => {
   return routeRoles.some((role) => userRoles.includes(role))
 }
 
+// 获取Token函数
+const getToken = () => {
+  const authStore = useAuthStore()
+  return authStore.token
+}
+
+// 移除Token函数
+const removeToken = () => {
+  const authStore = useAuthStore()
+  authStore.clearAuth()
+}
+
+
 // 主要守卫函数
 export const beforeEachGuard = (store) => async (to, from, next) => {
   startProgress()
 
   try {
-    const token = getToken()
-
+    const token = getToken()    
     if (token) {
       await handleAuthenticatedUser(to, from, next, store)
     } else {
@@ -91,7 +95,7 @@ export const afterEachGuard = (to, from) => {
 
 export const beforeResolveGuard = (to, from, next) => {
   if (to.meta?.requiresAuth && !getToken()) {
-    next('/login')
+    next(LOGIN_PATH)
     return
   }
 
@@ -106,28 +110,46 @@ export const beforeResolveGuard = (to, from, next) => {
 
 // 处理已认证用户
 const handleAuthenticatedUser = async (to, from, next, store) => {
-  if (to.path === '/login') {
-    next({ path: '/' })
+  if (to.path === LOGIN_PATH) {
+    next()
     return
   }
 
-  const hasUserInfo = store.getters.userName
+  const authStore = useAuthStore()
+  const hasUserInfo = Object.keys(authStore.userInfo).length > 0 
 
-  if (hasUserInfo) {
-    checkPermission(to, from, next, store)
-  } else {
+  if (!hasUserInfo) {
     try {
-      await store.dispatch('user/getUserInfo')
-      const accessRoutes = await store.dispatch('permission/generateRoutes', store.getters.roles)
-      accessRoutes.forEach((route) => router.addRoute(route))
-
-      next({ ...to, replace: true })
+      // 获取用户信息
+      await authStore.getUserInfo();
     } catch (error) {
       console.error('获取用户信息失败:', error)
-      await store.dispatch('user/resetToken')
-      next(`/login?redirect=${to.path}`)
+      removeToken()
+      next(`${LOGIN_PATH}?redirect=${to.path}`)
     }
   }
+  console.log(router.getRoutes());
+  
+  // 初始化路由
+  if (!authStore.isInitRoutes) {
+    console.log('初始化路由');
+    await dynamicRouter()
+    next({path:to.path,replace:true})
+    return
+  }
+  //如果路由不存在，则跳转到404
+  // 正确检查路由是否存在
+  if (to.matched.length === 0) {
+    // 如果当前不是已经在导航到404，则导航到404
+    if (to.path !== '/404') {
+      next({ path: '/404' });
+    } else {
+      // 已经是404页面，直接放行，避免循环
+      next();
+    }
+    return;
+  }
+  next()
 }
 
 // 处理未认证用户
@@ -135,7 +157,7 @@ const handleUnauthenticatedUser = (to, from, next) => {
   if (WHITE_LIST.includes(to.path)) {
     next()
   } else {
-    next(`/login?redirect=${to.path}`)
+    next(`${LOGIN_PATH}?redirect=${to.path}`)
   }
 }
 
@@ -147,97 +169,15 @@ const checkPermission = (to, from, next, store) => {
   if (hasPermission(userRoles, routeRoles)) {
     next()
   } else {
-    next({ path: '/403', replace: true })
+    next({ path: FORBIDDEN_PATH, replace: true })
   }
 }
 
 // 错误处理
 const handleError = (error, next, store) => {
-  removeToken()
-  store.dispatch('user/resetToken')
-  next('/login')
-}
-
-// React 版本的路由守卫 Hook
-export const useRouteGuard = () => {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
-  const { userInfo, roles } = useSelector((state) => state.user)
-
-  const [loading, setLoading] = useState(true)
-
-  const checkAuth = useCallback(async () => {
-    setLoading(true)
-
-    try {
-      const token = getToken()
-
-      if (token) {
-        if (location.pathname === '/login') {
-          navigate('/', { replace: true })
-          return
-        }
-
-        if (!userInfo) {
-          await dispatch(getUserInfo()).unwrap()
-        }
-
-        if (!checkRoutePermission(location.pathname, roles)) {
-          navigate('/403', { replace: true })
-          return
-        }
-      } else if (!WHITE_LIST.includes(location.pathname)) {
-        navigate(`/login?redirect=${location.pathname}`, { replace: true })
-      }
-    } catch (error) {
-      console.error('认证检查失败:', error)
-      handleAuthError(navigate, dispatch)
-    } finally {
-      setLoading(false)
-    }
-  }, [location.pathname, userInfo, roles, navigate, dispatch])
-
-  useEffect(() => {
-    checkAuth()
-  }, [checkAuth])
-
-  useEffect(() => {
-    if (!loading) {
-      setDocumentTitle(location.pathname)
-      logAccess(location)
-    }
-  }, [location, loading])
-
-  return { loading }
-}
-
-const checkRoutePermission = (pathname, userRoles) => {
-  const routePermissions = {
-    '/admin': ['admin'],
-    '/user/management': ['admin', 'manager'],
-    '/reports': ['admin', 'manager', 'viewer'],
-  }
-
-  const requiredRoles = routePermissions[pathname]
-  return hasPermission(userRoles, requiredRoles)
-}
-
-const handleAuthError = (navigate, dispatch) => {
-  removeToken()
-  dispatch(resetToken())
-  navigate('/login', { replace: true })
-}
-
-const setDocumentTitle = (pathname) => {
-  const titles = {
-    '/': '首页',
-    '/dashboard': '仪表板',
-    '/admin': '管理后台',
-    '/login': '登录',
-  }
-
-  document.title = `${titles[pathname] || '趣问系统'} - 趣问系统`
+  // removeToken()
+  // store.dispatch('user/resetToken')
+  // next('/login')
 }
 
 const logAccess = (location) => {

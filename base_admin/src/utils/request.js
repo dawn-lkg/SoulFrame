@@ -1,25 +1,31 @@
 import axios from 'axios';
+import { useAuthStore } from '@/stores/auth'
+import router from '@/router'
+import {LOGIN_PATH} from '@/config'
+
 
 // 默认配置
 const DEFAULT_CONFIG = {
-  baseURL: process.env.REACT_APP_API_BASE_URL || '/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },
 };
 
+const isPrintLog = import.meta.env.VITE_LOG_REQUEST;
+
 // 创建 axios 实例
 const instance = axios.create(DEFAULT_CONFIG);
 
-// 工具函数
-const getToken = () => 
-  localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
+// 获取token
+const getToken = () => useAuthStore().token;
 
-const clearToken = () => {
-  localStorage.removeItem('access_token');
-  sessionStorage.removeItem('access_token');
-};
+// 清除token
+const clearToken = () => useAuthStore().clearAuth();
+
+//获取token名称
+const getTokenName = () => useAuthStore().tokenName
 
 const generateRequestId = () => 
   Math.random().toString(36).substring(2) + Date.now().toString(36);
@@ -27,7 +33,7 @@ const generateRequestId = () =>
 const handleUnauthorized = () => {
   clearToken();
   console.log('用户未授权，请重新登录');
-  // window.location.href = '/login';
+  router.push(LOGIN_PATH);
 };
 
 // 错误处理映射
@@ -68,7 +74,7 @@ instance.interceptors.request.use(
     // 添加认证token
     const token = getToken();
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers[getTokenName()] =`Bearer ${token}`;
     }
 
     // 添加请求ID
@@ -79,7 +85,10 @@ instance.interceptors.request.use(
       config.params = { ...config.params, _t: Date.now() };
     }
 
-    console.log(`🚀 请求发送: ${config.method?.toUpperCase()} ${config.url}`, config);
+    if (isPrintLog) {
+      console.log(`🚀 请求发送: ${config.method?.toUpperCase()} ${config.url}`, config);
+    }
+
     return config;
   },
   (error) => {
@@ -91,17 +100,19 @@ instance.interceptors.request.use(
 // 响应拦截器
 instance.interceptors.response.use(
   (response) => {
-    console.log(`✅ 响应接收: ${response.config.url}`, response.data);
+    if (isPrintLog) {
+      console.log(`✅ 响应接收: ${response.config.url}`, response.data);
+    }
     
-    const { code, message, data } = response.data;
+    const { code, msg, data } = response.data;
     
     if (code === 200 || code === 0) {
       return data;
     } else if (code === 401) {
       handleUnauthorized();
-      return Promise.reject(new Error(message || '未授权访问'));
+      return Promise.reject(new Error(msg || '未授权访问'));
     } else {
-      return Promise.reject(new Error(message || '请求失败'));
+      return Promise.reject(new Error(msg || '请求失败'));
     }
   },
   handleResponseError
@@ -115,6 +126,8 @@ export const post = (url, data = {}, config = {}) => instance.post(url, data, co
 export const put = (url, data = {}, config = {}) => instance.put(url, data, config);
 
 export const del = (url, config = {}) => instance.delete(url, config);
+
+export const batchDel = (url, data = {}, config = {}) => instance.delete(url, { data, ...config });
 
 export const patch = (url, data = {}, config = {}) => instance.patch(url, data, config);
 
@@ -201,6 +214,7 @@ const request = {
   post,
   put,
   delete: del,
+  batchDel,
   patch,
   upload,
   download,

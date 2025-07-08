@@ -3,7 +3,7 @@ export const useThemeStore = defineStore('theme', {
     reactive({
       primaryColor: '#1890ff',
       isDarkMode: false,
-      menuTheme: 'dark',
+      menuTheme: 'light',
       layout: 'side', // side | top | mix
       layoutConfig: {
         showBreadcrumb: true,
@@ -36,5 +36,9 @@ export const useThemeStore = defineStore('theme', {
     setShowBreadcrumb(showBreadcrumb) {
       this.layoutConfig.showBreadcrumb = showBreadcrumb
     },
+  },
+  persist: {
+    key: 'theme',
+    storage: localStorage,
   },
 })

@@ -5,6 +5,8 @@ export const useAppStore = defineStore('app', {
       settingDrawerVisible: false,
       siderWidth: 200,
       collapsedWidth: 80,
+      //组件尺寸
+      componentSize: 'default', // default | middle | small
     }),
   actions: {
     // 打开设置抽屉
@@ -31,5 +33,9 @@ export const useAppStore = defineStore('app', {
     setCollapsedWidth(width) {
       this.collapsedWidth = width
     },
+  },
+  persist: {
+    key: 'app',
+    storage: localStorage,
   },
 })

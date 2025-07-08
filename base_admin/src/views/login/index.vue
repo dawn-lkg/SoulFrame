@@ -1,9 +1,12 @@
 <template>
   <div class="login-container">
     <div class="login-background">
-      <div class="wave"></div>
-      <div class="wave"></div>
-      <div class="wave"></div>
+      <div id="particles-js"></div>
+      <div class="wave-container">
+        <div class="wave wave1"></div>
+        <div class="wave wave2"></div>
+        <div class="wave wave3"></div>
+      </div>
     </div>
     <div class="login-content">
       <div class="login-box">
@@ -101,13 +104,13 @@ import {
 } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { useRoute, useRouter } from 'vue-router'
-// import { getCaptcha } from '@/api/modules/auth'
-// import { useAuthStore } from '@/store/modules/auth'
+import { getCaptcha } from '@/api/modules/auth'
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
 const route = useRoute()
 const loading = ref(false)
-// const authStore = useAuthStore()
+const authStore = useAuthStore()
 
 // 验证码相关状态
 const captchaInfo = ref({
@@ -141,12 +144,8 @@ const formRules = {
 
 // 获取验证码
 const refreshCaptcha = async () => {
-  try {
-    // const res = await getCaptcha()
-    // captchaInfo.value = res.data
-  } catch (error) {
-    message.error('获取验证码失败，请重试')
-  }
+    const data = await getCaptcha()
+    captchaInfo.value = data
 }
 
 // 检查是否有记住的密码
@@ -191,12 +190,12 @@ const handleForgotPassword = () => {
 const handleSubmit = async () => {
   try {
     loading.value = true
-    // await authStore.login({
-    //   username: formState.username,
-    //   password: formState.password,
-    //   code: formState.captcha,
-    //   uuid: captchaInfo.value.captchaCode
-    // })
+    await authStore.login({
+      username: formState.username,
+      password: formState.password,
+      code: formState.captcha,
+      uuid: captchaInfo.value.captchaCode
+    })
 
     handleRememberPassword()
     message.success('登录成功')
@@ -221,11 +220,114 @@ const handleKeyPress = (e) => {
   }
 }
 
+// 初始化粒子背景
+const initParticles = () => {
+  if (window.particlesJS) {
+    window.particlesJS('particles-js', {
+      particles: {
+        number: {
+          value: 80,
+          density: {
+            enable: true,
+            value_area: 800
+          }
+        },
+        color: {
+          value: '#ffffff'
+        },
+        shape: {
+          type: 'circle',
+          stroke: {
+            width: 0,
+            color: '#000000'
+          },
+        },
+        opacity: {
+          value: 0.5,
+          random: true,
+          anim: {
+            enable: true,
+            speed: 1,
+            opacity_min: 0.1,
+            sync: false
+          }
+        },
+        size: {
+          value: 3,
+          random: true,
+          anim: {
+            enable: true,
+            speed: 2,
+            size_min: 0.1,
+            sync: false
+          }
+        },
+        line_linked: {
+          enable: true,
+          distance: 150,
+          color: '#ffffff',
+          opacity: 0.4,
+          width: 1
+        },
+        move: {
+          enable: true,
+          speed: 1,
+          direction: 'none',
+          random: true,
+          straight: false,
+          out_mode: 'out',
+          bounce: false,
+        }
+      },
+      interactivity: {
+        detect_on: 'canvas',
+        events: {
+          onhover: {
+            enable: true,
+            mode: 'grab'
+          },
+          onclick: {
+            enable: true,
+            mode: 'push'
+          },
+          resize: true
+        },
+        modes: {
+          grab: {
+            distance: 140,
+            line_linked: {
+              opacity: 1
+            }
+          },
+          push: {
+            particles_nb: 4
+          }
+        }
+      },
+      retina_detect: true
+    })
+  }
+}
+
+// 加载粒子JS脚本
+const loadParticlesScript = () => {
+  if (!window.particlesJS) {
+    const script = document.createElement('script')
+    script.src = 'https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js'
+    script.onload = () => initParticles()
+    document.head.appendChild(script)
+  } else {
+    initParticles()
+  }
+}
+
 onMounted(() => {
   refreshCaptcha()
   checkRemembered()
   // 添加键盘事件监听
   window.addEventListener('keypress', handleKeyPress)
+  // 加载粒子动画
+  loadParticlesScript()
 })
 
 onUnmounted(() => {
@@ -238,6 +340,7 @@ onUnmounted(() => {
 // 变量定义
 $primary-color: #1890ff;
 $secondary-color: #722ed1;
+$accent-color: #13c2c2;
 $white: #ffffff;
 $text-color: rgba(0, 0, 0, 0.65);
 $text-secondary: rgba(0, 0, 0, 0.45);
@@ -246,7 +349,7 @@ $shadow-color: rgba(0, 0, 0, 0.15);
 
 // Mixins
 @mixin gradient-bg {
-  background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+  background: linear-gradient(135deg, $primary-color 0%, $secondary-color 75%, $accent-color 100%);
 }
 
 @mixin text-gradient {
@@ -289,26 +392,46 @@ $shadow-color: rgba(0, 0, 0, 0.15);
     right: 0;
     bottom: 0;
     z-index: 0;
+    
+    #particles-js {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .wave-container {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 150px;
+      overflow: hidden;
+    }
 
     .wave {
       position: absolute;
       bottom: 0;
       left: 0;
-      width: 100%;
-      height: 100px;
-      background: url('@/assets/login-bg.svg') repeat-x;
-      animation: wave 10s linear infinite;
-
-      &:nth-child(2) {
-        bottom: 10px;
-        opacity: 0.5;
-        animation: wave 7s linear infinite;
+      width: 200%;
+      height: 100%;
+      background: transparent;
+      
+      &.wave1 {
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.7)" fill-opacity="1" d="M0,192L48,181.3C96,171,192,149,288,154.7C384,160,480,192,576,202.7C672,213,768,203,864,170.7C960,139,1056,85,1152,85.3C1248,85,1344,139,1392,165.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') repeat-x;
+        animation: wave 15s linear infinite;
+        z-index: 3;
       }
 
-      &:nth-child(3) {
-        bottom: 20px;
-        opacity: 0.2;
-        animation: wave 4s linear infinite;
+      &.wave2 {
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.5)" fill-opacity="1" d="M0,256L48,229.3C96,203,192,149,288,138.7C384,128,480,160,576,186.7C672,213,768,235,864,224C960,213,1056,171,1152,165.3C1248,160,1344,192,1392,208L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') repeat-x;
+        animation: wave 20s linear infinite;
+        z-index: 2;
+      }
+
+      &.wave3 {
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.3)" fill-opacity="1" d="M0,224L48,213.3C96,203,192,181,288,154.7C384,128,480,96,576,122.7C672,149,768,235,864,250.7C960,267,1056,213,1152,176C1248,139,1344,117,1392,106.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') repeat-x;
+        animation: wave 30s linear infinite;
+        z-index: 1;
       }
     }
   }
@@ -490,11 +613,10 @@ $shadow-color: rgba(0, 0, 0, 0.15);
 // 动画定义
 @keyframes wave {
   0% {
-    background-position-x: 0;
+    transform: translateX(0);
   }
-
   100% {
-    background-position-x: 1440px;
+    transform: translateX(-50%);
   }
 }
 

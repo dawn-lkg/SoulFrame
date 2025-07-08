@@ -28,7 +28,6 @@ const props = defineProps({
   },
 });
 const showTooltip = computed(() => props.tooltipContent);
-console.log(showTooltip.value);
 </script>
 
 <style lang="scss" scoped>

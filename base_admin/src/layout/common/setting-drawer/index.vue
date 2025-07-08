@@ -45,6 +45,17 @@
         <a-switch v-model:checked="themeStore.layoutConfig.showTagsView"></a-switch>
       </a-form-item>
     </a-form>
+
+    <a-divider class="divider">组件设置</a-divider>
+    <a-form :labelCol="{ span: 16 }" :wrapperCol="{ span: 8 }" labelAlign="left">
+      <a-form-item label="组件尺寸">
+        <a-select v-model:value="app.componentSize" style="width: 100%">
+          <a-select-option value="default">默认</a-select-option>
+          <a-select-option value="middle">中等</a-select-option>
+          <a-select-option value="small">紧凑</a-select-option>
+        </a-select>
+      </a-form-item>
+    </a-form>
   </a-drawer>
 </template>
 

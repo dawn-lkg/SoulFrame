@@ -34,9 +34,12 @@ import GlobalHeader from "../common/global-header/index.vue";
 import SettingDrawer from "../common/setting-drawer/index.vue";
 import globalTab from "../common/global-tab/index.vue"
 import globalContent from "../common/global-content/index.vue";
+import { useAuthStore } from '@/stores/auth'
 
 const themeStore = useThemeStore();
 const app = useAppStore()
+const authStore = useAuthStore()
+
 
 // 计算布局样式
 const layoutClass = computed(() => ({
@@ -133,11 +136,11 @@ const layoutStyle = computed(() => ({
 
   .layout-content {
     margin: 24px 24px 0;
-    padding: 24px;
-    background: $component-bg;
-    border-radius: $border-radius-base;
-    min-height: calc(100vh - $header-height - 48px);
-    transition: all $animation-duration-base;
+    // padding: 24px;
+    // background: $component-bg;
+    // border-radius: $border-radius-base;
+    // min-height: calc(100vh - $header-height - 48px);
+    // transition: all $animation-duration-base;
   }
 
   :deep(.ant-layout) {
