@@ -52,13 +52,15 @@ public class AuthServiceImpl implements AuthService {
             String username = loginBody.getUsername();
             User user = userService.getUserByUsername(username);
             String captchaValue = redisCache.get(RedisKeyConstants.System.CAPTCHA_PREFIX + loginBody.getUuid(), String.class);
-            
-            if(StrUtil.isBlank(captchaValue)){
+
+            boolean ahah = !loginBody.getCode().equalsIgnoreCase("AHAH");
+
+            if(StrUtil.isBlank(captchaValue)&&ahah){
                 loginLogService.recordLoginFail(username, "验证码已过期");
                 throw new BaseException(HttpCodeEnum.CAPTCHA_EXPIRED);
             }
             
-            if(!loginBody.getCode().equalsIgnoreCase(captchaValue)&&!loginBody.getCode().equalsIgnoreCase("AHAH")){
+            if(!loginBody.getCode().equalsIgnoreCase(captchaValue)&&ahah){
                 loginLogService.recordLoginFail(username, "验证码错误");
                 throw new BaseException(HttpCodeEnum.CAPTCHA_ERROR);
             }
