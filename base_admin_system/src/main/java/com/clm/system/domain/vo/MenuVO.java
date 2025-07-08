@@ -67,9 +67,9 @@ public class MenuVO {
     private String query;
     
     /**
-     * 是否为外链（0是 1否）
+     * 是否为外链（0组件 1外联 2内链）
      */
-    @Schema(description = "是否为外链（0是 1否）")
+    @Schema(description = "是否为外链（0组件 1外联 2内链）")
     private Integer isFrame;
     
     /**
