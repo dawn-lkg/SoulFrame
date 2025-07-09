@@ -1,6 +1,7 @@
 package com.clm.common.utils;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -51,5 +52,16 @@ public class ServletUtils {
      */
     public static String getUserAgent() {
         return getHeader("User-Agent");
+    }
+
+    /**
+     * 获取返回respond
+     */
+    public static HttpServletResponse getResponse() {
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attr == null) {
+            return null;
+        }
+        return attr.getResponse();
     }
 } 

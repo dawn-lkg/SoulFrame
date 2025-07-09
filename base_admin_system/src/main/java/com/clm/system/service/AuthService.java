@@ -2,8 +2,8 @@ package com.clm.system.service;
 
 import cn.dev33.satoken.stp.SaTokenInfo;
 import com.clm.common.core.domain.model.LoginBody;
-import com.clm.system.domain.CaptchaVo;
-import com.clm.system.domain.UserInfo;
+import com.clm.system.domain.entity.UserInfo;
+import com.clm.system.domain.vo.CaptchaVo;
 import com.clm.system.domain.vo.MenuVO;
 
 import java.util.List;

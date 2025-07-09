@@ -1,8 +1,9 @@
-package com.clm.system.domain;
+package com.clm.system.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 /**
  * 角色和菜单关联表(RoleMenu)实体类
@@ -14,6 +15,7 @@ import java.io.Serializable;
 @TableName("sys_role_menu")
 public class RoleMenu implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -62808350545302516L;
             
     /**

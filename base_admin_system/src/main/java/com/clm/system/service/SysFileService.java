@@ -1,7 +1,7 @@
 package com.clm.system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.clm.system.domain.SysFile;
+import com.clm.system.domain.entity.SysFile;
 import com.clm.system.domain.vo.FileChunkResultVO;
 import com.clm.system.domain.vo.FileChunkVO;
 import com.clm.system.domain.vo.FileInfoVO;

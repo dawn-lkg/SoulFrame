@@ -8,9 +8,8 @@
         oper_name, dept_name, oper_url, oper_ip, oper_location, oper_param,
         json_result, status, error_msg, oper_time, os, browser, cost_time
     </sql>
-    
-    <!-- 分页查询操作日志 -->
-    <select id="selectOperLogPage" resultType="com.clm.system.domain.vo.OperLogVO">
+
+    <sql id="selectSql">
         SELECT
         <include refid="Base_Column_List"/>
         FROM sys_oper_log
@@ -46,8 +45,16 @@
             </if>
         </where>
         ORDER BY oper_time DESC
-    </select>
+    </sql>
     
+    <!-- 分页查询操作日志 -->
+    <select id="selectOperLogPage" resultType="com.clm.system.domain.vo.OperLogVO">
+        <include refid="selectSql"/>
+    </select>
+    <select id="selectListRel" resultType="com.clm.system.domain.vo.OperLogVO">
+        <include refid="selectSql"/>
+    </select>
+
     <!-- 清空操作日志 -->
     <update id="cleanOperLog">
         TRUNCATE TABLE sys_oper_log

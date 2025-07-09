@@ -5,7 +5,7 @@ import com.clm.common.core.controller.BaseController;
 import com.clm.common.core.domain.Result;
 import com.clm.common.enums.BusinessType;
 import com.clm.framework.annotation.Log;
-import com.clm.system.domain.DictData;
+import com.clm.system.domain.entity.DictData;
 import com.clm.system.service.DictDataService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;

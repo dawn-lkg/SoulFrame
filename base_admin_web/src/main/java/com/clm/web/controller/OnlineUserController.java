@@ -4,7 +4,7 @@ import com.clm.common.core.controller.BaseController;
 import com.clm.common.core.domain.Result;
 import com.clm.common.enums.BusinessType;
 import com.clm.framework.annotation.Log;
-import com.clm.system.domain.OnlineUser;
+import com.clm.system.domain.entity.OnlineUser;
 import com.clm.system.domain.param.OnlineUserQueryParam;
 import com.clm.system.service.OnlineUserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,6 +42,14 @@ public class OnlineUserController extends BaseController {
     @Log(businessType = BusinessType.FORCE)
     public Result<?> forceLogout(@PathVariable String tokenId) {
         onlineUserService.forceLogout(tokenId);
+        return success();
+    }
+
+    @Operation(summary = "批量退出用户")
+    @DeleteMapping("batch")
+    @Log(businessType = BusinessType.FORCE)
+    public Result<?> forceLogout(@RequestBody List<String> tokenIds) {
+        tokenIds.forEach(onlineUserService::forceLogout);
         return success();
     }
 } 

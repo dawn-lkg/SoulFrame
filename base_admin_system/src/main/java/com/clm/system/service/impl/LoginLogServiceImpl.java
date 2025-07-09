@@ -8,7 +8,7 @@ import com.clm.common.exception.BaseException;
 import com.clm.common.utils.IpUtils;
 import com.clm.common.utils.ServletUtils;
 import com.clm.common.utils.UserAgentUtils;
-import com.clm.system.domain.LoginLog;
+import com.clm.system.domain.entity.LoginLog;
 import com.clm.system.domain.param.LoginLogQueryParam;
 import com.clm.system.domain.vo.LoginLogVO;
 import com.clm.system.mapper.LoginLogMapper;

@@ -1,4 +1,4 @@
-package com.clm.system.domain;
+package com.clm.system.domain.entity;
 
 
 import com.clm.system.domain.vo.RoleSimpleVO;

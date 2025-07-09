@@ -1,7 +1,7 @@
 package com.clm.system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.clm.system.domain.RoleMenu;
+import com.clm.system.domain.entity.RoleMenu;
 
 import java.util.List;
 

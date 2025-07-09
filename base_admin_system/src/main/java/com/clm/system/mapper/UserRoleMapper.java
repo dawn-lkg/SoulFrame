@@ -2,7 +2,7 @@ package com.clm.system.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.clm.system.domain.UserRole;
+import com.clm.system.domain.entity.UserRole;
 
 /**
  * 用户和角色关联表(UserRole)表数据库访问层

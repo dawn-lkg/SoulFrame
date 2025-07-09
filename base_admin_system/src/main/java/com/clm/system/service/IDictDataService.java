@@ -1,8 +1,7 @@
 package com.clm.system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.clm.system.domain.DictData;
-
+import com.clm.system.domain.entity.DictData;
 
 import java.util.List;
 

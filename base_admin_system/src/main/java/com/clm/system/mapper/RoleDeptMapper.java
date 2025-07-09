@@ -1,7 +1,7 @@
 package com.clm.system.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.clm.system.domain.RoleDept;
+import com.clm.system.domain.entity.RoleDept;
 
 
 /**

@@ -2,7 +2,7 @@ package com.clm.system.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.clm.system.domain.OperLog;
+import com.clm.system.domain.entity.OperLog;
 import com.clm.system.domain.param.OperLogQueryParam;
 import com.clm.system.domain.vo.OperLogVO;
 
@@ -23,7 +23,15 @@ public interface OperLogService extends IService<OperLog> {
      * @return 分页结果
      */
     IPage<OperLogVO> pageOperLog(OperLogQueryParam param);
-    
+
+    /**
+     * 列表关联查询
+     *
+     * @param param 查询参数
+     * @return 结果
+     */
+    List<OperLogVO> listRel(OperLogQueryParam param);
+
     /**
      * 新增操作日志
      *
@@ -36,14 +44,6 @@ public interface OperLogService extends IService<OperLog> {
      * 新增操作日志（异步）
      */
     void insertOperLogAsync(OperLog operLog);
-
-    /**
-     * 批量删除操作日志
-     *
-     * @param operIds 需要删除的操作日志ID
-     * @return 结果
-     */
-    boolean deleteOperLogByIds(List<Long> operIds);
     
     /**
      * 查询操作日志详细
@@ -62,9 +62,7 @@ public interface OperLogService extends IService<OperLog> {
     
     /**
      * 导出操作日志
-     *
      * @param param 查询条件
-     * @return 操作日志列表
      */
-    List<OperLogVO> exportOperLog(OperLogQueryParam param);
+    void exportOperLog(OperLogQueryParam param);
 } 

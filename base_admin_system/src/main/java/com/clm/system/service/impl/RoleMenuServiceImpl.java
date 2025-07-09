@@ -2,7 +2,7 @@ package com.clm.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.clm.system.domain.RoleMenu;
+import com.clm.system.domain.entity.RoleMenu;
 import com.clm.system.mapper.RoleMenuMapper;
 import com.clm.system.service.RoleMenuService;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,7 @@
 package com.clm.system.service;
 
 import com.clm.common.core.domain.entity.User;
-import com.clm.system.domain.OnlineUser;
+import com.clm.system.domain.entity.OnlineUser;
 import com.clm.system.domain.param.OnlineUserQueryParam;
 
 import java.util.List;

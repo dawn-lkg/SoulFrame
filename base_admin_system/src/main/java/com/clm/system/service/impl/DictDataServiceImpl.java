@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.clm.common.constants.RedisKeyConstants;
 import com.clm.common.utils.RedisUtils;
-import com.clm.system.domain.DictData;
+import com.clm.system.domain.entity.DictData;
 import com.clm.system.mapper.DictDataMapper;
 import com.clm.system.service.DictDataService;
 import lombok.RequiredArgsConstructor;

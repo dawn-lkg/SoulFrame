@@ -11,7 +11,7 @@ import com.clm.common.utils.IpUtils;
 import com.clm.common.utils.ServletUtils;
 import com.clm.common.utils.UserAgentUtils;
 import com.clm.framework.annotation.Log;
-import com.clm.system.domain.OperLog;
+import com.clm.system.domain.entity.OperLog;
 import com.clm.system.service.OperLogService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;

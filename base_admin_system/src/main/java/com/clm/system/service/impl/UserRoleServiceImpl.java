@@ -2,7 +2,7 @@ package com.clm.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.clm.system.domain.UserRole;
+import com.clm.system.domain.entity.UserRole;
 import com.clm.system.mapper.UserRoleMapper;
 import com.clm.system.service.UserRoleService;
 import lombok.RequiredArgsConstructor;

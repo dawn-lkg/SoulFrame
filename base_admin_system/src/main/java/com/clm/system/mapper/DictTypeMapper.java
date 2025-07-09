@@ -1,7 +1,7 @@
 package com.clm.system.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.clm.system.domain.DictType;
+import com.clm.system.domain.entity.DictType;
 
 /**
  * 字典类型表 数据层

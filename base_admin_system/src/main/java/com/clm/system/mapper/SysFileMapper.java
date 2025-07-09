@@ -2,7 +2,7 @@ package com.clm.system.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.clm.system.domain.SysFile;
+import com.clm.system.domain.entity.SysFile;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

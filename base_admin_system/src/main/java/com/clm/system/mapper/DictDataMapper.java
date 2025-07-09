@@ -1,7 +1,7 @@
 package com.clm.system.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.clm.system.domain.DictData;
+import com.clm.system.domain.entity.DictData;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

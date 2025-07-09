@@ -8,7 +8,7 @@ import com.clm.common.utils.IpUtils;
 import com.clm.common.utils.RedisUtils;
 import com.clm.common.utils.ServletUtils;
 import com.clm.common.utils.UserAgentUtils;
-import com.clm.system.domain.OnlineUser;
+import com.clm.system.domain.entity.OnlineUser;
 import com.clm.system.domain.param.OnlineUserQueryParam;
 import com.clm.system.service.OnlineUserService;
 import jakarta.servlet.http.HttpServletRequest;

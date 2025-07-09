@@ -3,7 +3,7 @@ package com.clm.system.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.clm.system.domain.LoginLog;
+import com.clm.system.domain.entity.LoginLog;
 import com.clm.system.domain.param.LoginLogQueryParam;
 import com.clm.system.domain.vo.LoginLogVO;
 import org.apache.ibatis.annotations.Param;

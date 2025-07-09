@@ -26,7 +26,7 @@ import java.util.List;
 @RequestMapping("/system/operLog")
 @RequiredArgsConstructor
 public class OperLogController extends BaseController {
-    
+
     private final OperLogService operLogService;
 
     @Operation(summary = "查询操作日志列表")
@@ -43,27 +43,35 @@ public class OperLogController extends BaseController {
     }
 
     @Operation(summary = "删除操作日志")
-    @DeleteMapping("/{operIds}")
-    public Result<?> remove(@PathVariable List<Long> operIds) {
-        if (operLogService.deleteOperLogByIds(operIds)) {
-            return success();
+    @DeleteMapping("/{operId}")
+    public Result<?> remove(@PathVariable Long operId) {
+        if(!operLogService.removeById(operId)) {
+            return error("删除操作日志失败");
         }
-        return error("删除操作日志失败");
+        return success();
+    }
+
+    @Operation(summary = "批量删除操作日志")
+    @DeleteMapping("/batch")
+    public Result<?> remove(@RequestBody List<Long> operIds) {
+        if(!operLogService.removeByIds(operIds)){
+            return error("批量删除操作日志失败");
+        }
+        return success();
     }
 
     @Operation(summary = "清空操作日志")
-    @DeleteMapping("/clean")
+    @DeleteMapping("/clear")
     public Result<?> clean() {
-        if (operLogService.cleanOperLog()) {
-            return success();
+        if (!operLogService.cleanOperLog()) {
+           return error("清空操作日志失败");
         }
-        return error("清空操作日志失败");
+        return success();
     }
 
     @Operation(summary = "导出操作日志")
     @GetMapping("/export")
-    public Result<List<OperLogVO>> export(OperLogQueryParam param) {
-        List<OperLogVO> list = operLogService.exportOperLog(param);
-        return success(list);
+    public void export(OperLogQueryParam param) {
+        operLogService.exportOperLog(param);
     }
 } 

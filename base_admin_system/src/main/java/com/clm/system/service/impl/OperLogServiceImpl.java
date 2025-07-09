@@ -1,5 +1,6 @@
 package com.clm.system.service.impl;
 
+import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -8,19 +9,22 @@ import com.clm.common.enums.BusinessType;
 import com.clm.common.enums.HttpCodeEnum;
 import com.clm.common.enums.OperatorType;
 import com.clm.common.exception.BaseException;
+import com.clm.common.utils.ServletUtils;
 import com.clm.common.utils.UserAgentUtils;
-import com.clm.system.domain.OperLog;
+import com.clm.system.domain.entity.OperLog;
 import com.clm.system.domain.param.OperLogQueryParam;
+import com.clm.system.domain.vo.OperLogExportVO;
 import com.clm.system.domain.vo.OperLogVO;
 import com.clm.system.mapper.OperLogMapper;
 import com.clm.system.service.OperLogService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -47,6 +51,11 @@ public class OperLogServiceImpl extends ServiceImpl<OperLogMapper, OperLog> impl
     }
 
     @Override
+    public List<OperLogVO> listRel(OperLogQueryParam param){
+        return baseMapper.selectListRel(param);
+    }
+
+    @Override
     public boolean insertOperLog(OperLog operLog) {
         return save(operLog);
     }
@@ -55,15 +64,6 @@ public class OperLogServiceImpl extends ServiceImpl<OperLogMapper, OperLog> impl
     @Override
     public void insertOperLogAsync(OperLog operLog) {
         save(operLog);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public boolean deleteOperLogByIds(List<Long> operIds) {
-        if (operIds == null || operIds.isEmpty()) {
-            throw new BaseException("操作日志ID不能为空", HttpCodeEnum.BAD_REQUEST.getCode());
-        }
-        return removeByIds(operIds);
     }
     
     @Override
@@ -90,19 +90,33 @@ public class OperLogServiceImpl extends ServiceImpl<OperLogMapper, OperLog> impl
     }
     
     @Override
-    public List<OperLogVO> exportOperLog(OperLogQueryParam param) {
-        LambdaQueryWrapper<OperLog> queryWrapper = createQueryWrapper(param);
-        List<OperLog> list = list(queryWrapper);
-        
-        List<OperLogVO> result = new ArrayList<>(list.size());
-        for (OperLog operLog : list) {
-            OperLogVO vo = new OperLogVO();
-            BeanUtils.copyProperties(operLog, vo);
+    public void exportOperLog(OperLogQueryParam param) {
+        List<OperLogVO> list = baseMapper.selectListRel(param);
+        List<OperLogExportVO> exportVOList = list.stream().map(vo -> {
+            OperLogExportVO operLogExportVO = new OperLogExportVO();
             processOperLogVO(vo);
-            result.add(vo);
+            BeanUtils.copyProperties(vo, operLogExportVO);
+            return operLogExportVO;
+        }).toList();
+
+        // 获取返回对象
+        HttpServletResponse response = ServletUtils.getResponse();
+
+        if(response == null){
+            throw new BaseException("返回对象为空", HttpCodeEnum.ERROR.getCode());
         }
-        
-        return result;
+
+        response.setCharacterEncoding("utf-8");
+        String fileName = "操作日志_" + System.currentTimeMillis() + ".xlsx";
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName);
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+        try(OutputStream os = response.getOutputStream()){
+            EasyExcel.write(os).sheet("操作日志").head(OperLogExportVO.class).doWrite(exportVOList);
+        } catch (Exception e){
+            throw new BaseException("导出操作日志失败", HttpCodeEnum.ERROR.getCode());
+        }
+
     }
     
     /**

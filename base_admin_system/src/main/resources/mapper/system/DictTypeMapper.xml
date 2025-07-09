@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.clm.system.mapper.DictTypeMapper">
 
-    <resultMap type="com.clm.system.domain.DictType" id="DictTypeResult">
+    <resultMap type="com.clm.system.domain.entity.DictType" id="DictTypeResult">
         <id     property="dictId"     column="dict_id"     />
         <result property="dictName"   column="dict_name"   />
         <result property="dictType"   column="dict_type"   />

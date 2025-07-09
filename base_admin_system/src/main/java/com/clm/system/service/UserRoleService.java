@@ -1,7 +1,8 @@
 package com.clm.system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.clm.system.domain.UserRole;
+import com.clm.system.domain.entity.UserRole;
+
 import java.util.List;
 import java.util.Map;
 

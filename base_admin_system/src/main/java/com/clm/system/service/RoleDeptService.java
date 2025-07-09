@@ -1,7 +1,7 @@
 package com.clm.system.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.clm.system.domain.RoleDept;
+import com.clm.system.domain.entity.RoleDept;
 
 
 /**

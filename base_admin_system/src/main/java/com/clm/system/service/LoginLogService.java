@@ -2,7 +2,7 @@ package com.clm.system.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.clm.system.domain.LoginLog;
+import com.clm.system.domain.entity.LoginLog;
 import com.clm.system.domain.param.LoginLogQueryParam;
 import com.clm.system.domain.vo.LoginLogVO;
 

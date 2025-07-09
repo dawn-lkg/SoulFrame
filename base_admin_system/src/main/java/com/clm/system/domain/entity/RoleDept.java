@@ -1,8 +1,9 @@
-package com.clm.system.domain;
+package com.clm.system.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 /**
  * 角色和部门关联表(RoleDept)实体类
@@ -14,6 +15,7 @@ import java.io.Serializable;
 @TableName("sys_role_dept")
 public class RoleDept  implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -56806592249724639L;
             
     /**

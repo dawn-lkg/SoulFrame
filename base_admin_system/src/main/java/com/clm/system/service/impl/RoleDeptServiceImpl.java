@@ -1,7 +1,7 @@
 package com.clm.system.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.clm.system.domain.RoleDept;
+import com.clm.system.domain.entity.RoleDept;
 import com.clm.system.mapper.RoleDeptMapper;
 import com.clm.system.service.RoleDeptService;
 import org.springframework.stereotype.Service;
