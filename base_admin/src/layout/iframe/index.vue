@@ -35,7 +35,7 @@
   import {computed, onBeforeUnmount, onMounted, ref, watch} from 'vue'
   import {useRoute, useRouter} from 'vue-router'
   import {LeftOutlined, ReloadOutlined} from '@ant-design/icons-vue'
-  
+
   const route = useRoute()
   const router = useRouter()
   const loading = ref(true)

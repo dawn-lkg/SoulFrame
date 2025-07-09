@@ -45,7 +45,7 @@
 
     <div class="common-table-container" ref="tableContainerRef">
       <!-- 操作按钮区域 -->
-      <div style="margin-bottom: 16px" class="action-buttons">
+      <div class="action-buttons">
         <a-button type="primary" @click="handleAdd">
           <template #icon>
             <PlusOutlined />
@@ -111,21 +111,12 @@
 </template>
 
 <script setup>
-import { h, onMounted, reactive, ref } from "vue";
-import { message, Modal } from "ant-design-vue";
-import * as Icons from "@ant-design/icons-vue";
-import {
-  ExclamationCircleOutlined,
-  PlusOutlined,
-  ReloadOutlined,
-  SearchOutlined,
-} from "@ant-design/icons-vue";
+import {h, onMounted, reactive, ref} from "vue";
+import {message, Modal} from "ant-design-vue";
+import {ExclamationCircleOutlined, PlusOutlined, ReloadOutlined, SearchOutlined} from "@ant-design/icons-vue";
 import MenuForm from "./components/MenuForm.vue";
-import {
-  getMenuTreeList,
-  removeMenu,
-} from "@/api/modules/menu";
-import { useAppStore } from "@/stores/app";
+import {getMenuTreeList, removeMenu,} from "@/api/modules/menu";
+import {useAppStore} from "@/stores/app";
 
 const appStore = useAppStore();
 
@@ -258,7 +249,7 @@ const updateMenuOptions = (menuData) => {
 const getList = () => {
   loading.value = true;
 
-  getMenuTreeList().then((data) => {
+  getMenuTreeList(queryParams).then((data) => {
     menuList.value = data;
     updateMenuOptions(menuList.value);
     loading.value = false;

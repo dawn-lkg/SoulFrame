@@ -35,7 +35,7 @@
 
       <div class="common-table-container" ref="tableContainerRef">
         <!-- 操作按钮区域 -->
-        <div style="margin-bottom: 16px" class="action-buttons">
+        <div class="action-buttons">
           <a-space>
           <a-button type="primary" @click="handleAdd">
             <template #icon>
@@ -112,9 +112,9 @@ import {
 } from '@ant-design/icons-vue'
 import RoleForm from './components/RoleForm.vue'
 import PermissionForm from './components/PermissionForm.vue'
-import {batchDeleteRole, getRolePage, deleteRole} from '@/api/modules/role'
+import {batchDeleteRole, deleteRole, getRolePage} from '@/api/modules/role'
 import {handleDeletePagination, handleSingleDeletePagination} from '@/utils/pagination'
-import { useAppStore } from '@/stores/app'
+import {useAppStore} from '@/stores/app'
 
 const appStore = useAppStore()
 

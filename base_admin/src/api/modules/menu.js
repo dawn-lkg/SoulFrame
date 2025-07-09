@@ -1,8 +1,8 @@
 import request from '@/utils/request'
 
 // 获取菜单列表(树形结构)
-export const getMenuTreeList = () => {
-  return request.get('/system/menu/tree')
+export const getMenuTreeList = (params) => {
+  return request.get('/system/menu/tree', { params })
 }
 
 // 获取菜单列表（扁平结构）

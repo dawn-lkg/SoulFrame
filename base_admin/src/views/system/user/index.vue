@@ -53,7 +53,7 @@
 
     <div class="common-table-container" ref="tableContainerRef">
       <!-- 操作按钮区域 -->
-      <div style="margin-bottom: 16px" class="action-buttons">
+      <div class="action-buttons">
         <a-space>
           <a-button type="primary" @click="handleAdd">
             <template #icon>
@@ -140,30 +140,22 @@
 </template>
   
   <script setup>
-import { h, onMounted, reactive, ref,getCurrentInstance } from "vue";
-import { message, Modal } from "ant-design-vue";
-import {
-  DeleteOutlined,
-  ExclamationCircleOutlined,
-  PlusOutlined,
-  ReloadOutlined,
-  SearchOutlined,
-} from "@ant-design/icons-vue";
-import UserForm from "./components/UserForm.vue";
-import {
-  batchDeleteUser,
-  deleteUser,
-  getUserPage,
-  resetPassword,
-} from "@/api/modules/user";
-import { getRoleList } from "@/api/modules/role";
-import {
-  handleDeletePagination,
-  handleSingleDeletePagination,
-} from "@/utils/pagination";
-import { useAppStore } from "@/stores/app";
+  import {h, onMounted, reactive, ref} from "vue";
+  import {message, Modal} from "ant-design-vue";
+  import {
+    DeleteOutlined,
+    ExclamationCircleOutlined,
+    PlusOutlined,
+    ReloadOutlined,
+    SearchOutlined,
+  } from "@ant-design/icons-vue";
+  import UserForm from "./components/UserForm.vue";
+  import {batchDeleteUser, deleteUser, getUserPage, resetPassword,} from "@/api/modules/user";
+  import {getRoleList} from "@/api/modules/role";
+  import {handleDeletePagination, handleSingleDeletePagination,} from "@/utils/pagination";
+  import {useAppStore} from "@/stores/app";
 
-const appStore = useAppStore();
+  const appStore = useAppStore();
 
 const tableContainerRef = ref(null)
 

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useAuthStore } from '@/stores/auth'
+import {useAuthStore} from '@/stores/auth'
 import router from '@/router'
 import {LOGIN_PATH} from '@/config'
 
@@ -14,6 +14,7 @@ const DEFAULT_CONFIG = {
 };
 
 const isPrintLog = import.meta.env.VITE_LOG_REQUEST;
+console.log(isPrintLog);
 
 // 创建 axios 实例
 const instance = axios.create(DEFAULT_CONFIG);
@@ -103,6 +104,15 @@ instance.interceptors.response.use(
     if (isPrintLog) {
       console.log(`✅ 响应接收: ${response.config.url}`, response.data);
     }
+
+    if (response.config.responseType === 'blob') {
+			if (response.status === 200) {
+				return response
+			} else {
+				message.warning('文件下载失败或此文件不存在')
+				return
+			}
+		}
     
     const { code, msg, data } = response.data;
     
@@ -149,9 +159,10 @@ export const upload = (url, file, config = {}, onProgress) => {
 };
 
 // 文件下载
-export const download = (url, filename, config = {}) => {
+export const download = (url, filename, config = {},params = {}) => {
   return instance.get(url, {
     ...config,
+    params,
     responseType: 'blob',
   }).then((response) => {
     const blob = new Blob([response.data]);

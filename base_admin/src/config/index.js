@@ -10,3 +10,23 @@ export const SERVER_ERROR_PATH = '/500'
 
 //路由白名单
 export const WHITE_LIST = [HOME_PATH, LOGIN_PATH, NOT_FOUND_PATH, FORBIDDEN_PATH, UNAUTHORIZED_PATH, SERVER_ERROR_PATH]
+
+
+// 数据操作类型常量
+export const OPERATE_TYPE = {
+    QUERY: 0, // 查询
+    INSERT: 1, // 新增
+    UPDATE: 2, // 修改
+    DELETE: 3, // 删除
+    EXPORT: 4, //导出
+    IMPORT: 5, //导入
+    CLEAN: 6, //清空数据
+    OTHER: 99, //其他
+}
+
+
+//数据操作状态
+export const OPERATE_STATUS = {
+    SUCCESS: 0, // 成功
+    FAIL: 1, // 失败
+}
