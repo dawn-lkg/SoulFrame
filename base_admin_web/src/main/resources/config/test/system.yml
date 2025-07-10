@@ -1,0 +1,136 @@
+# 系统配置
+system:
+  # 名称
+  name: Base Admin
+  # 版本
+  version: 1.0.0
+  # 版权年份
+  copyrightYear: 2025
+  # 实例演示开关
+  demoEnabled: true
+  # 获取ip地址开关
+  addressEnabled: true
+  # 验证码类型 math 数组计算 char 字符验证
+  captchaType: math
+
+# 用户配置
+user:
+  # 密码相关
+  password:
+    # 密码最大错误次数
+    maxRetryCount: 5
+    # 密码锁定时间（默认10分钟）
+    lockTime: 10
+  # 默认密码
+  initPassword: 123456
+  # 用户token超时时间（分钟）
+  tokenTimeout: 1440
+  # 记住我token超时时间（天）
+  rememberMeTimeout: 7
+
+# 文件上传
+file:
+  # 文件大小限制
+  maxSize: 50MB
+  # 允许的文件类型
+  allowTypes: .jpg,.jpeg,.png,.gif,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.zip,.rar,.txt
+  # 上传路径
+  uploadPath: /upload
+  # 预览路径
+  previewPath: /preview
+
+# 线程池
+thread:
+  # 核心线程池大小
+  corePoolSize: 50
+  # 最大可创建的线程数
+  maxPoolSize: 200
+  # 队列最大长度
+  queueCapacity: 1000
+  # 线程池维护线程所允许的空闲时间
+  keepAliveSeconds: 300
+
+# 缓存配置
+cache:
+  # 缓存类型
+  type: redis
+  # 缓存时间
+  expiration: 1440
+  # 缓存刷新时间
+  preload: 20
+  # 是否允许缓存空值
+  allowNullValues: true
+
+# 安全配置
+security:
+  # 防止XSS攻击
+  xss:
+    # 过滤开关
+    enabled: true
+    # 排除链接
+    excludes: /system/notice/*
+  # 不需要验证码的链接
+  captchaExcludes: /auth/logout,/auth/register
+  # 不需要认证的链接
+  anonymousUrls: /auth/login,/auth/captcha,/auth/register,/common/download,/common/resource
+  # 不记录日志的链接
+  noLogUrls: /actuator/**,/common/download,/common/resource,/swagger-ui/**,/v3/api-docs/**
+
+# 日志配置
+logging:
+  # 日志存储天数
+  retentionDays: 30
+  # 日志存储路径
+  path: logs
+  # 操作日志
+  operation:
+    # 是否记录请求参数
+    recordParams: true
+    # 是否记录响应参数
+    recordResult: true
+    # 排除链接
+    excludes: /actuator/**,/common/download,/common/resource,/swagger-ui/**,/v3/api-docs/**
+
+# 代码生成
+gen:
+  # 作者
+  author: 陈黎明
+  # 默认生成包路径
+  packageName: com.clm.base_admin.modules
+  # 自动去除表前缀，默认是false
+  autoRemovePre: true
+  # 表前缀（生成类名不会包含表前缀，多个用逗号分隔）
+  tablePrefix: sys_,biz_
+
+# 定时任务
+job:
+  # 是否开启定时任务
+  enabled: true
+  # 是否开启并发执行
+  concurrent: true
+  # 定时任务线程池配置
+  pool:
+    # 核心线程数
+    corePoolSize: 10
+    # 最大线程数
+    maxPoolSize: 20
+    # 队列容量
+    queueCapacity: 20
+    # 线程活跃时间（秒）
+    keepAliveSeconds: 60
+
+# 接口文档
+swagger:
+  # 是否开启swagger
+  enabled: true
+  # 标题
+  title: Base Admin API文档
+  # 描述
+  description: Base Admin后台管理系统接口文档
+  # 版本
+  version: 1.0.0
+  # 作者信息
+  contact:
+    name: 陈黎明
+    url: https://github.com/yourusername
+    email: your.email@example.com

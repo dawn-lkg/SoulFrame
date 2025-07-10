@@ -23,5 +23,11 @@
             <groupId>com.github.whvcse</groupId>
             <artifactId>easy-captcha</artifactId>
         </dependency>
+
+        <!-- 系统监控 -->
+        <dependency>
+            <groupId>com.github.oshi</groupId>
+            <artifactId>oshi-core</artifactId>
+        </dependency>
     </dependencies>
 </project>

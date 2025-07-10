@@ -19,7 +19,17 @@
             <properties>
                 <profiles.active>dev</profiles.active>
             </properties>
+            <activation>
+                <!-- 默认激活开发环境 -->
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
 
+        <profile>
+            <id>test</id>
+            <properties>
+                <profiles.active>test</profiles.active>
+            </properties>
         </profile>
 
         <!-- 生产环境 -->
@@ -28,10 +38,7 @@
             <properties>
                 <profiles.active>prod</profiles.active>
             </properties>
-            <activation>
-                <!-- 默认激活开发环境 -->
-                <activeByDefault>true</activeByDefault>
-            </activation>
+
         </profile>
     </profiles>
 

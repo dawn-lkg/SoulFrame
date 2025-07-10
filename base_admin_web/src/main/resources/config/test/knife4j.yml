@@ -1,0 +1,30 @@
+#knife4j配置信息
+knife4j:
+  # 是否开启增强模式，建议必须开启
+  enable: true
+  setting:
+    language: zh_cn
+  # production改为true则会关闭knife4j和swagger所有文档
+  production: false
+  ## 开启Swagger的Basic认证功能,默认是false
+  basic:
+    enable: true
+    ## Basic认证用户名
+    username: admin
+    ## Basic认证密码
+    password: 123456
+
+#  springdoc-openapi项目配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+    enabled: true
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: com.clm.web.controller
