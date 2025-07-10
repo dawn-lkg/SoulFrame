@@ -14,7 +14,6 @@ const DEFAULT_CONFIG = {
 };
 
 const isPrintLog = import.meta.env.VITE_LOG_REQUEST;
-console.log(isPrintLog);
 
 // 创建 axios 实例
 const instance = axios.create(DEFAULT_CONFIG);

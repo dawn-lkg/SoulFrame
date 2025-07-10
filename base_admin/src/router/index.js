@@ -1,9 +1,9 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import {createRouter, createWebHistory} from 'vue-router'
 import NProgress from 'nprogress'
-import { staticRouter, errorRoute } from './modules/staticRouter'
-import { dynamicRouter } from './modules/dynamicRouter'
-import { useAuthStore } from '@/stores/auth'
-import { WHITE_LIST, HOME_PATH, LOGIN_PATH } from '@/config'
+import {errorRoute, staticRouter} from './modules/staticRouter'
+import {dynamicRouter} from './modules/dynamicRouter'
+import {useAuthStore} from '@/stores/auth'
+import {HOME_PATH, LOGIN_PATH, WHITE_LIST} from '@/config'
 
 NProgress.configure({ showSpinner: false })
 
@@ -134,9 +134,23 @@ const handleAuthenticatedUser = async (to, from, next, store) => {
   if (!authStore.isInitRoutes) {
     console.log('初始化路由');
     await dynamicRouter()
+    
+    // 检查是否是根路径访问，重定向到首页
+    if (to.path === '/') {
+      next({ path: HOME_PATH, replace: true })
+      return
+    }
+    
     next({path:to.path,replace:true})
     return
   }
+  
+  // 检查是否是根路径访问
+  if (to.path === '/') {
+    next({ path: HOME_PATH, replace: true })
+    return
+  }
+  
   //如果路由不存在，则跳转到404
   // 正确检查路由是否存在
   if (to.matched.length === 0) {

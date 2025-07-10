@@ -1,16 +1,15 @@
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
+import {createApp} from 'vue'
+import {createPinia} from 'pinia'
 import './assets/icons/iconfont.js'
 import 'ant-design-vue/dist/reset.css'
+import 'nprogress/nprogress.css'
 import './styles/global.scss'
 import zhCN from 'ant-design-vue/es/locale/zh_CN'
-import { ConfigProvider } from 'ant-design-vue'
+import Antd, {ConfigProvider, message} from 'ant-design-vue'
 import App from './App.vue'
-import router, { setupRouterGuards } from './router'
-import Antd from 'ant-design-vue'
+import router, {setupRouterGuards} from './router'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
-import { message } from 'ant-design-vue'
-import { useAuthStore } from '@/stores/auth'
+import {useAuthStore} from '@/stores/auth'
 
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)

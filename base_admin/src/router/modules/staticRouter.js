@@ -10,6 +10,7 @@ export const staticRouter = [
   {
         path: '/',
         redirect: '/home',
+        name: 'Root'
   },
   {
     path: '/login',

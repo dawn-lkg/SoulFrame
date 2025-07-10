@@ -20,7 +20,8 @@
 
 <script setup>
 import Icon from "@/components/common/icon.vue";
-import { useRouter } from 'vue-router'
+import {useRouter} from 'vue-router'
+
 const router = useRouter()
 const props = defineProps({
   menuList: {
@@ -29,8 +30,6 @@ const props = defineProps({
   },
 });
 const handleClickMenu = (item) => {
-  console.log(item);
-  
   router.push(item.path)
 }
 </script>
