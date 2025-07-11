@@ -2,7 +2,6 @@ package com.clm.system.domain.entity;
 
 
 import com.clm.common.core.domain.server.*;
-import com.clm.common.core.domain.server.SysFile;
 import com.clm.common.utils.Arith;
 import com.clm.common.utils.IpUtils;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,8 +20,8 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * @author chenliming
- * @date 2023/11/16 22:59
+ * @author 陈黎明
+ * @date 2023-11-16
  */
 @Data
 public class Server {

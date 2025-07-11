@@ -66,4 +66,11 @@ public class LoginLogController extends BaseController {
         loginLogService.cleanLoginLog();
         return success();
     }
+
+    @Operation(summary = "导出登录日志")
+    @GetMapping("/export")
+    @Log(businessType = BusinessType.EXPORT)
+    public void export(LoginLogQueryParam param) {
+        loginLogService.exportLoginLog(param);
+    }
 } 

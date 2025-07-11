@@ -21,7 +21,7 @@ import java.util.List;
 
 /**
  * @author 陈黎明
- * @date 2025/3/1 下午8:59
+ * @date 2025-03-01
  */
 
 @Tag(name = "鉴权管理")
@@ -52,15 +52,15 @@ public class AuthController extends BaseController {
     }
 
     @Operation(summary = "获取用户信息")
-    @GetMapping("/getUserInfo")
     @Log(businessType = BusinessType.QUERY)
+    @GetMapping("/getUserInfo")
     public Result<UserInfo> getUserInfo(){
         return success(authService.getUserInfo());
     }
 
     @Operation(summary = "获取用户菜单权限")
-    @GetMapping("/getRouters")
     @Log(businessType = BusinessType.QUERY)
+    @GetMapping("/getRouters")
     public Result<List<MenuVO>> getRouter(){
         return success(authService.getRouter());
     }

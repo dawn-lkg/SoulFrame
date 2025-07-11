@@ -1,5 +1,6 @@
 package com.clm.system.service.impl;
 
+import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -10,10 +11,12 @@ import com.clm.common.utils.ServletUtils;
 import com.clm.common.utils.UserAgentUtils;
 import com.clm.system.domain.entity.LoginLog;
 import com.clm.system.domain.param.LoginLogQueryParam;
+import com.clm.system.domain.vo.LoginLogExportVO;
 import com.clm.system.domain.vo.LoginLogVO;
 import com.clm.system.mapper.LoginLogMapper;
 import com.clm.system.service.LoginLogService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +24,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -93,15 +97,33 @@ public class LoginLogServiceImpl extends ServiceImpl<LoginLogMapper, LoginLog> i
     }
     
     @Override
-    public List<LoginLogVO> exportLoginLog(LoginLogQueryParam param) {
+    public void exportLoginLog(LoginLogQueryParam param) {
         List<LoginLogVO> list = baseMapper.selectLoginLogList(param);
-        
-        // 填充状态描述
-        for (LoginLogVO vo : list) {
+        List<LoginLogExportVO> exportVOList = list.stream().map(vo -> {
+            LoginLogExportVO loginLogExportVO = new LoginLogExportVO();
             processLoginLogVO(vo);
+            BeanUtils.copyProperties(vo, loginLogExportVO);
+            return loginLogExportVO;
+        }).toList();
+
+        // 获取返回对象
+        HttpServletResponse response = ServletUtils.getResponse();
+
+        if(response == null){
+            throw new BaseException("返回对象为空", HttpCodeEnum.ERROR.getCode());
         }
-        
-        return list;
+
+        response.setCharacterEncoding("utf-8");
+        String fileName = "登录日志_" + System.currentTimeMillis() + ".xlsx";
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName);
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+        try(OutputStream os = response.getOutputStream()){
+            EasyExcel.write(os).sheet("登录日志").head(LoginLogExportVO.class).doWrite(exportVOList);
+        } catch (Exception e){
+            throw new BaseException("导出登录日志失败", HttpCodeEnum.ERROR.getCode());
+        }
+
     }
     
     @Override

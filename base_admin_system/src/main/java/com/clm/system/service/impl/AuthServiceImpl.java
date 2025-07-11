@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @author 陈黎明
- * @date 2025/3/4 下午10:18
+ * @date 2025-03-04
  */
 @Service("authService")
 @RequiredArgsConstructor
@@ -80,15 +80,11 @@ public class AuthServiceImpl implements AuthService {
                 throw new BaseException(HttpCodeEnum.PASSWORD_ERROR);
             }
             
-            //更新登录信息
+            // 更新登录信息
             userService.updateLoginInfo(user.getUserId());
             
-            //查询角色
-    //        Set<String> roles = roleService.getRolesByUserId(user.getUserId());
-            //查询权限
-    //        Set<String> permissions = roleService.getPermissionIdsByRoleId(user.getUserId());
             // 登录
-            LoginHelper.login(user,null, null);
+            LoginHelper.login(user, null, null);
             
             // 获取登录token信息
             SaTokenInfo tokenInfo = StpUtil.getTokenInfo();

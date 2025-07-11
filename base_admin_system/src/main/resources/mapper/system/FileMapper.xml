@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.clm.system.mapper.FileMapper">
+    <sql id="selectSql">
+        SELECT
+        file_id, file_name, file_extension, original_name, file_size, file_hash, mime_type, encoding,
+        storage_path, storage_type, bucket_name, owner_id, status, is_public, is_encrypted,
+        width, height, duration, version_number, is_latest_version, upload_ip, upload_user_agent,
+        upload_source, download_count, view_count, last_accessed_at, metadata, tags, description,
+        created_time
+        FROM file
+        <where>
+            del_flag = '0'
+            <if test="param.fileName != null and param.fileName != ''">
+                AND file_name LIKE CONCAT('%', #{param.fileName}, '%')
+            </if>
+            <if test="param.fileExtension != null and param.fileExtension != ''">
+                AND file_extension = #{param.fileExtension}
+            </if>
+            <if test="param.storageType != null and param.storageType != ''">
+                AND storage_type = #{param.storageType}
+            </if>
+            <if test="param.status != null and param.status != ''">
+                AND status = #{param.status}
+            </if>
+            <if test="param.isPublic != null">
+                AND is_public = #{param.isPublic}
+            </if>
+            <if test="param.ownerId != null">
+                AND owner_id = #{param.ownerId}
+            </if>
+            <if test="param.startTime != null">
+                AND created_time &gt;= #{param.startTime}
+            </if>
+            <if test="param.endTime != null">
+                AND created_time &lt;= #{param.endTime}
+            </if>
+        </where>
+        ORDER BY created_time DESC
+    </sql>
+
+    <select id="selectFilePage" resultType="com.clm.system.domain.vo.FileVO">
+        <include refid="selectSql"/>
+    </select>
+
+    <update id="updateAccessCount">
+        UPDATE file
+        <if test="type == 'view'">
+            SET view_count = view_count + 1, last_accessed_at = NOW()
+        </if>
+        <if test="type == 'download'">
+            SET download_count = download_count + 1, last_accessed_at = NOW()
+        </if>
+        WHERE file_id = #{fileId}
+    </update>
+</mapper> 

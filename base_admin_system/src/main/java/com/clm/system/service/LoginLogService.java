@@ -61,11 +61,9 @@ public interface LoginLogService extends IService<LoginLog> {
     
     /**
      * 导出登录日志
-     *
      * @param param 查询条件
-     * @return 登录日志列表
      */
-    List<LoginLogVO> exportLoginLog(LoginLogQueryParam param);
+    void exportLoginLog(LoginLogQueryParam param);
     
     /**
      * 记录登录成功日志
