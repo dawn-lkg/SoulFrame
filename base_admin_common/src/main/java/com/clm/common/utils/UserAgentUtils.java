@@ -21,6 +21,16 @@ public class UserAgentUtils {
     public static String getUserAgent(HttpServletRequest request) {
         return request.getHeader("User-Agent");
     }
+    
+    /**
+     * 获取用户代理（从当前请求中获取）
+     *
+     * @return 用户代理
+     */
+    public static String getUserAgent() {
+        HttpServletRequest request = ServletUtils.getRequest();
+        return request != null ? getUserAgent(request) : null;
+    }
 
     /**
      * 获取操作系统

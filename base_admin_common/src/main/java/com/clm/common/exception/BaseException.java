@@ -31,6 +31,11 @@ public final class BaseException extends RuntimeException {
         this.code = code;
     }
 
+    public BaseException(Integer code,String message) {
+        super(message);
+        this.code = code;
+    }
+
     public BaseException(HttpCodeEnum httpCodeEnum) {
         super(httpCodeEnum.getMessage());
         this.code = httpCodeEnum.getCode();

@@ -64,4 +64,31 @@ public class ServletUtils {
         }
         return attr.getResponse();
     }
+    
+    /**
+     * 获取服务器URL
+     * 
+     * @return 服务器URL，格式为：http(s)://host:port
+     */
+    public static String getServerUrl() {
+        HttpServletRequest request = getRequest();
+        if (request == null) {
+            return "";
+        }
+        
+        String scheme = request.getScheme();
+        String serverName = request.getServerName();
+        int serverPort = request.getServerPort();
+        
+        StringBuilder url = new StringBuilder();
+        url.append(scheme).append("://").append(serverName);
+        
+        // 如果是默认端口，则不显示端口号
+        if (("http".equals(scheme) && serverPort != 80) || 
+            ("https".equals(scheme) && serverPort != 443)) {
+            url.append(":").append(serverPort);
+        }
+        
+        return url.toString();
+    }
 } 

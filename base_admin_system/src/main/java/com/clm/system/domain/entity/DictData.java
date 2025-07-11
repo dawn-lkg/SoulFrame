@@ -12,7 +12,7 @@ import lombok.EqualsAndHashCode;
  * 字典数据表 实体类
  *
  * @author 陈黎明
- * @date 2025/3/5
+ * @date 2025-03-05
  */
 @Data
 @EqualsAndHashCode(callSuper = true)

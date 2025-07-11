@@ -24,7 +24,7 @@ import java.util.List;
  * 用户信息表(User)表控制层
  *
  * @author 陈黎明
- * @since 2025-03-07 14:31:36
+ * @since 2025-03-07
  */
 @Tag(name = "用户管理")
 @RestController
@@ -73,23 +73,23 @@ public class UserController extends BaseController {
         return success();
     }
 
-    @Log(businessType = BusinessType.DELETE)
     @Operation(summary = "批量删除用户")
+    @Log(businessType = BusinessType.DELETE)
     @DeleteMapping("/batch")
     public Result<?> batchDelete(@RequestBody @Schema(description = "用户ID列表") List<Long> userIds) {
         userService.batchDeleteUser(userIds);
         return success();
     }
 
-    @Log(businessType = BusinessType.QUERY)
     @Operation(summary = "检查用户名是否存在")
+    @Log(businessType = BusinessType.QUERY)
     @GetMapping("/checkUsername/{username}")
     public Result<?> checkUsernameExists(@Schema(description = "用户名") @PathVariable String username) {
         return success(userService.checkUsernameExists(username, null));
     }
 
-    @Log(businessType = BusinessType.UPDATE)
     @Operation(summary = "重置密码")
+    @Log(businessType = BusinessType.UPDATE)
     @PutMapping("/resetPassword/{userId}")
     public Result<?> resetPassword(@Schema(description = "用户ID") @PathVariable Long userId) {
         userService.resetPassword(userId);
