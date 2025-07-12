@@ -63,6 +63,72 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
     private String localFilePath;
 
     @Override
+    public IPage<FileVO> selectFilePage(FileQueryParam param) {
+        Page<FileVO> pageParam = new Page<>(param.getPageNum(), param.getPageSize());
+        return baseMapper.selectFilePage(pageParam, param);
+    }
+
+    @Override
+    public List<FileVO> selectFileList(FileQueryParam param) {
+        return selectFileList(param);
+    }
+
+    @Override
+    public FileVO getFileInfo(Long fileId) {
+        File fileEntity = getById(fileId);
+        if (fileEntity == null) {
+            throw new BaseException(HttpCodeEnum.DATA_NOT_EXIST.getCode(), "文件不存在");
+        }
+
+        FileVO fileVO = convertToFileVO(fileEntity);
+        fileVO.setFileUrl(getFileUrl(fileId));
+        return fileVO;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean deleteFile(Long fileId) {
+        File fileEntity = getById(fileId);
+        if (fileEntity == null) {
+            return false;
+        }
+
+        try {
+            // 删除物理文件
+            if ("local".equals(fileEntity.getStorageType())) {
+                FileUtil.del(fileEntity.getStoragePath());
+            } else {
+                minioClient.removeObject(
+                        RemoveObjectArgs.builder()
+                                .bucket(fileEntity.getBucketName())
+                                .object(fileEntity.getStoragePath())
+                                .build()
+                );
+            }
+
+            // 删除数据库记录
+            return removeById(fileId);
+        } catch (Exception e) {
+            log.error("删除文件失败", e);
+            throw new BaseException(HttpCodeEnum.ERROR.getCode(), "删除文件失败: " + e.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean batchDeleteFiles(List<Long> fileIds) {
+        if (fileIds == null || fileIds.isEmpty()) {
+            return false;
+        }
+
+        for (Long fileId : fileIds) {
+            deleteFile(fileId);
+        }
+
+        return true;
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public FileVO uploadFile(FileUploadDTO uploadDTO) {
         try {
@@ -82,20 +148,22 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
             
             // 存储类型，默认为local
             String storageType = StrUtil.isBlank(uploadDTO.getStorageType()) ? "local" : uploadDTO.getStorageType();
+
+            storageType="minio";
             
             // 存储路径
             String storagePath;
             String bucketName = defaultBucketName;
             
             // 根据存储类型处理文件
-            if ("oss".equals(storageType) || "s3".equals(storageType) || "cos".equals(storageType)) {
+//            if ("minio".equals(storageType)) {
                 // 使用MinIO存储
                 storagePath = uploadToMinio(file, fileName, bucketName);
-            } else {
-                // 默认本地存储
-                storagePath = uploadToLocalStorage(file, fileName);
-                storageType = "local";
-            }
+//            } else {
+//                // 默认本地存储
+//                storagePath = uploadToLocalStorage(file, fileName);
+//                storageType = "local";
+//            }
 
             // 创建文件记录
             File fileEntity = new File();
@@ -120,11 +188,6 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
             fileEntity.setDownloadCount(0);
             fileEntity.setViewCount(0);
             fileEntity.setDescription(uploadDTO.getDescription());
-            fileEntity.setCreatedTime(LocalDateTime.now());
-            fileEntity.setUpdatedTime(LocalDateTime.now());
-            fileEntity.setCreateBy(StpUtil.getLoginIdAsString());
-            fileEntity.setUpdateBy(StpUtil.getLoginIdAsString());
-            fileEntity.setDelFlag('0');
             
             // 如果是图片，获取宽高
             if (mimeType != null && mimeType.startsWith("image/")) {
@@ -230,66 +293,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
         }
     }
 
-    @Override
-    public IPage<FileVO> selectFilePage( FileQueryParam param) {
-        Page<FileVO> pageParam = new Page<>(param.getPageNum(), param.getPageNum());
-        return baseMapper.selectFilePage(pageParam, param);
-    }
 
-    @Override
-    public FileVO getFileInfo(Long fileId) {
-        File fileEntity = getById(fileId);
-        if (fileEntity == null) {
-            throw new BaseException(HttpCodeEnum.DATA_NOT_EXIST.getCode(), "文件不存在");
-        }
-        
-        FileVO fileVO = convertToFileVO(fileEntity);
-        fileVO.setFileUrl(getFileUrl(fileId));
-        return fileVO;
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public boolean deleteFile(Long fileId) {
-        File fileEntity = getById(fileId);
-        if (fileEntity == null) {
-            return false;
-        }
-        
-        try {
-            // 删除物理文件
-            if ("local".equals(fileEntity.getStorageType())) {
-                FileUtil.del(fileEntity.getStoragePath());
-            } else {
-                minioClient.removeObject(
-                    RemoveObjectArgs.builder()
-                        .bucket(fileEntity.getBucketName())
-                        .object(fileEntity.getStoragePath())
-                        .build()
-                );
-            }
-            
-            // 删除数据库记录
-            return removeById(fileId);
-        } catch (Exception e) {
-            log.error("删除文件失败", e);
-            throw new BaseException(HttpCodeEnum.ERROR.getCode(), "删除文件失败: " + e.getMessage());
-        }
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public boolean batchDeleteFiles(List<Long> fileIds) {
-        if (fileIds == null || fileIds.isEmpty()) {
-            return false;
-        }
-        
-        for (Long fileId : fileIds) {
-            deleteFile(fileId);
-        }
-        
-        return true;
-    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -306,8 +310,6 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
         if (isPublic != null) {
             fileEntity.setIsPublic(isPublic);
         }
-        
-        fileEntity.setUpdatedTime(LocalDateTime.now());
         fileEntity.setUpdateBy(StpUtil.getLoginIdAsString());
         
         updateById(fileEntity);

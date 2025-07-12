@@ -42,10 +42,17 @@ public class FileController extends BaseController {
 
 
     @Operation(summary = "分页查询文件列表")
-    @GetMapping("/list")
+    @GetMapping("/page")
     @Log(businessType = BusinessType.QUERY)
-    public Result<IPage<FileVO>> list(FileQueryParam  param) {
+    public Result<IPage<FileVO>> page(FileQueryParam  param) {
         return success(fileService.selectFilePage(param));
+    }
+
+    @Operation(summary = "查询所有文件列表")
+    @GetMapping
+    @Log(businessType = BusinessType.QUERY)
+    public Result<List<FileVO>> list(FileQueryParam param) {
+        return success(fileService.selectFileList(param));
     }
 
     @Operation(summary = "获取文件详情")

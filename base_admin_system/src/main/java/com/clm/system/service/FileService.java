@@ -59,6 +59,13 @@ public interface FileService extends IService<File> {
     IPage<FileVO> selectFilePage(FileQueryParam param);
 
     /**
+     * 查询文件列表
+     * @param param 查询参数
+     * @return 文件列表
+     */
+    List<FileVO> selectFileList(FileQueryParam param);
+
+    /**
      * 获取文件详情
      *
      * @param fileId 文件ID

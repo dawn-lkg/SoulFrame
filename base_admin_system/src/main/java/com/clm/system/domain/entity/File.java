@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import com.clm.common.core.domain.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -19,9 +20,9 @@ import java.util.Map;
  * @date 2025/3/10
  */
 @Data
-@TableName(value = "file", autoResultMap = true)
+@TableName(value = "sys_file", autoResultMap = true)
 @Schema(description = "文件")
-public class File implements Serializable {
+public class File extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -201,34 +202,4 @@ public class File implements Serializable {
      */
     @Schema(description = "文件描述")
     private String description;
-
-    /**
-     * 创建时间
-     */
-    @Schema(description = "创建时间")
-    private LocalDateTime createdTime;
-
-    /**
-     * 更新时间
-     */
-    @Schema(description = "更新时间")
-    private LocalDateTime updatedTime;
-
-    /**
-     * 创建人
-     */
-    @Schema(description = "创建人")
-    private String createBy;
-
-    /**
-     * 更新人
-     */
-    @Schema(description = "更新人")
-    private String updateBy;
-
-    /**
-     * 逻辑删除
-     */
-    @Schema(description = "逻辑删除")
-    private Character delFlag;
 } 
