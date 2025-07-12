@@ -1,0 +1,76 @@
+package com.clm.system.service.impl;
+
+import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.clm.common.enums.HttpCodeEnum;
+import com.clm.common.exception.BaseException;
+import com.clm.system.domain.dto.ConfigDTO;
+import com.clm.system.domain.entity.Config;
+import com.clm.system.domain.param.ConfigParam;
+import com.clm.system.domain.vo.ConfigVO;
+import com.clm.system.mapper.ConfigMapper;
+import com.clm.system.service.ConfigService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+/**
+ * 系统配置表 服务实现
+ *
+ * @author 陈黎明
+ * @date 2025-07-12 19:37:02
+ */
+@Service
+@RequiredArgsConstructor
+public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> implements ConfigService {
+    
+    @Override
+    public Page<ConfigVO> selectConfigPage(ConfigParam param) {
+        Page<ConfigVO> page = new Page<>(param.getPageNum(), param.getPageSize());
+        return page.setRecords(baseMapper.selectConfigPage(page, param));
+    }
+    
+    @Override
+    public List<ConfigVO> selectConfigList(ConfigParam param) {
+        return baseMapper.selectConfigList(param);
+    }
+
+    @Override
+    public ConfigVO getByIdRel(Long id) {
+        ConfigParam param = new ConfigParam();
+        param.setId(id);
+        return baseMapper.selectConfigList(param).stream().findFirst().orElse(null);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveConfig(ConfigDTO dto) {
+        Config entity = new Config();
+        BeanUtils.copyProperties(dto, entity);
+        if(!save(entity)){
+            throw new BaseException(HttpCodeEnum.FAILED_ADD);
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateConfig(ConfigDTO dto) {
+        Config entity = new Config();
+        BeanUtil.copyProperties(dto, entity);
+        if(!updateById(entity)){
+            throw new BaseException(HttpCodeEnum.FAILED_UPDATE);
+        }
+    }
+    
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void deleteConfig(Long id){
+        if(!removeById(id)){
+            throw new BaseException(HttpCodeEnum.FAILED_DELETE);
+        }
+    }
+}
