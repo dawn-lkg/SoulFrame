@@ -3,7 +3,6 @@ $primary-color: var(--primary-color, #1890ff);
 $success-color: #52c41a;
 $warning-color: #faad14;
 $error-color: #ff4d4f;
-
 // 文字颜色
 $text-color: rgba(0, 0, 0, 0.85);
 $text-color-secondary: rgba(0, 0, 0, 0.45);
@@ -17,10 +16,15 @@ $border-color-split: #f0f0f0;
 $bg-color: #f0f2f5;
 $component-bg: #fff;
 
+// 内容边距
+$content-padding: 24px;
+
 // 布局
 $header-height: 56px;
 $sidebar-width: 200px;
 $sidebar-collapsed-width: 80px;
+$tab-height: 36px;
+$content-height: calc(100vh - $header-height - $tab-height);
 
 // 断点
 $screen-xs: 480px;

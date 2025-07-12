@@ -128,7 +128,7 @@ const handleAuthenticatedUser = async (to, from, next, store) => {
       next(`${LOGIN_PATH}?redirect=${to.path}`)
     }
   }
-  console.log(router.getRoutes());
+  // console.log(router.getRoutes());
   
   // 初始化路由
   if (!authStore.isInitRoutes) {

@@ -8,7 +8,7 @@
     </hover-container>
     <template #overlay>
       <a-menu class="user-dropdown-menu">
-        <a-menu-item key="1">
+        <a-menu-item key="1" @click="goToProfile">
           <div class="menu-item-content">
             <SettingOutlined style="margin-right: 8px; font-size: 16px;" />
             <span>个人中心</span>
@@ -26,19 +26,21 @@
 </template>
 
 <script setup>
-import {
-  LogoutOutlined,
-  SettingOutlined,
-} from '@ant-design/icons-vue'
-import { useAuthStore } from '@/stores/auth'
-import { useRouter } from 'vue-router'
-import { LOGIN_PATH } from '@/config'
-import { message } from 'ant-design-vue'
+import {LogoutOutlined, SettingOutlined,} from '@ant-design/icons-vue'
+import {useAuthStore} from '@/stores/auth'
+import {useRouter} from 'vue-router'
+import {LOGIN_PATH} from '@/config'
+import {message} from 'ant-design-vue'
 
 
 const authStore = useAuthStore()  
 const router = useRouter()
 const userInfo = authStore.userInfo;
+
+// 前往个人中心
+const goToProfile = () => {
+  router.push('/profile')
+}
 
 const handleLogout = () => {
   authStore.logout().then(() => {

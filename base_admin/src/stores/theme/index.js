@@ -36,6 +36,14 @@ export const useThemeStore = defineStore('theme', {
     setShowBreadcrumb(showBreadcrumb) {
       this.layoutConfig.showBreadcrumb = showBreadcrumb
     },
+    // 设置固定头部
+    setFixedHeader(fixedHeader) {
+      this.layoutConfig.fixedHeader = fixedHeader
+    },
+    // 设置固定侧边栏
+    setFixedSidebar(fixedSidebar) {
+      this.layoutConfig.fixedSidebar = fixedSidebar
+    },
   },
   persist: {
     key: 'theme',

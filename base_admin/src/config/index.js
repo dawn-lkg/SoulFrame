@@ -30,3 +30,23 @@ export const OPERATE_STATUS = {
     SUCCESS: 0, // 成功
     FAIL: 1, // 失败
 }
+
+// 文件状态
+export const FILE_STATUS = {
+    'active': {
+        color: 'green',
+        text: '正常'
+    },
+    'uploading': {
+        color: 'blue',
+        text: '上传中'
+    },
+    'deleted': {
+        color: 'blue',
+        text: '删除'
+    },
+    'archived': {
+        color: 'orange',
+        text: '归档'
+    }
+}

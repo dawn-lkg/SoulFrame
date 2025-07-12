@@ -9,11 +9,15 @@
     <!-- 右侧内容 -->
     <a-layout :style="layoutStyle">
       <!-- 头部 -->
-      <a-layout-header class="layout-header">
+      <a-layout-header class="layout-header" :class="{ 'fixed-header': themeStore.layoutConfig.fixedHeader }">
         <global-header />
       </a-layout-header>
+      <!-- 头部占位符，在固定头部时使用 -->
+      <div v-if="themeStore.layoutConfig.fixedHeader" class="header-placeholder"></div>
       <!-- 头部tab-->
-      <global-tab v-if="themeStore.layoutConfig.showTagsView" />
+      <global-tab v-if="themeStore.layoutConfig.showTagsView" :class="{ 'fixed-tab': themeStore.layoutConfig.fixedHeader }" />
+      <!-- 标签页占位符，在固定标签页时使用 -->
+      <div v-if="themeStore.layoutConfig.fixedHeader && themeStore.layoutConfig.showTagsView" class="tab-placeholder"></div>
       <!-- 内容 -->
       <a-layout-content class="layout-content">
         <global-content />
@@ -25,16 +29,15 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
-import { useThemeStore, useAppStore } from "@/stores";
-import { BellOutlined } from '@ant-design/icons-vue';
+import {computed} from "vue";
+import {useAppStore, useThemeStore} from "@/stores";
 import globalSider from "../common/global-sider/index.vue";
 import globalLogo from "../common/global-logo/index.vue";
 import GlobalHeader from "../common/global-header/index.vue";
 import SettingDrawer from "../common/setting-drawer/index.vue";
 import globalTab from "../common/global-tab/index.vue"
 import globalContent from "../common/global-content/index.vue";
-import { useAuthStore } from '@/stores/auth'
+import {useAuthStore} from '@/stores/auth'
 
 const themeStore = useThemeStore();
 const app = useAppStore()
@@ -44,8 +47,14 @@ const authStore = useAuthStore()
 // 计算布局样式
 const layoutClass = computed(() => ({
   'layout-container': true,
-  'dark-mode': themeStore.isDarkMode
+  'dark-mode': themeStore.isDarkMode,
+  'fixed-header-layout': themeStore.layoutConfig.fixedHeader
 }));
+
+// 将fixedHeader改为直接获取配置，不再需要检查侧边栏状态
+const fixedHeader = computed(() => {
+  return themeStore.layoutConfig.fixedHeader;
+});
 
 // 侧边栏样式
 const siderStyle = computed(() => ({
@@ -55,6 +64,7 @@ const siderStyle = computed(() => ({
   position: themeStore.layoutConfig.fixedSidebar ? 'fixed' : 'static',
   left: themeStore.layoutConfig.fixedSidebar ? 0 : 'auto',
   width: app.siderCollapse ? `${app.collapsedWidth}px` : `${app.siderWidth}px`,
+  zIndex: 101
 }));
 // 布局样式
 const layoutStyle = computed(() => ({
@@ -122,6 +132,15 @@ const layoutStyle = computed(() => ({
     transition: all $animation-duration-base;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 
+    &.fixed-header {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: calc(100% - var(--sider-width, #{$sidebar-width}));
+      z-index: 999;
+      transition: width $animation-duration-base;
+    }
+
     .header-left {
       .ant-breadcrumb {
         line-height: $header-height;
@@ -134,13 +153,39 @@ const layoutStyle = computed(() => ({
     }
   }
 
+  // 头部占位符
+  .header-placeholder {
+    height: $header-height;
+    width: 100%;
+  }
+
+  // 标签页占位符
+  .tab-placeholder {
+    height: $tab-height;
+    width: 100%;
+  }
+
+  // 固定标签页
+  :deep(.global-tab) {
+    &.fixed-tab {
+      position: fixed;
+      top: $header-height;
+      right: 0;
+      width: calc(100% - var(--sider-width, #{$sidebar-width}));
+      z-index: 998;
+      transition: width $animation-duration-base;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+      background-color: $component-bg;
+    }
+  }
+
   .layout-content {
-    margin: 24px 24px 0;
-    // padding: 24px;
+    margin: $content-padding $content-padding 0;
+    // padding-bottom: 24px;
     // background: $component-bg;
-    // border-radius: $border-radius-base;
-    // min-height: calc(100vh - $header-height - 48px);
-    // transition: all $animation-duration-base;
+    border-radius: $border-radius-base;
+    min-height: calc(100vh - $header-height - 60px);
+    transition: all $animation-duration-base;
   }
 
   :deep(.ant-layout) {
@@ -151,6 +196,16 @@ const layoutStyle = computed(() => ({
       margin-left: $sidebar-collapsed-width;
     }
   }
+}
+
+// 设置侧边栏宽度变量
+:root {
+  --sider-width: #{$sidebar-width};
+}
+
+// 当侧边栏收起时
+.layout-container:has(.ant-layout-sider-collapsed) {
+  --sider-width: #{$sidebar-collapsed-width};
 }
 
 // 暗黑模式特定样式
@@ -183,6 +238,14 @@ const layoutStyle = computed(() => ({
 
   .layout-header {
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    
+    &.fixed-header {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+  }
+  
+  .global-tab.fixed-tab {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   }
 }
 </style>

@@ -68,6 +68,7 @@ declare module 'vue' {
     ATreeSelect: typeof import('ant-design-vue/es')['TreeSelect']
     AUpload: typeof import('ant-design-vue/es')['Upload']
     Empty: typeof import('./components/common/empty.vue')['default']
+    FileUploadExample: typeof import('./components/examples/FileUploadExample.vue')['default']
     GlobalBreadcrumb: typeof import('./layout/common/global-header/components/global-breadcrumb.vue')['default']
     GlobalContent: typeof import('./layout/common/global-content/index.vue')['default']
     GlobalHeader: typeof import('./layout/common/global-header/index.vue')['default']

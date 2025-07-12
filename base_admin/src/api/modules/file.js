@@ -1,8 +1,19 @@
 import request from '@/utils/request'
 
+
+// 分页获取文件列表
+export async function getFilePage(params) {
+  return request.get('/system/file/page', { params })
+}
+
 // 上传文件
 export async function uploadFile(data) {
-  return request.post('/system/file/upload', data)
+  return request.upload('/system/file/upload', data)
+}
+
+// 获取文件url
+export async function getFileUrl(id) {
+  return request.get(`/system/file/url/${id}`)
 }
 
 // 批量上传文件

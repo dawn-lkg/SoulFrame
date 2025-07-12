@@ -21,7 +21,7 @@ html, body {
   padding: 48px;
   background: $component-bg;
   border-radius: $border-radius-lg;
-  min-height: calc(100vh - $header-height - 48px);
+  min-height: calc(100vh - $header-height - 70px);
   transition: all $animation-duration-base;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   position: relative;

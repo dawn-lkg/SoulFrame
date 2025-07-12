@@ -16,17 +16,6 @@ export const staticRouter = [
     path: '/login',
     component: () => import('@/views/login/index.vue'),
   },
-  // {
-  //   name: 'layout',
-  //   component: () => import('@/layout/silderLayout/index.vue'),
-  //   children: [
-  //     {
-  //       path: '/home',
-  //       name: 'home',
-  //       component: () => import('@/views/dashboard/index.vue'),
-  //     },
-  //   ],
-  // },
 ]
 
 // 错误路由
@@ -67,3 +56,12 @@ export const iframeRoute = {
   name: 'iframe',
   component: IFrame,
 }
+
+// 个人中心
+export const profileRoute = {
+  path: '/profile',
+  name: 'profile',
+  component: () => import('@/views/profile/index.vue'),
+}
+
+
