@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.clm.common.enums.HttpCodeEnum;
 import com.clm.common.exception.BaseException;
 import com.clm.common.utils.IpUtils;
+import com.clm.common.utils.RedisUtils;
 import com.clm.common.utils.ServletUtils;
 import com.clm.common.utils.UserAgentUtils;
 import com.clm.system.domain.dto.FileUploadDTO;
@@ -18,6 +19,7 @@ import com.clm.system.domain.entity.File;
 import com.clm.system.domain.param.FileQueryParam;
 import com.clm.system.domain.vo.FileVO;
 import com.clm.system.mapper.FileMapper;
+import com.clm.system.service.ConfigService;
 import com.clm.system.service.FileService;
 import io.minio.*;
 import io.minio.http.Method;
@@ -49,6 +51,7 @@ import java.util.stream.Collectors;
 public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements FileService {
 
     private final MinioClient minioClient;
+    private final RedisUtils redisUtils;
 
     @Value("${minio.endpoint}")
     private String endpoint;
@@ -61,6 +64,8 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
 
     @Value("${file.local-path:/uploads}")
     private String localFilePath;
+
+    private final ConfigService configService;
 
     @Override
     public IPage<FileVO> selectFilePage(FileQueryParam param) {
@@ -137,6 +142,10 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
                 throw new BaseException(HttpCodeEnum.BAD_REQUEST.getCode(), "上传文件不能为空");
             }
 
+            Long userId = StpUtil.getLoginIdAsLong();
+
+            String configStorageType = configService.getValueByKey("storage.storageType", String.class);
+
             String originalFilename = file.getOriginalFilename();
             String fileExtension = FileUtil.extName(originalFilename);
             String mimeType = file.getContentType();
@@ -147,23 +156,21 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
             String fileName = IdUtil.fastSimpleUUID() + "." + fileExtension;
             
             // 存储类型，默认为local
-            String storageType = StrUtil.isBlank(uploadDTO.getStorageType()) ? "local" : uploadDTO.getStorageType();
-
-            storageType="minio";
+            String storageType = StrUtil.isBlank(uploadDTO.getStorageType()) ? configStorageType : uploadDTO.getStorageType();
             
             // 存储路径
             String storagePath;
             String bucketName = defaultBucketName;
             
             // 根据存储类型处理文件
-//            if ("minio".equals(storageType)) {
+            if ("minio".equals(storageType)) {
                 // 使用MinIO存储
                 storagePath = uploadToMinio(file, fileName, bucketName);
-//            } else {
-//                // 默认本地存储
-//                storagePath = uploadToLocalStorage(file, fileName);
-//                storageType = "local";
-//            }
+            } else {
+                // 默认本地存储
+                storagePath = uploadToLocalStorage(file, fileName);
+                storageType = "local";
+            }
 
             // 创建文件记录
             File fileEntity = new File();
@@ -188,6 +195,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
             fileEntity.setDownloadCount(0);
             fileEntity.setViewCount(0);
             fileEntity.setDescription(uploadDTO.getDescription());
+            fileEntity.setFileUrl(getFileUrl(fileEntity));
             
             // 如果是图片，获取宽高
             if (mimeType != null && mimeType.startsWith("image/")) {
@@ -205,7 +213,9 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
             }
             
             // 保存到数据库
-            save(fileEntity);
+            if (!save(fileEntity)) {
+                throw new BaseException(HttpCodeEnum.ERROR.getCode(), "保存文件记录失败");
+            }
             
             // 转换为VO返回
             FileVO fileVO = convertToFileVO(fileEntity);
@@ -267,10 +277,10 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
         if (fileEntity == null) {
             throw new BaseException(HttpCodeEnum.DATA_NOT_EXIST.getCode(), "文件不存在");
         }
-        
+
         // 更新查看次数
         baseMapper.updateAccessCount(fileId, "view");
-        
+
         try {
             if ("local".equals(fileEntity.getStorageType())) {
                 // 本地文件URL
@@ -291,6 +301,25 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
             log.error("获取文件URL失败", e);
             throw new BaseException(HttpCodeEnum.ERROR.getCode(), "获取文件URL失败: " + e.getMessage());
         }
+    }
+
+    public String getFileUrl(File file) {
+        try {
+            if ("minio".equals(file.getStorageType())) {
+                // MinIO文件URL
+                return minioClient.getPresignedObjectUrl(
+                        GetPresignedObjectUrlArgs.builder()
+                                .method(Method.GET)
+                                .bucket(file.getBucketName())
+                                .object(file.getStoragePath())
+                                .build()
+                );
+            }
+        } catch (Exception e) {
+            log.error("获取文件URL失败", e);
+            throw new BaseException(HttpCodeEnum.ERROR.getCode(), "获取文件URL失败: " + e.getMessage());
+        }
+        return "";
     }
 
 

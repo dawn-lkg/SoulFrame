@@ -27,3 +27,4 @@ router:
   whitelist:
     - /auth/login
     - /auth/captcha
+    - /system/config/configGroup

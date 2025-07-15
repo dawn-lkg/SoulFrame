@@ -3,8 +3,10 @@ package com.clm.system.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.clm.common.constants.RedisKeyConstants;
 import com.clm.common.enums.HttpCodeEnum;
 import com.clm.common.exception.BaseException;
+import com.clm.common.utils.RedisUtils;
 import com.clm.system.domain.dto.ConfigDTO;
 import com.clm.system.domain.entity.Config;
 import com.clm.system.domain.param.ConfigParam;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 系统配置表 服务实现
@@ -27,7 +30,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> implements ConfigService {
-    
+
+    private final RedisUtils redisUtils;
+
     @Override
     public Page<ConfigVO> selectConfigPage(ConfigParam param) {
         Page<ConfigVO> page = new Page<>(param.getPageNum(), param.getPageSize());
@@ -72,5 +77,50 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> impleme
         if(!removeById(id)){
             throw new BaseException(HttpCodeEnum.FAILED_DELETE);
         }
+    }
+
+    @Override
+    public List<ConfigVO> getConfigList(String groupName) {
+        ConfigParam configParam = new ConfigParam();
+        configParam.setConfigGroup(groupName);
+        return redisUtils.get(RedisKeyConstants.System.CONFIG_PREFIX, groupName, () -> baseMapper.selectConfigList(configParam),
+                RedisKeyConstants.System.SYSTEM_CONFIG_TIMEOUT, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public ConfigVO getByKey(String key) {
+        ConfigParam param = new ConfigParam();
+        param.setConfigKey(key);
+        return redisUtils.get(RedisKeyConstants.System.CONFIG_PREFIX, key,
+                () -> baseMapper.selectConfigList(param).stream().findFirst().orElse(null),
+                RedisKeyConstants.System.SYSTEM_CONFIG_TIMEOUT, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public <T> T getValueByKey(String key, Class<T> clazz) {
+        Config config = redisUtils.get(RedisKeyConstants.System.CONFIG_PREFIX, key, () ->
+                lambdaQuery().eq(Config::getConfigKey, key).last("limit 1").one(), RedisKeyConstants.System.SYSTEM_CONFIG_TIMEOUT, TimeUnit.SECONDS);
+        if (config == null) {
+            return null;
+        }
+        String val = config.getConfigValue();
+        return clazz.cast(val);
+    }
+
+
+    @Override
+    public void refreshAllCache() {
+        redisUtils.deletePattern(RedisKeyConstants.System.CONFIG_PREFIX + "*");
+    }
+
+    @Override
+    public void refreshCache(String key) {
+        Config one = lambdaQuery().eq(Config::getConfigKey, key).last("limit 1").one();
+        if (one == null) {
+            return;
+        }
+        String configGroup = one.getConfigGroup();
+        redisUtils.deletePattern(RedisKeyConstants.System.CONFIG_PREFIX + configGroup);
+        redisUtils.delete(RedisKeyConstants.System.CONFIG_PREFIX + key);
     }
 }

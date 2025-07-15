@@ -4,8 +4,9 @@ import com.clm.common.core.domain.BasePageParam;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 文件查询参数
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 @Schema(description = "文件查询参数")
 public class FileQueryParam extends BasePageParam implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
@@ -26,10 +28,22 @@ public class FileQueryParam extends BasePageParam implements Serializable {
     private String fileName;
 
     /**
+     * 原始文件名称
+     */
+    @Schema(description = "原始文件名称")
+    private String originalName;
+
+    /**
      * 文件扩展名
      */
     @Schema(description = "文件扩展名")
     private String fileExtension;
+
+    /**
+     * 文件扩展名
+     */
+    @Schema(description = "文件扩展名")
+    private List<String> fileExtensionList;
 
     /**
      * 存储类型
@@ -53,13 +67,13 @@ public class FileQueryParam extends BasePageParam implements Serializable {
      * 上传开始时间
      */
     @Schema(description = "上传开始时间")
-    private LocalDateTime startTime;
+    private String beginTime;
 
     /**
      * 上传结束时间
      */
     @Schema(description = "上传结束时间")
-    private LocalDateTime endTime;
+    private String endTime;
     
     /**
      * 文件所有者ID

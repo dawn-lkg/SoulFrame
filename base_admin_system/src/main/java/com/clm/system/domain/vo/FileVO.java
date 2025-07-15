@@ -3,6 +3,7 @@ package com.clm.system.domain.vo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @Schema(description = "文件信息")
 public class FileVO implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
@@ -49,6 +51,12 @@ public class FileVO implements Serializable {
     private Long fileSize;
 
     /**
+     * 文件url
+     */
+    @Schema(description = "文件url")
+    private String fileUrl;
+
+    /**
      * 文件哈希值(SHA256)
      */
     @Schema(description = "文件哈希值(SHA256)")
@@ -65,12 +73,6 @@ public class FileVO implements Serializable {
      */
     @Schema(description = "存储类型")
     private String storageType;
-
-    /**
-     * 文件访问URL
-     */
-    @Schema(description = "文件访问URL")
-    private String fileUrl;
 
     /**
      * 文件状态

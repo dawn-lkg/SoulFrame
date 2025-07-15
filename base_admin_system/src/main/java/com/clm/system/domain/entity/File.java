@@ -8,7 +8,9 @@ import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.clm.common.core.domain.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -19,11 +21,13 @@ import java.util.Map;
  * @author 陈黎明
  * @date 2025/3/10
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @TableName(value = "sys_file", autoResultMap = true)
 @Schema(description = "文件")
 public class File extends BaseEntity implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
@@ -56,6 +60,12 @@ public class File extends BaseEntity implements Serializable {
      */
     @Schema(description = "文件大小(字节)")
     private Long fileSize;
+
+    /**
+     * 文件url
+     */
+    @Schema(description = "文件url")
+    private String fileUrl;
 
     /**
      * 文件哈希值(SHA256)

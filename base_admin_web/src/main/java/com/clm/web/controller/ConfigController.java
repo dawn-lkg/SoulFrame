@@ -55,7 +55,7 @@ public class ConfigController extends BaseController {
         return success(configService.getByIdRel(id));
     }
 
-    @Operation(summary = "新增系统配置表", description = "新增系统配置表信息")
+    @Operation(summary = "新增系统配置", description = "新增系统配置表信息")
     @Log(businessType = BusinessType.INSERT)
     @PostMapping
     public Result<?> add(@Validated @RequestBody ConfigDTO dto) {
@@ -63,7 +63,7 @@ public class ConfigController extends BaseController {
         return success();
     }
 
-    @Operation(summary = "修改系统配置表", description = "修改系统配置表信息")
+    @Operation(summary = "修改系统配置", description = "修改系统配置表信息")
     @Log(businessType = BusinessType.UPDATE)
     @PutMapping
     public Result<?> edit(@Validated @RequestBody ConfigDTO dto) {
@@ -71,7 +71,7 @@ public class ConfigController extends BaseController {
         return success();
     }
 
-    @Operation(summary = "删除系统配置表", description = "根据ID删除系统配置表信息")
+    @Operation(summary = "删除系统配置", description = "根据ID删除系统配置表信息")
     @Parameter(name = "id", description = "系统配置表ID", required = true)
     @Log(businessType = BusinessType.DELETE)
     @DeleteMapping("/{id}")
@@ -79,4 +79,45 @@ public class ConfigController extends BaseController {
         configService.deleteConfig(id);
         return success();
     }
+
+    @Operation(summary = "批量删除系统配置", description = "根据ID列表批量删除系统配置表信息")
+    @Log(businessType = BusinessType.DELETE)
+    @DeleteMapping("/batch")
+    public Result<?> batchRemove(@RequestBody @Validated List<Long> ids) {
+        configService.removeByIds(ids);
+        return success();
+    }
+
+    @Operation(summary = "获取系统配置（缓存）", description = "根据分组名称获取系统配置")
+    @Log(businessType = BusinessType.QUERY)
+    @GetMapping("/configGroup")
+    public Result<List<ConfigVO>> getConfigList(@RequestParam(value = "groupName") String groupName) {
+        List<ConfigVO> list = configService.getConfigList(groupName);
+        return success(list);
+    }
+
+    @Operation(summary = "获取系统配置 （缓存）", description = "根据键名获取系统配置")
+    @Log(businessType = BusinessType.QUERY)
+    @GetMapping("/key/{configKey}")
+    public Result<ConfigVO> getConfigByKey(@PathVariable("configKey") String configKey) {
+        ConfigVO config = configService.getByKey(configKey);
+        return success(config);
+    }
+
+    @Operation(summary = "刷新所有配置缓存", description = "刷新所有配置缓存")
+    @Log(businessType = BusinessType.UPDATE)
+    @GetMapping("/refresh")
+    public Result<?> refreshCache() {
+        configService.refreshAllCache();
+        return success();
+    }
+
+    @Operation(summary = "刷新配置缓存", description = "刷新配置缓存")
+    @Log(businessType = BusinessType.UPDATE)
+    @GetMapping("/refreshKeyCache/{key}")
+    public Result<?> refreshKeyCache(@PathVariable("key") String configKey) {
+        configService.refreshCache(configKey);
+        return success();
+    }
+
 }

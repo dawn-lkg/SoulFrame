@@ -8,6 +8,7 @@
         a.width, a.height, a.duration, a.version_number, a.is_latest_version, a.upload_ip, a.upload_user_agent,
         a.upload_source, a.download_count, a.view_count, a.last_accessed_at, a.metadata, a.tags, a.description,
         a.create_time,
+        a.file_url,
         b.user_name
         FROM sys_file a
         left join sys_user b on a.owner_id = b.user_id
@@ -16,8 +17,17 @@
             <if test="param.fileName != null and param.fileName != ''">
                 AND a.file_name LIKE CONCAT('%', #{param.fileName}, '%')
             </if>
+            <if test="param.originalName != null and param.originalName != ''">
+                AND a.original_name LIKE CONCAT('%', #{param.originalName}, '%')
+            </if>
             <if test="param.fileExtension != null and param.fileExtension != ''">
                 AND a.file_extension = #{param.fileExtension}
+            </if>
+            <if test="param.fileExtensionList!=null and param.fileExtensionList.size>0">
+                AND a.file_extension IN
+                <foreach item="item" collection="param.fileExtensionList" separator="," open="(" close=")" index="">
+                    #{item}
+                </foreach>
             </if>
             <if test="param.storageType != null and param.storageType != ''">
                 AND a.storage_type = #{param.storageType}
@@ -31,8 +41,8 @@
             <if test="param.ownerId != null">
                 AND a.owner_id = #{param.ownerId}
             </if>
-            <if test="param.startTime != null">
-                AND a.create_time &gt;= #{param.startTime}
+            <if test="param.beginTime != null">
+                AND a.create_time &gt;= #{param.beginTime}
             </if>
             <if test="param.endTime != null">
                 AND a.create_time &lt;= #{param.endTime}

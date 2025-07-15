@@ -110,6 +110,20 @@ public class RedisUtils {
     }
 
     /**
+     * 从缓存中获取数据
+     *
+     * @param prefix   前缀
+     * @param key      缓存键
+     * @param callback 回调函数
+     * @param timeout  缓存过期时间
+     * @param unit     时间单位
+     * @return 缓存数据
+     */
+    public <T> T get(String prefix, String key, CacheCallback<T> callback, long timeout, TimeUnit unit) {
+        return get(prefix + key, callback, timeout, unit);
+    }
+
+    /**
      * 从缓存中获取数据（默认24小时过期）
      *
      * @param key 缓存键

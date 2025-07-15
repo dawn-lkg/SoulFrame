@@ -82,7 +82,7 @@ public class SqlInterceptor implements Interceptor {
      * 排除的SQL ID列表
      */
     private Set<String> excludeSqlIds = new HashSet<>(){{
-        add("com.clm.base_admin.modules.system.mapper.OperLogMapper.insert");
+        add("com.clm.system.mapper.OperLogMapper.insert");
     }};
 
     /**

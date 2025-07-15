@@ -26,6 +26,14 @@ public class RedisKeyConstants {
         public static final String MENU_PREFIX = "sys:menu:";
         /** 验证码数据前缀 */
         public static final String CAPTCHA_PREFIX = "sys:captcha:";
+        /**
+         * 系统配置数据前缀
+         */
+        public static final String SYSTEM_CONFIG_PREFIX = "sys:config:";
+        /**
+         * 系统配置数据过期时间
+         */
+        public static final long SYSTEM_CONFIG_TIMEOUT = 60 * 60 * 24 * 7;
     }
 
     /**

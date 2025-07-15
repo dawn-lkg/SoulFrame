@@ -32,3 +32,4 @@ router:
     - /swagger-ui/**
     - /v3/api-docs/**
     - /swagger-resources/**
+    - /system/config/configGroup

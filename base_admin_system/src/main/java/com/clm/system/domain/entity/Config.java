@@ -1,6 +1,7 @@
 package com.clm.system.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.clm.common.core.domain.BaseEntity;
 import lombok.Data;
@@ -25,7 +26,7 @@ public class Config extends BaseEntity {
     /**
      * 主键ID
      */
-    @TableField("id")
+    @TableId("id")
     private Long id;
 
     /**

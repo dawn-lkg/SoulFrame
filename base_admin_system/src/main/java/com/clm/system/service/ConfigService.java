@@ -39,7 +39,20 @@ public interface ConfigService extends IService<Config> {
      * @param id id
      * @return 系统配置表
      */
-    ConfigVO getByIdRel( Long id);
+    ConfigVO getByIdRel(Long id);
+
+    /**
+     * 根据key查询信息
+     *
+     * @param key key
+     * @return 系统配置表
+     */
+    ConfigVO getByKey(String key);
+
+
+    <T> T getValueByKey(String key, Class<T> clazz);
+
+
 
     /**
      * 新增保存系统配置表信息
@@ -60,4 +73,24 @@ public interface ConfigService extends IService<Config> {
      * @param id id
      */
     void deleteConfig(Long id);
+
+    /**
+     * 查询系统配置表列表
+     *
+     * @param groupName 分组名称
+     * @return 系统配置表列表
+     */
+    List<ConfigVO> getConfigList(String groupName);
+
+    /**
+     * 刷新配置全部缓存
+     */
+    void refreshAllCache();
+
+    /**
+     * 刷新缓存
+     *
+     * @param key 缓存key
+     */
+    void refreshCache(String key);
 }

@@ -1,5 +1,7 @@
 package com.clm.framework.config;
 
+import cn.dev33.satoken.dao.SaTokenDao;
+import cn.dev33.satoken.dao.SaTokenDaoDefaultImpl;
 import cn.dev33.satoken.filter.SaServletFilter;
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.jwt.StpLogicJwtForSimple;
@@ -49,6 +51,11 @@ public class SecurityConfig implements WebMvcConfigurer  {
         registrationBean.addUrlPatterns("/**");
         registrationBean.setOrder(1);
         return registrationBean;
+    }
+
+    @Bean
+    public SaTokenDao saTokenDao() {
+        return new SaTokenDaoDefaultImpl();
     }
 
     @Bean

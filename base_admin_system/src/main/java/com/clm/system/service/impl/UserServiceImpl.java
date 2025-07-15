@@ -5,17 +5,21 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.clm.common.core.domain.entity.User;
+import com.clm.common.core.domain.model.LoginUser;
 import com.clm.common.enums.HttpCodeEnum;
 import com.clm.common.exception.BaseException;
+import com.clm.common.security.LoginHelper;
 import com.clm.common.utils.IpUtils;
 import com.clm.common.utils.NicknameGenerator;
 import com.clm.common.utils.PasswordUtils;
 import com.clm.common.utils.ServletUtils;
 import com.clm.system.domain.dto.UserDTO;
 import com.clm.system.domain.param.UserQueryParam;
+import com.clm.system.domain.vo.ConfigVO;
 import com.clm.system.domain.vo.UserPageVO;
 import com.clm.system.domain.vo.UserVO;
 import com.clm.system.mapper.UserMapper;
+import com.clm.system.service.ConfigService;
 import com.clm.system.service.UserRoleService;
 import com.clm.system.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,8 +49,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     private final UserRoleService userRoleService;
 
+    private final ConfigService configService;
+
     @Override
     public IPage<UserPageVO> getUserPage(UserQueryParam param) {
+        LoginUser loginUser = LoginHelper.getLoginUser();
         Page<UserPageVO> page = new Page<>(param.getPageNum(), param.getPageSize());
         IPage<UserPageVO> userPage = baseMapper.selectUserPage(page, param);
         if (userPage.getRecords().isEmpty()) {
@@ -220,6 +227,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
 
         String initPassword = "123456";
+        ConfigVO key = configService.getByKey("sys.user.defaultPassword");
+
         if (StrUtil.isBlank(initPassword)) {
             throw new BaseException("初始密码配置为空", HttpCodeEnum.BAD_REQUEST.getCode());
         }
