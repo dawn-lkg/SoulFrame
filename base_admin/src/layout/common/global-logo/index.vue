@@ -1,18 +1,20 @@
 <template>
   <div class="global-logo">
     <span class="logo-icon" ref="logoIcon">B</span>
-    <h1 v-if="!app.siderCollapse" ref="logoText">Base Admin</h1>
+    <h1 v-if="!app.siderCollapse" ref="logoText">{{ configStore.systemConfig.name }}</h1>
   </div>
 </template>
 
 <script setup>
-import { useAppStore } from "@/stores";
-import { ref, onMounted, watch } from 'vue';
+import {useAppStore} from "@/stores";
+import {useConfigStore} from "@/stores/config";
+import {onMounted, ref, watch} from 'vue';
 import gsap from 'gsap';
 
 const app = useAppStore();
 const logoIcon = ref(null);
 const logoText = ref(null);
+const configStore = useConfigStore()
 
 // 初始动画
 onMounted(() => {

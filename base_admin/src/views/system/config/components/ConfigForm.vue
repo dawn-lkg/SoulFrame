@@ -129,6 +129,8 @@ watch(
   () => props.configData,
   (val) => {
     if (val && Object.keys(val).length > 0) {
+      console.log(val);
+        
       Object.assign(form, val)
     }
   },

@@ -1,5 +1,6 @@
 import * as auth from './modules/auth.js';
+import * as file from './modules/file.js';
 
-export {auth}
+export {auth, file}
 
-export default {auth}
+// export default {auth, file}

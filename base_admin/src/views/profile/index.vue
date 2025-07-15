@@ -10,10 +10,6 @@
               <a-upload
                 name="avatar"
                 :show-upload-list="false"
-                :action="uploadUrl"
-                :headers="headers"
-                :before-upload="beforeUpload"
-                @change="handleAvatarChange"
               >
                 <a-button type="link">更换头像</a-button>
               </a-upload>
@@ -22,12 +18,15 @@
           <div class="profile-info">
             <h2>{{ userInfo.nickName || userInfo.userName }}</h2>
             <div class="profile-role">
-              <tag v-for="role in userInfo.roles" :key="role" color="blue">{{ role }}</tag>
+              <tag v-for="role in userInfo.roles" :key="role" color="blue">{{ role.roleName }}</tag>
             </div>
             <div class="profile-detail">
               <p><user-outlined /> {{ userInfo.userName }}</p>
               <p><mail-outlined /> {{ userInfo.email || '未设置邮箱' }}</p>
-              <p><phone-outlined /> {{ userInfo.phonenumber || '未设置手机号' }}</p>
+              <p>
+                <phone-outlined/>
+                {{ userInfo.phone || '未设置手机号' }}
+              </p>
               <p><calendar-outlined /> {{ userInfo.createTime || '未知加入时间' }}</p>
             </div>
           </div>
@@ -61,7 +60,7 @@
                   </a-radio-group>
                 </a-form-item>
                 <a-form-item label="手机号码" name="phonenumber">
-                  <a-input v-model:value="userForm.phonenumber" placeholder="请输入手机号码" />
+                  <a-input v-model:value="userForm.phone" placeholder="请输入手机号码"/>
                 </a-form-item>
                 <a-form-item label="邮箱" name="email">
                   <a-input v-model:value="userForm.email" placeholder="请输入邮箱" />
@@ -193,7 +192,7 @@
                   </template>
                 </a-list-item>
                 <a-list-item>
-                  <a-list-item-meta title="手机绑定" :description="userInfo.phonenumber || '未绑定手机号码'">
+                  <a-list-item-meta :description="userInfo.phone || '未绑定手机号码'" title="手机绑定">
                     <template #avatar>
                       <mobile-outlined />
                     </template>
@@ -265,16 +264,6 @@ import {
   UserOutlined
 } from '@ant-design/icons-vue'
 
-// 默认头像
-const defaultAvatar = 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png'
-
-// 上传URL
-const uploadUrl = '/api/system/user/avatar'
-
-// 请求头
-const headers = {
-  Authorization: 'Bearer ' + localStorage.getItem('token')
-}
 
 // 当前激活的标签页
 const activeTab = ref('basic')
@@ -532,7 +521,7 @@ $transition-duration: 0.3s;
 .profile-container {
   height: 100%;
   padding: $base-spacing;
-  background-color: #f0f2f5;
+  // background-color: #f0f2f5;
   
   .ant-row {
     margin-bottom: $base-spacing;
@@ -554,7 +543,7 @@ $transition-duration: 0.3s;
     border-radius: $border-radius;
     box-shadow: $box-shadow;
     height: 100%;
-    background: linear-gradient(to bottom, rgba($primary-color, 0.03) 0%, rgba($primary-color, 0) 100%);
+    // background: linear-gradient(to bottom, rgba($primary-color, 0.03) 0%, rgba($primary-color, 0) 100%);
     
     .profile-avatar {
       margin-bottom: $base-spacing;
@@ -669,7 +658,6 @@ $transition-duration: 0.3s;
     
     .ant-input, .ant-input-password {
       border-radius: $border-radius / 2;
-      padding: 8px 12px;
       border-color: #d9d9d9;
       
       &:hover, &:focus {

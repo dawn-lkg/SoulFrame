@@ -1,32 +1,42 @@
-import request from '@/utils/request'
+import request from "@/utils/request"
 
 
 // 分页获取文件列表
-export async function getFilePage(params) {
-  return request.get('/system/file/page', { params })
+export function getFilePage(params) {
+    return request.get('/system/file/page', {params})
+}
+
+// 获取文件列表
+export function getFileList(params) {
+    return request.get('/system/file/list', {params})
 }
 
 // 上传文件
-export async function uploadFile(data) {
-  return request.upload('/system/file/upload', data)
+export async function uploadFile(formData, onProgress) {
+    return request.upload('/system/file/upload', formData, {}, onProgress)
+}
+
+// 删除文件
+export function deleteFile(fileId) {
+    return request.delete(`/system/file/${fileId}`)
+}
+
+// 批量删除文件
+export function batchDeleteFiles(fileIds) {
+    return request.post('/system/file/batchDelete', {fileIds})
 }
 
 // 获取文件url
 export async function getFileUrl(id) {
-  return request.get(`/system/file/url/${id}`)
+    return request.get(`/system/file/url/${id}`)
 }
 
-// 批量上传文件
-export async function batchUploadFile(data) {
-  return request.post('/system/file/batchUpload', data)
+// 创建文件夹
+export function createFolder(data) {
+    return request.post('/system/file/folder', data)
 }
 
-// 删除文件
-export async function deleteFile(id) {
-  return request.delete(`/system/file/${id}`)
-}
-
-// 批量删除文件
-export async function batchDeleteFile(ids) {
-  return request.batchDel('/system/file/batch', ids)
+// 分享文件
+export function shareFile(data) {
+    return request.post('/system/file/share', data)
 }

@@ -268,16 +268,6 @@ const resetQuery = () => {
   handleQuery();
 };
 
-// // 获取图标组件
-// const getIcon = (iconName) => {
-//   if (!iconName) return null;
-
-//   // 转换图标名称为组件名
-//   const iconComponent =
-//     iconName.charAt(0).toUpperCase() + iconName.slice(1) + "Outlined";
-//   return Icons[iconComponent] || null;
-// };
-
 // 新增菜单
 const handleAdd = (record) => {
   title.value = "添加菜单";

@@ -1,507 +1,416 @@
 <template>
-  <div>
-    <!-- <a-card title="文件管理" :bordered="false"> -->
-    <a-row :gutter="16">
-      <!-- 左侧筛选区域 -->
-      <a-col :span="5">
-        <a-card
-          title="文件类型"
-          :bordered="false"
-          class="filter-card"
-          style="height: 100vh"
-        >
-          <a-menu
-            v-model:selectedKeys="selectedFileTypes"
-            mode="inline"
-            @select="handleFileTypeSelect"
-          >
-            <a-menu-item key="all">
-              <template #icon><folder-outlined /></template>
-              全部文件
-            </a-menu-item>
-            <a-menu-item key="image">
-              <template #icon><picture-outlined /></template>
-              图片
-            </a-menu-item>
-            <a-menu-item key="document">
-              <template #icon><file-text-outlined /></template>
-              文档
-            </a-menu-item>
-            <a-menu-item key="video">
-              <template #icon><video-camera-outlined /></template>
-              视频
-            </a-menu-item>
-            <a-menu-item key="audio">
-              <template #icon><sound-outlined /></template>
-              音频
-            </a-menu-item>
-            <a-menu-item key="other">
-              <template #icon><file-unknown-outlined /></template>
-              其他
-            </a-menu-item>
-          </a-menu>
+  <div class="common-container">
 
-          <a-divider />
-
-          <div class="storage-info">
-            <h4>存储空间</h4>
-            <a-progress
-              :percent="storageUsage"
-              :stroke-color="getStorageColor()"
-            />
-            <div class="storage-text">
-              <span>已用: {{ formatFileSize(usedStorage) }}</span>
-              <span>总共: {{ formatFileSize(totalStorage) }}</span>
-            </div>
-          </div>
-        </a-card>
-      </a-col>
-
-      <!-- 右侧主内容区域 -->
-      <a-col :span="19">
-        <div class="common-container">
-          <!-- 搜索表单 -->
-          <a-form layout="inline" :model="queryParams" class="search-form">
-            <a-form-item label="文件名称">
-              <a-input
-                v-model:value="queryParams.fileName"
-                placeholder="请输入文件名称"
-              />
-            </a-form-item>
-            <a-form-item label="上传时间">
-              <a-range-picker v-model:value="queryParams.dateRange" />
-            </a-form-item>
-            <a-form-item>
-              <a-space>
-                <a-button type="primary" @click="handleQuery">
-                  <template #icon><search-outlined /></template>
-                  查询
-                </a-button>
-                <a-button @click="resetQuery">
-                  <template #icon><reload-outlined /></template>
-                  重置
-                </a-button>
-              </a-space>
-            </a-form-item>
-          </a-form>
-
-          <!-- 操作按钮 -->
-          <div class="action-buttons">
-            <a-space>
-              <a-upload
-                name="file"
-                :multiple="true"
-                :show-upload-list="false"
-                :customRequest="customUpload"
-              >
-                <a-button type="primary">
-                  <template #icon><upload-outlined /></template>
-                  上传文件
-                </a-button>
-              </a-upload>
-              <a-button
-                danger
-                :disabled="!selectedRowKeys.length"
-                @click="handleBatchDelete"
-              >
-                <template #icon><delete-outlined /></template>
-                批量删除
-              </a-button>
-            </a-space>
-
-            <!-- 视图切换 -->
-            <a-radio-group v-model:value="viewMode" button-style="solid">
-              <a-radio-button value="table">
-                <template #icon><table-outlined /></template>
-                表格视图
-              </a-radio-button>
-              <a-radio-button value="card">
-                <template #icon><appstore-outlined /></template>
-                卡片视图
-              </a-radio-button>
-            </a-radio-group>
-          </div>
-
-          <!-- 表格视图 -->
-          <a-table
-            v-if="viewMode === 'table'"
-            :columns="columns"
-            :data-source="filteredFileList"
-            :row-key="(record) => record.fileId"
-            :pagination="pagination"
-            :loading="loading"
-            :row-selection="{ selectedRowKeys, onChange: onSelectChange }"
-            @change="handleTableChange"
-          >
-            <template #bodyCell="{ column, record }">
-              <template v-if="column.key === 'preview'">
-                <a-image
-                  v-if="isImage(record.fileType)"
-                  :width="40"
-                  :src="record.fileUrl"
-                  :preview="{ src: record.fileUrl }"
-                />
-                <file-outlined v-else />
-              </template>
-              <template v-else-if="column.key === 'fileSize'">
-                {{ formatFileSize(record.fileSize) }}
-              </template>
-              <template v-else-if="column.key === 'status'">
-                <a-tag :color="FILE_STATUS[record.status].color">
-                  {{ FILE_STATUS[record.status].text }}
-                </a-tag>
-              </template>
-              <template v-else-if="column.key === 'action'">
-                <a-space>
-                  <a @click="handlePreview(record)">预览</a>
-                  <a @click="handleDownload(record)">下载</a>
-                  <a-popconfirm
-                    title="确定要删除该文件吗？"
-                    @confirm="handleDelete(record)"
-                    ok-text="确定"
-                    cancel-text="取消"
-                  >
-                    <a>删除</a>
-                  </a-popconfirm>
-                </a-space>
-              </template>
+    <!-- 搜索区域 -->
+    <a-form :model="queryParams" class="search-form" layout="inline">
+      <a-form-item label="文件名称">
+        <a-input v-model:value="queryParams.originalName" allow-clear placeholder="请输入文件名称"/>
+      </a-form-item>
+      <a-form-item label="文件类型">
+        <a-select v-model:value="queryParams.fileType" allow-clear placeholder="请选择文件类型" style="width: 120px">
+          <a-select-option value="image">图片</a-select-option>
+          <a-select-option value="document">文档</a-select-option>
+          <a-select-option value="video">视频</a-select-option>
+          <a-select-option value="audio">音频</a-select-option>
+          <a-select-option value="other">其他</a-select-option>
+        </a-select>
+      </a-form-item>
+      <a-form-item label="上传时间">
+        <a-range-picker v-model:value="queryParams.dateRange" format="YYYY-MM-DD" value-format="YYYY-MM-DD"/>
+      </a-form-item>
+      <a-form-item>
+        <a-space>
+          <a-button type="primary" @click="handleQuery">
+            <template #icon>
+              <SearchOutlined/>
             </template>
-          </a-table>
+            搜索
+          </a-button>
+          <a-button @click="resetQuery">
+            <template #icon>
+              <ReloadOutlined/>
+            </template>
+            重置
+          </a-button>
+        </a-space>
+      </a-form-item>
+    </a-form>
+    <div ref="tableContainerRef" class="common-table-container">
+      <!-- 操作按钮区域 -->
+      <div class="action-buttons">
+        <a-space>
+          <a-button type="primary" @click="handleUpload">
+            <template #icon>
+              <UploadOutlined/>
+            </template>
+            上传文件
+          </a-button>
+          <a-button :disabled="!selectedRowKeys.length" danger @click="handleBatchDelete">
+            <template #icon>
+              <DeleteOutlined/>
+            </template>
+            批量删除
+          </a-button>
+        </a-space>
+        <TableTool
+            v-model:tableSize="tableConfig.size"
+            :fullScreenElement="tableConfig.fullScreenElement"
+            :tableColumns="tableConfig.columns"
+            @refresh="getFileList"
+        />
+      </div>
 
-          <!-- 卡片视图 -->
-          <div v-else class="file-cards">
-            <a-row :gutter="16">
-              <a-col
-                :span="4"
-                v-for="file in filteredFileList"
-                :key="file.fileId"
-              >
-                <a-card hoverable class="file-card">
-                  <template #cover>
-                    <div class="file-preview" @click="handlePreview(file)">
-                      <a-image
-                        v-if="isImage(file.fileType)"
-                        :src="file.fileUrl"
-                        :preview="false"
-                        height="120"
-                      />
-                      <div v-else class="file-icon">
-                        <file-outlined />
-                        <div class="file-type">{{ file.fileType }}</div>
-                      </div>
-                    </div>
-                  </template>
-                  <a-card-meta :title="file.fileName">
-                    <template #description>
-                      <div>{{ formatFileSize(file.fileSize) }}</div>
-                      <div>{{ file.createTime }}</div>
-                    </template>
-                  </a-card-meta>
-                  <template #actions>
-                    <eye-outlined key="preview" @click="handlePreview(file)" />
-                    <download-outlined
-                      key="download"
-                      @click="handleDownload(file)"
-                    />
-                    <delete-outlined
-                      key="delete"
-                      @click="confirmDelete(file)"
-                    />
-                  </template>
-                </a-card>
-              </a-col>
-            </a-row>
-          </div>
-        </div>
-      </a-col>
-    </a-row>
-    <!-- </a-card> -->
+      <!-- 文件列表 -->
+      <a-table
+          :columns="tableColumns"
+          :data-source="fileList"
+          :loading="loading"
+          :pagination="pagination"
+          :row-selection="{ selectedRowKeys, onChange: onSelectChange }"
+          :size="tableConfig.size"
+          @change="handleTableChange"
+      >
+        <!-- 文件名称列 -->
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'fileName'">
+            <div class="file-name-cell">
+              <file-type-icon :file-type="getFileType(record.fileExtension)"/>
+              <a @click="handlePreview(record)">{{ record.originalName }}</a>
+            </div>
+          </template>
 
-    <!-- 预览弹窗 -->
-    <file-preview-modal
-      v-model:visible="previewVisible"
-      :file="currentFile"
-      @close="previewVisible = false"
+          <!-- 文件类型列 -->
+          <template v-if="column.key === 'fileType'">
+            {{ getFileType(record.fileExtension) }}
+          </template>
+
+          <!-- 文件大小列 -->
+          <template v-if="column.key === 'fileSize'">
+            {{ formatFileSize(record.fileSize) }}
+          </template>
+
+          <!-- 状态列 -->
+          <template v-if="column.key === 'status'">
+            <a-tag :color="FILE_STATUS[record.status]?.color">
+              {{ FILE_STATUS[record.status]?.text }}
+            </a-tag>
+          </template>
+
+          <!-- 操作列 -->
+          <template v-if="column.key === 'action'">
+            <a-space>
+              <a-tooltip title="预览">
+                <a-button size="small" type="link" @click="handlePreview(record)">
+                  <template #icon>
+                    <EyeOutlined/>
+                  </template>
+                </a-button>
+              </a-tooltip>
+              <a-tooltip title="下载">
+                <a-button size="small" type="link" @click="handleDownload(record)">
+                  <template #icon>
+                    <DownloadOutlined/>
+                  </template>
+                </a-button>
+              </a-tooltip>
+              <a-tooltip title="分享">
+                <a-button size="small" type="link" @click="handleShare(record)">
+                  <template #icon>
+                    <ShareAltOutlined/>
+                  </template>
+                </a-button>
+              </a-tooltip>
+              <a-dropdown>
+                <template #overlay>
+                  <a-menu>
+                    <a-menu-item key="1" @click="handleRename(record)">
+                      <EditOutlined/>
+                      重命名
+                    </a-menu-item>
+                    <a-menu-item key="3" danger @click="handleDelete(record)">
+                      <DeleteOutlined/>
+                      删除
+                    </a-menu-item>
+                  </a-menu>
+                </template>
+                <a-button size="small" type="link">
+                  <template #icon>
+                    <EllipsisOutlined/>
+                  </template>
+                </a-button>
+              </a-dropdown>
+            </a-space>
+          </template>
+        </template>
+      </a-table>
+    </div>
+
+    <!-- 上传文件对话框 -->
+    <upload-modal
+        v-model:visible="uploadModalVisible"
+        @success="handleUploadSuccess"
+    />
+
+    <!-- 文件预览对话框 -->
+    <preview-modal
+        v-model:visible="previewModalVisible"
+        :file="previewFile"
+    />
+
+    <!-- 文件分享对话框 -->
+    <share-modal
+        v-model:visible="shareModalVisible"
+        :file="previewFile"
+        @success="handleShareSuccess"
     />
   </div>
 </template>
-  
-  <script setup>
-  import {computed, onMounted, reactive, ref} from "vue";
-  import {message} from "ant-design-vue";
-  import {
-    AppstoreOutlined,
-    DeleteOutlined,
-    DownloadOutlined,
-    EyeOutlined,
-    FileOutlined,
-    FileTextOutlined,
-    FileUnknownOutlined,
-    FolderOutlined,
-    PictureOutlined,
-    ReloadOutlined,
-    SearchOutlined,
-    SoundOutlined,
-    TableOutlined,
-    UploadOutlined,
-    VideoCameraOutlined,
-  } from "@ant-design/icons-vue";
-  import FilePreviewModal from "./components/FilePreviewModal.vue";
-  import {getFilePage, getFileUrl, uploadFile} from "@/api/modules/file";
-  import {FILE_STATUS} from "@/config";
 
-  // 视图模式
-const viewMode = ref("table");
+<script setup>
+import {computed, onMounted, reactive, ref} from 'vue';
+import {message} from 'ant-design-vue';
+import {
+  DeleteOutlined,
+  DownloadOutlined,
+  EditOutlined,
+  EllipsisOutlined,
+  EyeOutlined,
+  ReloadOutlined,
+  SearchOutlined,
+  ShareAltOutlined,
+  UploadOutlined
+} from '@ant-design/icons-vue';
+import {FILE_STATUS} from '@/config';
+import FileTypeIcon from './components/FileTypeIcon.vue';
+import {getFilePage, getFileUrl} from '@/api/modules/file';
+import UploadModal from './components/UploadModal.vue';
+import PreviewModal from './components/PreviewModal.vue';
+import ShareModal from './components/ShareModal.vue';
+import {useAppStore} from '@/stores/app';
 
-// 查询参数
-const queryParams = reactive({
-  fileName: "",
-  fileType: undefined,
-  dateRange: [],
-  pageNum: 1,
-  pageSize: 10,
-});
-
-// 文件类型筛选
-const selectedFileTypes = ref(["all"]);
-
-// 存储空间信息
-const usedStorage = ref(1024 * 1024 * 1024 * 2.5); // 2.5GB
-const totalStorage = ref(1024 * 1024 * 1024 * 10); // 10GB
-const storageUsage = computed(() => {
-  return Math.round((usedStorage.value / totalStorage.value) * 100);
-});
-
-// 获取存储空间颜色
-const getStorageColor = () => {
-  const usage = storageUsage.value;
-  if (usage < 60) {
-    return "#52c41a"; // 绿色
-  } else if (usage < 80) {
-    return "#faad14"; // 黄色
-  } else {
-    return "#f5222d"; // 红色
-  }
-};
-
-// 加载状态
+// 状态
 const loading = ref(false);
-
-// 选中行的键
+const fileList = ref([]);
 const selectedRowKeys = ref([]);
-
-// 当前预览的文件
-const currentFile = ref({});
-
-// 预览弹窗可见性
-const previewVisible = ref(false);
-
-// 分页配置
+const appStore = useAppStore();
+const tableContainerRef = ref(null);
 const pagination = reactive({
   current: 1,
   pageSize: 10,
   total: 0,
   showSizeChanger: true,
-  showQuickJumper: true,
-  showTotal: (total) => `共 ${total} 条`,
+  showTotal: (total) => `共 ${total} 条记录`
 });
+
+// 查询参数
+const queryParams = reactive({
+  originalName: '',
+  fileType: undefined,
+  dateRange: [],
+  pageNum: 1,
+  pageSize: 10
+});
+
+// 上传相关
+const uploadModalVisible = ref(false);
+
+// 预览相关
+const previewModalVisible = ref(false);
+const previewFile = ref({});
+
+// 分享相关
+const shareModalVisible = ref(false);
+
+// 图片类型后缀
+const imageSuffix = ['jpg', 'png', 'gif'];
+// 文档类型后缀
+const documentSuffix = ['doc', 'pdf', 'xlsx', 'docx', 'xls', 'ppt', 'pptx', 'txt', 'md', 'csv', 'xlsb', 'xlsm', 'xltx', 'xltm', 'xlam', 'xlt', 'xlr', 'xlc', 'xlm', 'xlw', 'xltx', 'xltm', 'xlam', 'xlt', 'xlr', 'xlc', 'xlm', 'xlw'];
+// 视频类型后缀
+const videoSuffix = ['mp4', 'avi', 'mov', 'flv', 'wmv', 'mpeg', 'mpg', 'm4v', 'webm', 'mkv'];
+// 音频类型后缀
+const audioSuffix = ['mp3', 'wav', 'ogg'];
+
+
+// 根据后缀获取文件类型
+const getFileType = (suffix) => {
+  if (imageSuffix.includes(suffix)) {
+    return 'image';
+  }
+  if (documentSuffix.includes(suffix)) {
+    return 'document';
+  }
+  if (videoSuffix.includes(suffix)) {
+    return 'video';
+  }
+  if (audioSuffix.includes(suffix)) {
+    return 'audio';
+  }
+  return 'other';
+};
+
+// 根据文件类型返回文件后缀
+const getFileSuffix = (fileType) => {
+  if (fileType === 'image') {
+    return imageSuffix.join(',');
+  }
+  if (fileType === 'document') {
+    return documentSuffix.join(',');
+  }
+  if (fileType === 'video') {
+    return videoSuffix.join(',');
+  }
+  if (fileType === 'audio') {
+    return audioSuffix.join(',');
+  }
+}
 
 // 表格列定义
 const columns = [
   {
-    title: "预览",
-    dataIndex: "preview",
-    key: "preview",
-    width: 80,
-  },
-  {
-    title: "文件名",
-    dataIndex: "originalName",
-    key: "originalName",
+    title: '文件名称',
+    dataIndex: 'fileName',
+    key: 'fileName',
     ellipsis: true,
+    sorter: true,
+    visible: true
   },
   {
-    title: "文件类型",
-    dataIndex: "fileExtension",
-    key: "fileExtension",
+    title: '文件类型',
+    dataIndex: 'fileType',
+    key: 'fileType',
+    width: 120,
+    visible: true
+  },
+  {
+    title: '文件大小',
+    dataIndex: 'fileSize',
+    key: 'fileSize',
+    width: 120,
+    sorter: true,
+    visible: true
+  },
+  {
+    title: '上传时间',
+    dataIndex: 'createTime',
+    key: 'createTime',
+    width: 180,
+    sorter: true,
+    visible: true
+  },
+  {
+    title: '状态',
+    dataIndex: 'status',
+    key: 'status',
     width: 100,
+    visible: true
   },
   {
-    title: "文件大小",
-    dataIndex: "fileSize",
-    key: "fileSize",
-    width: 120,
-    sorter: true,
-  },
-  {
-    title: "上传者",
-    dataIndex: "userName",
-    key: "userName",
-    width: 120,
-  },
-  {
-    title: "上传时间",
-    dataIndex: "createTime",
-    key: "createTime",
+    title: '操作',
+    key: 'action',
     width: 180,
-    sorter: true,
-  },
-  {
-    title: "状态",
-    dataIndex: "status",
-    key: "status",
-    width: 80,
-  },
-  {
-    title: "操作",
-    dataIndex: "action",
-    key: "action",
-    width: 180,
-    fixed: "right",
-  },
+    fixed: 'right',
+    visible: true
+  }
 ];
 
-// 模拟文件列表数据
-const fileList = ref([]);
+const tableConfig = reactive({
+  size: appStore.tableSize,
+  columns: columns,
+  fullScreenElement: tableContainerRef
+});
 
-// 分页获取文件列表
-const getFileList = async () => {
-  loading.value = true;
-  try { 
-    const data = await getFilePage(queryParams);
-    fileList.value = data.records;
-    pagination.total = data.total;
-  } catch (error) {
-    message.error(error.message || '获取文件列表失败')
-  } finally {
-    loading.value = false;
-  }
-};
+const tableColumns = computed(() => {
+  return tableConfig.columns.filter(item => item.visible);
+});
 
+
+// 生命周期钩子
 onMounted(() => {
   getFileList();
 });
 
-const customUpload = (options) => {
-  console.log(options);
-  const { file, onSuccess, onError } = options;
-  // const formData = new FormData();
-  // formData.append('file', file);
-  // formData.append('fileName', file.name);
-  // formData.append('fileType', file.type);
-  uploadFile(file).then(data => {
-    console.log(data);
-  })
-};
+// 获取文件列表
+const getFileList = async () => {
+  loading.value = true;
+  try {
+    const params = {
+      ...queryParams,
+      pageNum: pagination.current,
+      pageSize: pagination.pageSize,
+      fileExtensionList: getFileSuffix(queryParams.fileType)
+    }
 
-// 根据选择的文件类型过滤文件列表
-const filteredFileList = computed(() => {
-  if (selectedFileTypes.value.includes("all")) {
-    return fileList.value;
-  }
-  return fileList.value.filter((file) =>
-    selectedFileTypes.value.includes(file.fileType)
-  );
-});
+    if (params.dateRange && params.dateRange.length === 2) {
+      params.beginTime = params.dateRange[0]
+      params.endTime = params.dateRange[1]
+      delete params.dateRange
+    }
 
-// 处理文件类型选择
-const handleFileTypeSelect = ({ selectedKeys }) => {
-  selectedFileTypes.value = selectedKeys;
-  // 重置分页
-  pagination.current = 1;
-};
-
-// 组件挂载时执行
-onMounted(() => {
-  // 在实际项目中，这里应该调用API获取文件列表
-  // getFileList()
-  pagination.total = filteredFileList.value.length;
-
-  // 计算已用存储空间
-  calculateUsedStorage();
-});
-
-// 计算已用存储空间
-const calculateUsedStorage = () => {
-  usedStorage.value = fileList.value.reduce(
-    (total, file) => total + file.fileSize,
-    0
-  );
-};
-
-// 判断是否为图片文件
-const isImage = (fileType) => {
-  return fileType === "image";
-};
-
-// 格式化文件大小
-const formatFileSize = (size) => {
-  if (size < 1024) {
-    return size + " B";
-  } else if (size < 1024 * 1024) {
-    return (size / 1024).toFixed(2) + " KB";
-  } else if (size < 1024 * 1024 * 1024) {
-    return (size / (1024 * 1024)).toFixed(2) + " MB";
-  } else {
-    return (size / (1024 * 1024 * 1024)).toFixed(2) + " GB";
+    const data = await getFilePage(params);
+    fileList.value = data.records;
+    pagination.total = data.total;
+    loading.value = false;
+  } catch (error) {
+    message.error('获取文件列表失败');
+    loading.value = false;
   }
 };
 
-// 处理查询
-const handleQuery = () => {
-  queryParams.pageNum = 1;
-  // 实际项目中应该调用API
-  // getFileList()
-  message.success("查询成功");
-};
-
-// 重置查询
-const resetQuery = () => {
-  queryParams.fileName = "";
-  queryParams.fileType = undefined;
-  queryParams.dateRange = [];
-  queryParams.pageNum = 1;
-  // 实际项目中应该调用API
-  // getFileList()
-  message.success("重置成功");
-};
-
-// 表格变化事件
-const handleTableChange = (pag, filters, sorter) => {
-  pagination.current = pag.current;
-  pagination.pageSize = pag.pageSize;
-  queryParams.pageNum = pag.current;
-  queryParams.pageSize = pag.pageSize;
-
-  // 处理排序
-  if (sorter.field) {
-    queryParams.orderByColumn = sorter.field;
-    queryParams.isAsc = sorter.order === "ascend" ? "asc" : "desc";
-  } else {
-    queryParams.orderByColumn = undefined;
-    queryParams.isAsc = undefined;
-  }
-
-  // 实际项目中应该调用API
-  // getFileList()
-};
-
-// 选择行变化
+// 表格选择变化
 const onSelectChange = (keys) => {
   selectedRowKeys.value = keys;
 };
 
-// 处理文件预览
-const handlePreview = (file) => {
-  currentFile.value = file;
-  previewVisible.value = true;
+// 表格变化处理
+const handleTableChange = (pag, filters, sorter) => {
+  pagination.current = pag.current;
+  pagination.pageSize = pag.pageSize;
+
+  // 处理排序
+  if (sorter.field) {
+    queryParams.sortField = sorter.field;
+    queryParams.sortOrder = sorter.order;
+  } else {
+    queryParams.sortField = undefined;
+    queryParams.sortOrder = undefined;
+  }
+  
+  getFileList();
 };
 
-// 处理文件下载
-const handleDownload =async (file) => {
+// 搜索
+const handleQuery = () => {
+  pagination.current = 1;
+  getFileList();
+};
+
+// 重置查询
+const resetQuery = () => {
+  queryParams.originalName = '';
+  queryParams.fileType = undefined;
+  queryParams.dateRange = [];
+  handleQuery();
+};
+
+// 上传文件
+const handleUpload = () => {
+  uploadModalVisible.value = true;
+};
+
+// 上传成功回调
+const handleUploadSuccess = () => {
+  getFileList();
+};
+
+// 预览文件
+const handlePreview = (record) => {
+  previewFile.value = record;
+  previewModalVisible.value = true;
+};
+
+// 下载文件
+const handleDownload = async (file) => {
   message.success(`正在下载: ${file.fileName}`);
-  // 实际项目中应该调用API
-  // downloadFile(file.fileId)
   try {
     const data = await getFileUrl(file.fileId)
     const link = document.createElement("a");
@@ -515,157 +424,78 @@ const handleDownload =async (file) => {
   }
 };
 
-// 处理文件删除
-const handleDelete = (file) => {
-  message.success(`删除文件: ${file.fileName}`);
-  // 实际项目中应该调用API
-  // deleteFile(file.fileId).then(() => {
-  //   getFileList()
-  // })
-
-  // 模拟删除
-  fileList.value = fileList.value.filter((item) => item.fileId !== file.fileId);
-  pagination.total = fileList.value.length;
-  calculateUsedStorage(); // 更新已用存储空间
+// 分享文件
+const handleShare = (record) => {
+  previewFile.value = record;
+  shareModalVisible.value = true;
 };
 
-// 批量删除确认
+// 分享成功回调
+const handleShareSuccess = () => {
+  message.success('分享成功');
+};
+
+// 重命名文件
+const handleRename = (record) => {
+  message.info('重命名功能开发中');
+};
+
+
+// 删除文件
+const handleDelete = (record) => {
+  message.success(`文件 ${record.fileName} 已删除`);
+  getFileList();
+};
+
+// 批量删除
 const handleBatchDelete = () => {
   if (selectedRowKeys.value.length === 0) {
-    message.warning("请至少选择一个文件");
+    message.warning('请选择要删除的文件');
     return;
   }
-
-  message.success(`批量删除文件: ${selectedRowKeys.value.join(", ")}`);
-  // 实际项目中应该调用API
-  // batchDeleteFiles(selectedRowKeys.value).then(() => {
-  //   getFileList()
-  // })
-
-  // 模拟批量删除
-  fileList.value = fileList.value.filter(
-    (item) => !selectedRowKeys.value.includes(item.fileId)
-  );
+  message.success(`已删除 ${selectedRowKeys.value.length} 个文件`);
   selectedRowKeys.value = [];
-  pagination.total = fileList.value.length;
-  calculateUsedStorage(); // 更新已用存储空间
+  getFileList();
 };
 
-// 确认删除（卡片视图使用）
-const confirmDelete = (file) => {
-  handleDelete(file);
-};
-
-// 处理上传变化
-// const handleUploadChange = (info) => {
-//   if (info.file.status === "uploading") {
-//     loading.value = true;
-//     return;
-//   }
-
-//   if (info.file.status === "done") {
-//     loading.value = false;
-//     message.success(`${info.file.name} 上传成功`);
-//     // 实际项目中应该调用API刷新列表
-//     // getFileList()
-
-//     // 模拟添加新文件
-//     const newFile = {
-//       fileId: fileList.value.length + 1,
-//       fileName: info.file.name,
-//       originalName: info.file.name,
-//       fileType: getFileType(info.file.name),
-//       fileSize: info.file.size || 1024 * 1024 * Math.random() * 10, // 随机大小
-//       fileUrl: URL.createObjectURL(info.file.originFileObj),
-//       createBy: "当前用户",
-//       createTime: new Date().toLocaleString(),
-//       status: 0,
-//     };
-//     fileList.value.unshift(newFile);
-//     pagination.total = fileList.value.length;
-//     calculateUsedStorage(); // 更新已用存储空间
-//   } else if (info.file.status === "error") {
-//     loading.value = false;
-//     message.error(`${info.file.name} 上传失败`);
-//   }
-// };
-
-// 获取文件类型
-const getFileType = (fileName) => {
-  const extension = fileName.split(".").pop().toLowerCase();
-  const imageExts = ["jpg", "jpeg", "png", "gif", "bmp", "webp"];
-  const docExts = ["doc", "docx", "xls", "xlsx", "ppt", "pptx", "pdf", "txt"];
-  const videoExts = ["mp4", "avi", "mov", "wmv", "flv", "mkv"];
-  const audioExts = ["mp3", "wav", "ogg", "flac", "aac"];
-
-  if (imageExts.includes(extension)) return "image";
-  if (docExts.includes(extension)) return "document";
-  if (videoExts.includes(extension)) return "video";
-  if (audioExts.includes(extension)) return "audio";
-  return "other";
+// 格式化文件大小
+const formatFileSize = (size) => {
+  if (size < 1024) {
+    return size + ' B';
+  } else if (size < 1024 * 1024) {
+    return (size / 1024).toFixed(2) + ' KB';
+  } else if (size < 1024 * 1024 * 1024) {
+    return (size / 1024 / 1024).toFixed(2) + ' MB';
+  } else {
+    return (size / 1024 / 1024 / 1024).toFixed(2) + ' GB';
+  }
 };
 </script>
-  
-  <style lang="scss" scoped>
-.action-buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
 
-.file-cards {
-  margin-top: 16px;
-}
+<style lang="scss" scoped>
+.file-manage-container {
+  .search-form {
+    margin-bottom: 16px;
+  }
 
-.file-card {
-  margin-bottom: 16px;
+  .table-operations {
+    margin-bottom: 16px;
+  }
 
-  .file-preview {
-    height: 120px;
+  .file-name-cell {
     display: flex;
     align-items: center;
-    justify-content: center;
+
+    .file-icon {
+      margin-right: 8px;
+    }
+  }
+
+  .share-link-box {
+    margin-top: 16px;
     background-color: #f5f5f5;
-    cursor: pointer;
-  }
-
-  .file-icon {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    .anticon {
-      font-size: 36px;
-      margin-bottom: 8px;
-    }
-
-    .file-type {
-      font-size: 12px;
-      color: #999;
-    }
+    padding: 12px;
+    border-radius: 4px;
   }
 }
-
-.filter-card {
-  margin-bottom: 16px;
-}
-
-.storage-info {
-  margin-top: 16px;
-  padding: 16px;
-  background-color: #f5f5f5;
-  border-radius: 4px;
-
-  h4 {
-    margin-bottom: 10px;
-    font-size: 16px;
-  }
-
-  .storage-text {
-    font-size: 14px;
-    color: #666;
-    margin-top: 10px;
-  }
-}
-</style>
+</style> 

@@ -1,3 +1,4 @@
+
 //全局默认配置项
 
 export const HOME_PATH = '/home'
@@ -9,7 +10,7 @@ export const UNAUTHORIZED_PATH = '/401'
 export const SERVER_ERROR_PATH = '/500'
 
 //路由白名单
-export const WHITE_LIST = [HOME_PATH, LOGIN_PATH, NOT_FOUND_PATH, FORBIDDEN_PATH, UNAUTHORIZED_PATH, SERVER_ERROR_PATH]
+export const WHITE_LIST = [LOGIN_PATH, NOT_FOUND_PATH, FORBIDDEN_PATH, UNAUTHORIZED_PATH, SERVER_ERROR_PATH]
 
 
 // 数据操作类型常量
@@ -42,11 +43,11 @@ export const FILE_STATUS = {
         text: '上传中'
     },
     'deleted': {
-        color: 'blue',
-        text: '删除'
+        color: 'red',
+        text: '已删除'
     },
     'archived': {
         color: 'orange',
-        text: '归档'
+        text: '已归档'
     }
 }

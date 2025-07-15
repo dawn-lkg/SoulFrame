@@ -42,6 +42,12 @@
               <template #icon><plus-outlined /></template>
               新增
             </a-button>
+            <a-button type="primary" @click="handleRefreshConfig">
+              <template #icon>
+                <reload-outlined/>
+              </template>
+              刷新缓存
+            </a-button>
             <a-button type="danger" :disabled="multiple" @click="handleBatchDelete">
               <template #icon><delete-outlined /></template>
               批量删除
@@ -101,6 +107,8 @@
             <a-space>
               <a @click="handleUpdate(record)">修改</a>
               <a-divider type="vertical" />
+              <a @click="handleRefreshConfigByKey(record.configKey)">刷新</a>
+              <a-divider type="vertical"/>
               <a @click="handleDelete(record)">删除</a>
             </a-space>
           </template>
@@ -128,7 +136,14 @@ import {
   ReloadOutlined,
   SearchOutlined
 } from '@ant-design/icons-vue'
-import {deleteConfig, getConfigDetail, getConfigPage, updateConfig} from '@/api/modules/config'
+import {
+  batchDeleteConfig,
+  deleteConfig,
+  getConfigPage,
+  refreshConfig,
+  refreshConfigByKey,
+  updateConfig
+} from '@/api/modules/config'
 import {useAppStore} from '@/stores/app'
 import {handleDeletePagination, handleSingleDeletePagination} from '@/utils/pagination'
 import ConfigForm from './components/ConfigForm.vue'
@@ -221,7 +236,7 @@ const columns = [
     title: '操作',
     dataIndex: 'action',
     key: 'action',
-    width: 150,
+    width: 200,
     visible: true,
     fixed: 'right'
   }
@@ -277,7 +292,7 @@ const multiple = computed(() => !selectedRowKeys.value.length)
 const queryRef = ref(null)
 
 /** 查询系统配置列表 */
-function getList() {
+const getList = () => {
   loading.value = true
   getConfigPage(queryParams).then(data => {
     configList.value = data.records
@@ -290,77 +305,88 @@ function getList() {
 }
 
 /** 搜索按钮操作 */
-function handleQuery() {
+const handleQuery = () => {
   queryParams.pageNum = 1
   getList()
 }
 
 /** 重置按钮操作 */
-function resetQuery() {
+const resetQuery = () => {
   queryRef.value.resetFields()
   handleQuery()
 }
 
 /** 多选框选中数据 */
-function onSelectChange(selection) {
+const onSelectChange = (selection) => {
   selectedRowKeys.value = selection
 }
 
 /** 表格变化事件 */
-function handleTableChange(pagination, filters, sorter) {
+const handleTableChange = (pagination, filters, sorter) => {
   queryParams.pageNum = pagination.current
   queryParams.pageSize = pagination.pageSize
   getList()
 }
 
 /** 新增按钮操作 */
-function handleAdd() {
+const handleAdd = () => {
   open.value = true
   title.value = '添加系统配置'
   currentConfig.value = {}
 }
 
 /** 修改按钮操作 */
-function handleUpdate(row) {
-  const id = row?.id || selectedRowKeys.value[0]
-  getConfigDetail(id).then(response => {
-    currentConfig.value = response.data
+const handleUpdate = (row) => {
+  currentConfig.value = row
     open.value = true
     title.value = '修改系统配置'
-  })
 }
 
 /** 表单提交成功回调 */
-function handleFormSuccess() {
+const handleFormSuccess = () => {
   getList()
 }
 
 /** 删除按钮操作 */
-function handleDelete(row) {
-  const ids = row?.id || selectedRowKeys.value
+const handleDelete = (row) => {
+  const id = row?.id;
   Modal.confirm({
     title: '系统提示',
     icon: () => h(ExclamationCircleOutlined),
     content: '确定要删除选中的系统配置项吗？',
     onOk() {
-      return deleteConfig(ids).then(() => {
+      return deleteConfig(id).then(() => {
         message.success('删除成功')
-        if (row?.id) {
-          // 单个删除，处理分页
-          handleSingleDeletePagination(configList.value.length, queryParams)
-        } else {
-          // 批量删除，处理分页
-          handleDeletePagination(selectedRowKeys.value.length, configList.value.length, queryParams)
-          selectedRowKeys.value = []
-        }
+        handleSingleDeletePagination(configList.value.length, {
+          ...queryParams,
+          pageNum: pagination.pageNum - 1
+        }, getList)
         getList()
       })
     }
   })
 }
 
+/** 批量删除按钮操作 */
+const handleBatchDelete = () => {
+  Modal.confirm({
+    title: '系统提示',
+    icon: () => h(ExclamationCircleOutlined),
+    content: '确定要删除选中的系统配置项吗？',
+    onOk() {
+      return batchDeleteConfig(selectedRowKeys.value).then(() => {
+        message.success('删除成功')
+        handleDeletePagination(configList.value, selectedRowKeys.value, {
+          ...queryParams,
+          pageNum: queryParams.pageNum - 1
+        }, getList)
+        getList()
+      })
+    }
+  })
+}
 /** 状态修改 */
-function handleStatusChange(row) {
+const handleStatusChange = (row) => {
   const text = row.isEnabled === 1 ? '启用' : '停用'
   Modal.confirm({
     title: '系统提示',
@@ -376,6 +402,20 @@ function handleStatusChange(row) {
     onCancel() {
       row.isEnabled = row.isEnabled === 1 ? 0 : 1
     }
+  })
+}
+
+/** 刷新系统配置 */
+const handleRefreshConfig = () => {
+  refreshConfig().then(() => {
+    message.success('刷新成功')
+  })
+}
+
+/** 刷新指定key系统配置 */
+const handleRefreshConfigByKey = (key) => {
+  refreshConfigByKey(key).then(() => {
+    message.success('刷新成功')
   })
 }
 
