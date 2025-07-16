@@ -1,7 +1,7 @@
 <template>
   <div class="global-logo">
     <span class="logo-icon" ref="logoIcon">B</span>
-    <h1 v-if="!app.siderCollapse" ref="logoText">{{ configStore.systemConfig.name }}</h1>
+    <h1 v-if="!app.siderCollapse" ref="logoText">{{ configStore?.systemConfig?.name }}</h1>
   </div>
 </template>
 

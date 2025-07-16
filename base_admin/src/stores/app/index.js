@@ -5,6 +5,8 @@ export const useAppStore = defineStore('app', {
       settingDrawerVisible: false,
       siderWidth: 200,
       collapsedWidth: 80,
+        //隐藏菜单
+        hideMenu: false,
       //组件尺寸
       componentSize: 'default', // default | middle | small
     }),

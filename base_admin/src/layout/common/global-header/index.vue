@@ -18,9 +18,10 @@ import GlobalBreadcrumb from './components/global-breadcrumb.vue';
 import SettingButton from './components/setting-button.vue';
 import ThemeMode from './components/theme-mode.vue';
 import userAvatar from './components/user-avatar.vue';
-import {useThemeStore} from "@/stores";
+import {useAppStore, useThemeStore} from "@/stores";
 
 const themeStore = useThemeStore();
+const appStore = useAppStore();
 
 </script>
 

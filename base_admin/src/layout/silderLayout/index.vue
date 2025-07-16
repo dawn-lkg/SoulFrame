@@ -2,20 +2,23 @@
   <a-layout :class="layoutClass">
     <!-- 左侧菜单 -->
     <a-layout-sider v-model:collapsed="app.siderCollapse" :theme="themeStore.menuTheme"
-      :collapsedWidth="app.collapsedWidth" collapsible :style="siderStyle" class="layout-sider">
+                    v-if="!app.hideMenu" :collapsedWidth="app.collapsedWidth" :style="siderStyle" class="layout-sider"
+                    collapsible>
       <global-logo />
       <global-sider />
     </a-layout-sider>
     <!-- 右侧内容 -->
     <a-layout :style="layoutStyle">
       <!-- 头部 -->
-      <a-layout-header class="layout-header" :class="{ 'fixed-header': themeStore.layoutConfig.fixedHeader }">
+      <a-layout-header :class="{ 'fixed-header': themeStore.layoutConfig.fixedHeader, 'hide-menu': app.hideMenu }"
+                       class="layout-header">
         <global-header />
       </a-layout-header>
       <!-- 头部占位符，在固定头部时使用 -->
       <div v-if="themeStore.layoutConfig.fixedHeader" class="header-placeholder"></div>
       <!-- 头部tab-->
-      <global-tab v-if="themeStore.layoutConfig.showTagsView" :class="{ 'fixed-tab': themeStore.layoutConfig.fixedHeader }" />
+      <global-tab v-if="themeStore.layoutConfig.showTagsView"
+                  :class="{ 'fixed-tab': themeStore.layoutConfig.fixedHeader,'hide-menu': app.hideMenu}"/>
       <!-- 标签页占位符，在固定标签页时使用 -->
       <div v-if="themeStore.layoutConfig.fixedHeader && themeStore.layoutConfig.showTagsView" class="tab-placeholder"></div>
       <!-- 内容 -->
@@ -25,7 +28,10 @@
     </a-layout>
     <!-- <a-layout-footer :style="footerStyle">Footer</a-layout-footer> -->
     <setting-drawer />
+    <menu-float-button @click="handleMenuDrawerOpen(true)"/>
+    <menu-drawer v-model:open="menuDrawerOpen" @update:open="handleMenuDrawerOpen"/>
   </a-layout>
+
 </template>
 
 <script setup>
@@ -38,10 +44,13 @@ import SettingDrawer from "../common/setting-drawer/index.vue";
 import globalTab from "../common/global-tab/index.vue"
 import globalContent from "../common/global-content/index.vue";
 import {useAuthStore} from '@/stores/auth'
+import menuFloatButton from "../common/global-floatButton/menu_float_button.vue"
 
 const themeStore = useThemeStore();
 const app = useAppStore()
 const authStore = useAuthStore()
+
+const menuDrawerOpen = ref(false)
 
 
 // 计算布局样式
@@ -68,8 +77,12 @@ const siderStyle = computed(() => ({
 }));
 // 布局样式
 const layoutStyle = computed(() => ({
-  marginLeft: themeStore.layoutConfig.fixedSidebar ? `${app.siderCollapse ? app.collapsedWidth : app.siderWidth}px` : '0',
+  marginLeft: themeStore.layoutConfig.fixedSidebar && !app.hideMenu ? `${app.siderCollapse ? app.collapsedWidth : app.siderWidth}px` : '0',
 }));
+
+const handleMenuDrawerOpen = (value) => {
+  menuDrawerOpen.value = value
+}
 </script>
 
 <style lang="scss" scoped>
@@ -141,6 +154,12 @@ const layoutStyle = computed(() => ({
       transition: width $animation-duration-base;
     }
 
+    // 隐藏菜单时，头部占位符
+    &.hide-menu {
+      width: 100% !important;
+    }
+
+
     .header-left {
       .ant-breadcrumb {
         line-height: $header-height;
@@ -176,6 +195,10 @@ const layoutStyle = computed(() => ({
       transition: width $animation-duration-base;
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
       background-color: $component-bg;
+    }
+
+    &.hide-menu {
+      width: 100% !important;
     }
   }
 

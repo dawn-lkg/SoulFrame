@@ -1,20 +1,20 @@
 <template>
   <div class="global-sider">
     <transition name="fade">
-    <a-menu v-model:openKeys="state.openKeys" v-model:selectedKeys="state.selectedKeys" mode="inline"
-      :theme="themeStore.menuTheme" :inline-collapsed="state.collapsed" @openChange="handleOpenChange"
-      class="custom-menu">
-      <sub-menu :menuList="menuList" />
-    </a-menu>
+      <a-menu v-model:openKeys="state.openKeys" v-model:selectedKeys="state.selectedKeys" :inline-collapsed="state.collapsed"
+              :theme="themeStore.menuTheme" class="custom-menu" mode="inline"
+              @openChange="handleOpenChange">
+        <sub-menu :menuList="menuList"/>
+      </a-menu>
     </transition>
   </div>
 </template>
 <script setup>
-import { reactive, watch, h, onMounted } from 'vue';
-import { useThemeStore } from '@/stores/theme';
-import { useAuthStore } from '@/stores/auth';
+import {onMounted, reactive, watch} from 'vue';
+import {useThemeStore} from '@/stores/theme';
+import {useAuthStore} from '@/stores/auth';
 import SubMenu from './components/sub-menu.vue';
-import { useRoute } from 'vue-router';
+import {useRoute} from 'vue-router';
 
 const themeStore = useThemeStore();
 const authStore = useAuthStore();
@@ -78,12 +78,30 @@ const handleOpenChange = (openKeys) => {
 <style lang="scss" scoped>
 .global-sider {
   height: 100%;
-  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  
   :deep(.custom-menu) {
+    height: 100%;
     border-right: none;
-    // .ant-menu-item-selected {
-    //   background-color: rgba(255, 255, 255, 0.1);
-    // }
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+
+    // 自定义滚动条样式
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background-color: transparent;
+    }
     
     // 添加图标过渡效果
     .anticon {
@@ -180,6 +198,11 @@ const handleOpenChange = (openKeys) => {
         .anticon {
           color: #fff;
         }
+      }
+
+      // 暗色模式滚动条
+      &::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.2);
       }
     }
   }

@@ -28,6 +28,9 @@
       <a-form-item label="折叠侧边栏">
         <a-switch v-model:checked="app.siderCollapse"></a-switch>
       </a-form-item>
+      <a-form-item label="隐藏菜单">
+        <a-switch v-model:checked="app.hideMenu"></a-switch>
+      </a-form-item>
     </a-form>
 
     <a-divider class="divider">导航设置</a-divider>
@@ -60,8 +63,8 @@
 </template>
 
 <script setup>
-import { useAppStore } from '@/stores/app';
-import { useThemeStore } from '@/stores/theme';
+import {useAppStore} from '@/stores/app';
+import {useThemeStore} from '@/stores/theme';
 
 const app = useAppStore();
 const themeStore = useThemeStore();
