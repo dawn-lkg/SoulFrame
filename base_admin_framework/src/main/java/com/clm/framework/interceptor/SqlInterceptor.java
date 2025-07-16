@@ -73,6 +73,9 @@ public class SqlInterceptor implements Interceptor {
     @Value("${mybatis-plus.sql-log.max-result-count:10}")
     private int maxResultCount=10;
 
+    @Value("${mybatis-plus.sql-log.print-sql:true}")
+    private boolean printSql = true;
+
     /**
      * SQL类型与操作名称的映射
      */
@@ -106,6 +109,9 @@ public class SqlInterceptor implements Interceptor {
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
+        if (!printSql) {
+            return invocation.proceed();
+        }
         MappedStatement mappedStatement = (MappedStatement) invocation.getArgs()[0];
         String sqlId = mappedStatement.getId();
         if (excludeSqlIds.contains(sqlId)) {
