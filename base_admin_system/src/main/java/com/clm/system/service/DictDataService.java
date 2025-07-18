@@ -1,7 +1,9 @@
 package com.clm.system.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.clm.system.domain.entity.DictData;
+import com.clm.system.domain.param.DictDataQueryParam;
 
 import java.util.List;
 
@@ -12,31 +14,53 @@ import java.util.List;
  * @date 2025/3/5
  */
 public interface DictDataService extends IService<DictData> {
-    
+
+
+    /**
+     * 查询字典数据
+     *
+     * @param param 查询参数
+     * @return 字典数据列表
+     */
+    Page<DictData> selectDictDataPage(DictDataQueryParam param);
+
     /**
      * 根据条件分页查询字典数据
      *
-     * @param dictData 字典数据信息
+     * @param param 字典数据信息
      * @return 字典数据集合
      */
-    List<DictData> selectDictDataList(DictData dictData);
+    List<DictData> selectDictDataList(DictDataQueryParam param);
+
+    /**
+     * 根据字典类型查询字典数据
+     *
+     * @param dictType 字典类型
+     * @return 字典数据集合
+     */
+    List<DictData> selectDictDataByType(String dictType);
 
     /**
      * 根据字典类型和字典键值查询字典数据信息
      *
-     * @param dictType  字典类型
-     * @param dictValue 字典键值
-     * @return 字典标签
+     * @param dictType 字典类型
+     * @return 字典数据信息
      */
-    String selectDictLabel(String dictType, String dictValue);
+    List<DictData> selectDictDataList(String dictType);
 
     /**
-     * 根据字典数据ID查询信息
+     * 新增保存字典数据信息
      *
-     * @param dictCode 字典数据ID
-     * @return 字典数据
+     * @param dictData 字典数据信息
      */
-    DictData selectDictDataById(Long dictCode);
+    void addDictData(DictData dictData);
+
+    /**
+     * 修改保存字典数据信息
+     *
+     * @param dictData 字典数据信息
+     */
+    void updateDictData(DictData dictData);
 
     /**
      * 批量删除字典数据信息
@@ -46,26 +70,26 @@ public interface DictDataService extends IService<DictData> {
     void deleteDictDataByIds(Long[] dictCodes);
 
     /**
-     * 新增保存字典数据信息
-     *
-     * @param dictData 字典数据信息
-     * @return 结果
-     */
-    boolean insertDictData(DictData dictData);
-
-    /**
-     * 修改保存字典数据信息
-     *
-     * @param dictData 字典数据信息
-     * @return 结果
-     */
-    boolean updateDictData(DictData dictData);
-    
-    /**
-     * 根据字典类型查询字典数据
+     * 根据字典类型删除字典数据信息
      *
      * @param dictType 字典类型
-     * @return 字典数据集合
      */
-    List<DictData> selectDictDataByType(String dictType);
-} 
+    void deleteDictDataByType(String dictType);
+
+    /**
+     * 修改类型值
+     *
+     * @param oldDictType 字典类型
+     * @param newDictType 新的字典类型
+     * @return 操作结果
+     */
+    boolean updateDictTypeValue(String oldDictType, String newDictType);
+
+
+    /**
+     * 更新字典状态
+     */
+    boolean updateDictStatus(String dictType, String status);
+
+
+}

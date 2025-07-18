@@ -7,6 +7,7 @@ import com.clm.system.domain.dto.UserDTO;
 import com.clm.system.domain.param.UserQueryParam;
 import com.clm.system.domain.vo.UserPageVO;
 import com.clm.system.domain.vo.UserVO;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -41,6 +42,15 @@ public interface UserService extends IService<User> {
      * @return 用户信息
      */
     UserVO getUserInfo(Long userId);
+
+    /**
+     * 更新用户信息
+     *
+     * @param userDTO 用户信息
+     */
+    void updateUserInfo(UserDTO userDTO);
+
+    void updatePassword(String oldPassword, String newPassword);
 
     /**
      * 新增用户
@@ -88,5 +98,12 @@ public interface UserService extends IService<User> {
      * @param userId 用户ID
      */
     void resetPassword(Long userId);
+
+    /**
+     * 更新用户头像
+     *
+     * @param file 文件
+     */
+    void updateAvatar(MultipartFile file);
 }
 

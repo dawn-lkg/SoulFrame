@@ -1,7 +1,9 @@
 package com.clm.system.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.clm.system.domain.entity.DictType;
+import com.clm.system.domain.param.DictTypeQueryParam;
 
 import java.util.List;
 
@@ -12,44 +14,29 @@ import java.util.List;
  * @date 2025/3/5
  */
 public interface DictTypeService extends IService<DictType> {
-    
+
+    /**
+     * 查询字典类型表列表
+     *
+     * @param param 字典类型表查询参数
+     * @return 字典类型表列表
+     */
+    Page<DictType> selectDictTypePage(DictTypeQueryParam param);
+
     /**
      * 根据条件分页查询字典类型
      *
-     * @param dictType 字典类型信息
+     * @param param 字典类型信息
      * @return 字典类型集合
      */
-    List<DictType> selectDictTypeList(DictType dictType);
-
-    /**
-     * 根据所有字典类型
-     *
-     * @return 字典类型集合
-     */
-    List<DictType> selectDictTypeAll();
-
-    /**
-     * 根据字典类型ID查询信息
-     *
-     * @param dictId 字典类型ID
-     * @return 字典类型
-     */
-    DictType selectDictTypeById(Long dictId);
-
-    /**
-     * 根据字典类型查询信息
-     *
-     * @param dictType 字典类型
-     * @return 字典类型
-     */
-    DictType selectDictTypeByType(String dictType);
+    List<DictType> selectDictTypeList(DictTypeQueryParam param);
 
     /**
      * 批量删除字典类型信息
      *
-     * @param dictIds 需要删除的字典ID
+     * @param idList 需要删除的字典ID
      */
-    void deleteDictTypeByIds(Long[] dictIds);
+    void deleteDictTypeByIds(List<Long> idList);
 
     /**
      * 重置字典缓存数据
@@ -60,17 +47,15 @@ public interface DictTypeService extends IService<DictType> {
      * 新增保存字典类型信息
      *
      * @param dictType 字典类型信息
-     * @return 结果
      */
-    boolean insertDictType(DictType dictType);
+    void addDictType(DictType dictType);
 
     /**
      * 修改保存字典类型信息
      *
      * @param dictType 字典类型信息
-     * @return 结果
      */
-    boolean updateDictType(DictType dictType);
+    void updateDictType(DictType dictType);
 
     /**
      * 校验字典类型称是否唯一

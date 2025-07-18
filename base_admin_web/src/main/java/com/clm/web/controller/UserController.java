@@ -6,6 +6,7 @@ import com.clm.common.core.controller.BaseController;
 import com.clm.common.core.domain.Result;
 import com.clm.common.enums.BusinessType;
 import com.clm.framework.annotation.Log;
+import com.clm.system.domain.dto.PasswordDTO;
 import com.clm.system.domain.dto.UserDTO;
 import com.clm.system.domain.param.UserQueryParam;
 import com.clm.system.domain.vo.UserPageVO;
@@ -17,6 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -62,6 +64,30 @@ public class UserController extends BaseController {
     @PutMapping
     public Result<?> update(@RequestBody @Valid UserDTO userDTO) {
         userService.updateUser(userDTO);
+        return success();
+    }
+
+    @Operation(summary = "修改用户信息")
+    @Log(businessType = BusinessType.UPDATE)
+    @PutMapping("/updateUserInfo")
+    public Result<?> updateUserInfo(@RequestBody @Valid UserDTO userDTO) {
+        userService.updateUserInfo(userDTO);
+        return success();
+    }
+
+    @Operation(summary = "更新头像")
+    @Log(businessType = BusinessType.UPDATE)
+    @PutMapping("/updateAvatar")
+    public Result<?> updateAvatar(MultipartFile file) {
+        userService.updateAvatar(file);
+        return success();
+    }
+
+    @Operation(summary = "修改用户密码")
+    @Log(businessType = BusinessType.UPDATE)
+    @PutMapping("/updatePassword")
+    public Result<?> updatePassword(@RequestBody @Valid PasswordDTO passwordDTO) {
+        userService.updatePassword(passwordDTO.getOldPassword(), passwordDTO.getNewPassword());
         return success();
     }
 

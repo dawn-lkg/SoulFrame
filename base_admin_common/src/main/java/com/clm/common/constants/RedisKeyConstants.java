@@ -34,6 +34,10 @@ public class RedisKeyConstants {
          * 系统配置数据过期时间
          */
         public static final long SYSTEM_CONFIG_TIMEOUT = 60 * 60 * 24 * 7;
+        /**
+         * 字典数据过期时间
+         */
+        public static final long DICT_TIMEOUT = 60 * 60 * 24 * 7;
     }
 
     /**

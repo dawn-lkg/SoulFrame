@@ -28,7 +28,12 @@ public class LoginLogQueryParam extends BasePageParam {
      * IP地址
      */
     private String ipaddr;
-    
+
+    /**
+     * 用户id
+     */
+    private Long userId;
+
     /**
      * 开始时间
      */

@@ -4,8 +4,10 @@ import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.clm.common.core.domain.BasePageParam;
 import com.clm.common.enums.HttpCodeEnum;
 import com.clm.common.exception.BaseException;
+import com.clm.common.security.LoginHelper;
 import com.clm.common.utils.IpUtils;
 import com.clm.common.utils.ServletUtils;
 import com.clm.common.utils.UserAgentUtils;
@@ -135,7 +137,16 @@ public class LoginLogServiceImpl extends ServiceImpl<LoginLogMapper, LoginLog> i
     public void recordLoginFail(String username, String message) {
         recordLoginInfo(username, null, "1", message);
     }
-    
+
+    @Override
+    public IPage<LoginLogVO> getCurrentUserLoginLog(BasePageParam param) {
+        LoginLogQueryParam loginLogQueryParam = new LoginLogQueryParam();
+        loginLogQueryParam.setPageNum(param.getPageNum());
+        loginLogQueryParam.setPageSize(param.getPageSize());
+        loginLogQueryParam.setUserId(LoginHelper.getUserId());
+        return pageLoginLog(loginLogQueryParam);
+    }
+
     /**
      * 填充登录日志视图对象的描述字段
      * 

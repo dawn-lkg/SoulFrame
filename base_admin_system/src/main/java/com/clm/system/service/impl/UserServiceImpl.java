@@ -15,11 +15,11 @@ import com.clm.common.utils.PasswordUtils;
 import com.clm.common.utils.ServletUtils;
 import com.clm.system.domain.dto.UserDTO;
 import com.clm.system.domain.param.UserQueryParam;
-import com.clm.system.domain.vo.ConfigVO;
 import com.clm.system.domain.vo.UserPageVO;
 import com.clm.system.domain.vo.UserVO;
 import com.clm.system.mapper.UserMapper;
 import com.clm.system.service.ConfigService;
+import com.clm.system.service.FileService;
 import com.clm.system.service.UserRoleService;
 import com.clm.system.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,6 +29,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -51,6 +52,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     private final ConfigService configService;
 
+    private final FileService fileService;
+
     @Override
     public IPage<UserPageVO> getUserPage(UserQueryParam param) {
         LoginUser loginUser = LoginHelper.getLoginUser();
@@ -61,9 +64,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         List<Long> userIdList =  userPage.getRecords().stream().map(UserPageVO::getUserId).collect(Collectors.toList());
         Map <Long, List<Long>> roleMap = userRoleService.getUserRoleMapByUserIds(userIdList);
-        userPage.getRecords().forEach(userVO -> {
-            userVO.setRoleIds(roleMap.getOrDefault(userVO.getUserId(), List.of()));
-        });
+        userPage.getRecords().forEach(userVO -> userVO.setRoleIds(roleMap.getOrDefault(userVO.getUserId(), List.of())));
         return userPage;
     }
 
@@ -77,6 +78,28 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new BaseException("用户不存在", HttpCodeEnum.DATA_NOT_EXIST.getCode());
         }
         return userVO;
+    }
+
+    @Override
+    public void updateUserInfo(UserDTO userDTO) {
+        userDTO.setUserId(LoginHelper.getUserId());
+        User user = new User();
+        BeanUtils.copyProperties(userDTO, user);
+        if (!updateById(user)) {
+            throw new BaseException("更新用户信息失败", HttpCodeEnum.ERROR.getCode());
+        }
+    }
+
+    @Override
+    public void updatePassword(String oldPassword, String newPassword) {
+        User user = getById(LoginHelper.getUserId());
+        if (!PasswordUtils.matches(oldPassword, user.getPassword())) {
+            throw new BaseException("旧密码错误", HttpCodeEnum.PASSWORD_ERROR.getCode());
+        }
+        user.setPassword(PasswordUtils.encryptPassword(newPassword));
+        if (!updateById(user)) {
+            throw new BaseException("更新用户信息失败", HttpCodeEnum.ERROR.getCode());
+        }
     }
 
     @Override
@@ -227,7 +250,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
 
         String initPassword = "123456";
-        ConfigVO key = configService.getByKey("sys.user.defaultPassword");
+        String configPassword = configService.getValueByKey("sys.user.defaultPassword", String.class);
+        initPassword = StrUtil.isNotBlank(configPassword) ? configPassword : initPassword;
 
         if (StrUtil.isBlank(initPassword)) {
             throw new BaseException("初始密码配置为空", HttpCodeEnum.BAD_REQUEST.getCode());
@@ -239,6 +263,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .update();
         if (!update) {
             throw new BaseException("重置密码失败", HttpCodeEnum.ERROR.getCode());
+        }
+    }
+
+    @Override
+    public void updateAvatar(MultipartFile file) {
+        String url = fileService.uploadFile(file);
+        boolean update = lambdaUpdate().eq(User::getUserId, LoginHelper.getUserId())
+                .set(User::getAvatar, url).update();
+        if (!update) {
+            throw new BaseException("更新头像失败", HttpCodeEnum.ERROR.getCode());
         }
     }
 }

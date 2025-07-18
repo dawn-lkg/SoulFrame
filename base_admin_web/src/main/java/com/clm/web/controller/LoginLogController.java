@@ -2,6 +2,7 @@ package com.clm.web.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.clm.common.core.controller.BaseController;
+import com.clm.common.core.domain.BasePageParam;
 import com.clm.common.core.domain.Result;
 import com.clm.common.enums.BusinessType;
 import com.clm.framework.annotation.Log;
@@ -72,5 +73,13 @@ public class LoginLogController extends BaseController {
     @Log(businessType = BusinessType.EXPORT)
     public void export(LoginLogQueryParam param) {
         loginLogService.exportLoginLog(param);
+    }
+
+
+    @Operation(summary = "获取当前用户的登录列表")
+    @GetMapping("/current")
+    @Log(businessType = BusinessType.QUERY)
+    public Result<IPage<LoginLogVO>> current(BasePageParam param) {
+        return success(loginLogService.getCurrentUserLoginLog(param));
     }
 } 

@@ -11,7 +11,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.clm.common.enums.HttpCodeEnum;
 import com.clm.common.exception.BaseException;
 import com.clm.common.utils.IpUtils;
-import com.clm.common.utils.RedisUtils;
 import com.clm.common.utils.ServletUtils;
 import com.clm.common.utils.UserAgentUtils;
 import com.clm.system.domain.dto.FileUploadDTO;
@@ -31,6 +30,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
@@ -51,7 +52,6 @@ import java.util.stream.Collectors;
 public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements FileService {
 
     private final MinioClient minioClient;
-    private final RedisUtils redisUtils;
 
     @Value("${minio.endpoint}")
     private String endpoint;
@@ -75,7 +75,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
 
     @Override
     public List<FileVO> selectFileList(FileQueryParam param) {
-        return selectFileList(param);
+        return baseMapper.selectFileList(param);
     }
 
     @Override
@@ -135,14 +135,27 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    public String uploadFile(MultipartFile file) {
+        FileUploadDTO fileUploadDTO = new FileUploadDTO();
+        fileUploadDTO.setFile(file);
+        fileUploadDTO.setStorageType("minio");
+        fileUploadDTO.setIsPublic(false);
+        fileUploadDTO.setIsEncrypted(false);
+        FileVO fileVO = uploadFile(fileUploadDTO);
+        if (fileVO == null) {
+            return null;
+        }
+        return fileVO.getFileUrl();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public FileVO uploadFile(FileUploadDTO uploadDTO) {
         try {
             MultipartFile file = uploadDTO.getFile();
             if (file == null || file.isEmpty()) {
                 throw new BaseException(HttpCodeEnum.BAD_REQUEST.getCode(), "上传文件不能为空");
             }
-
-            Long userId = StpUtil.getLoginIdAsLong();
 
             String configStorageType = configService.getValueByKey("storage.storageType", String.class);
 
@@ -164,10 +177,8 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
             
             // 根据存储类型处理文件
             if ("minio".equals(storageType)) {
-                // 使用MinIO存储
                 storagePath = uploadToMinio(file, fileName, bucketName);
             } else {
-                // 默认本地存储
                 storagePath = uploadToLocalStorage(file, fileName);
                 storageType = "local";
             }
@@ -196,20 +207,13 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
             fileEntity.setViewCount(0);
             fileEntity.setDescription(uploadDTO.getDescription());
             fileEntity.setFileUrl(getFileUrl(fileEntity));
-            
-            // 如果是图片，获取宽高
+
             if (mimeType != null && mimeType.startsWith("image/")) {
-                // 这里可以使用图片处理库获取宽高，例如ImageIO或thumbnailator
-                // 简化处理，实际项目中应该使用专门的图片处理库
-                // fileEntity.setWidth(width);
-                // fileEntity.setHeight(height);
-            }
-            
-            // 如果是音视频，获取时长
-            if (mimeType != null && (mimeType.startsWith("video/") || mimeType.startsWith("audio/"))) {
-                // 这里可以使用媒体处理库获取时长，例如ffmpeg
-                // 简化处理，实际项目中应该使用专门的媒体处理库
-                // fileEntity.setDuration(duration);
+                BufferedImage bufferedImage = ImageIO.read(file.getInputStream());
+                int width = bufferedImage.getWidth();
+                int height = bufferedImage.getHeight();
+                fileEntity.setWidth(width);
+                fileEntity.setHeight(height);
             }
             
             // 保存到数据库

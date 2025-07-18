@@ -1,13 +1,18 @@
 package com.clm.web.controller;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.clm.common.core.controller.BaseController;
 import com.clm.common.core.domain.Result;
 import com.clm.common.enums.BusinessType;
 import com.clm.framework.annotation.Log;
 import com.clm.system.domain.entity.DictData;
+import com.clm.system.domain.param.DictDataQueryParam;
 import com.clm.system.service.DictDataService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +24,7 @@ import java.util.List;
  * @author 陈黎明
  * @date 2025/3/5
  */
+@Tag(name = "字典数据管理")
 @RestController
 @RequestMapping("/system/dict/data")
 @RequiredArgsConstructor
@@ -27,64 +33,58 @@ public class DictDataController extends BaseController {
 
     private final DictDataService dictDataService;
 
-    /**
-     * 查询字典数据列表
-     */
-    @SaCheckPermission("system:dict:list")
+    @Operation(summary = "查询字典数据列表")
+    @Log(businessType = BusinessType.QUERY)
+    @GetMapping("/page")
+    public Result<Page<DictData>> page(DictDataQueryParam param) {
+        Page<DictData> pageResult = dictDataService.selectDictDataPage(param);
+        return success(pageResult);
+    }
+
+    @Operation(summary = "查询字典数据列表")
     @Log(value = "查询字典数据列表", businessType = BusinessType.QUERY)
     @GetMapping("/list")
-    public Result<List<DictData>> list(DictData dictData) {
-        List<DictData> list = dictDataService.selectDictDataList(dictData);
+    public Result<List<DictData>> list(DictDataQueryParam param) {
+        List<DictData> list = dictDataService.selectDictDataList(param);
         return success(list);
     }
 
-    /**
-     * 查询字典数据详细
-     */
-    @SaCheckPermission("system:dict:query")
+    @Operation(summary = "查询字典数据详情")
     @Log(value = "查询字典数据详情", businessType = BusinessType.QUERY)
     @GetMapping(value = "/{dictCode}")
     public Result<DictData> getInfo(@PathVariable Long dictCode) {
-        return success(dictDataService.selectDictDataById(dictCode));
+        return success(dictDataService.getById(dictCode));
     }
 
-    /**
-     * 根据字典类型查询字典数据信息
-     */
+    @Operation(summary = "查询字典数据列表")
+    @Log(value = "查询字典数据列表", businessType = BusinessType.QUERY)
     @GetMapping(value = "/type/{dictType}")
     public Result<List<DictData>> dictType(@PathVariable String dictType) {
         List<DictData> data = dictDataService.selectDictDataByType(dictType);
         return success(data);
     }
 
-    /**
-     * 新增字典数据
-     */
-    @SaCheckPermission("system:dict:add")
+    @Operation(summary = "查询字典数据详情")
     @Log(value = "新增字典数据", businessType = BusinessType.INSERT)
     @PostMapping
-    public Result<?> add(@RequestBody DictData dict) {
-        return success(dictDataService.insertDictData(dict));
+    public Result<?> add(@RequestBody @Validated(Insert.class) DictData dict) {
+        dictDataService.addDictData(dict);
+        return success();
     }
 
-    /**
-     * 修改保存字典数据
-     */
-    @SaCheckPermission("system:dict:edit")
+    @Operation(summary = "修改字典数据")
     @Log(value = "修改字典数据", businessType = BusinessType.UPDATE)
     @PutMapping
-    public Result<?> edit(@RequestBody DictData dict) {
-        return success(dictDataService.updateDictData(dict));
+    public Result<?> update(@RequestBody @Validated(Update.class) DictData dict) {
+        dictDataService.updateDictData(dict);
+        return success();
     }
 
-    /**
-     * 删除字典数据
-     */
-    @SaCheckPermission("system:dict:remove")
+    @Operation(summary = "删除字典数据")
     @Log(value = "删除字典数据", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{dictCodes}")
-    public Result<?> remove(@PathVariable Long[] dictCodes) {
-        dictDataService.deleteDictDataByIds(dictCodes);
+    @DeleteMapping("/{id}")
+    public Result<?> remove(@PathVariable Long id) {
+        dictDataService.removeById(id);
         return success();
     }
 } 

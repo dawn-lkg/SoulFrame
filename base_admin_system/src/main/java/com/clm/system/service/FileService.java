@@ -22,6 +22,14 @@ public interface FileService extends IService<File> {
     /**
      * 上传文件
      *
+     * @param file 文件
+     * @return 文件url
+     */
+    String uploadFile(MultipartFile file);
+
+    /**
+     * 上传文件
+     *
      * @param uploadDTO 上传文件信息
      * @return 文件信息
      */

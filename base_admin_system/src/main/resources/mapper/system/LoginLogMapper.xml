@@ -20,6 +20,9 @@
             <if test="param.endTime != null and param.endTime != ''">
                 AND login_time &lt;= #{param.endTime}
             </if>
+            <if test="param.userId!=null">
+                AND user_id = #{param.userId}
+            </if>
         </where>
         order by login_time desc
     </sql>
