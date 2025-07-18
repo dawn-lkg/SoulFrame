@@ -127,7 +127,6 @@
 </template>
 
 <script setup>
-import {computed, h, onMounted, reactive, ref} from 'vue'
 import {message, Modal} from 'ant-design-vue'
 import {
   DeleteOutlined,
@@ -144,7 +143,6 @@ import {
   refreshConfigByKey,
   updateConfig
 } from '@/api/modules/config'
-import {useAppStore} from '@/stores/app'
 import {handleDeletePagination, handleSingleDeletePagination} from '@/utils/pagination'
 import ConfigForm from './components/ConfigForm.vue'
 

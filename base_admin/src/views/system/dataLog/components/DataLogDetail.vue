@@ -5,14 +5,16 @@
       <a-descriptions-item label="日志标题" span="2">{{ detailInfo.title || '-' }}</a-descriptions-item>
       <a-descriptions-item label="请求方式">{{ detailInfo.requestMethod || '-' }}</a-descriptions-item>
       <a-descriptions-item label="操作状态">
-        <a-tag :color="getOperateStatusColor(detailInfo.status)">
-          {{ detailInfo.statusDesc || '-' }}
-        </a-tag>
+        <dict-tag
+            :value="detailInfo.status"
+            dict-type="sys_operate_status"
+        />
       </a-descriptions-item>
       <a-descriptions-item label="操作类型">
-        <a-tag :color="getOperateTypeColor(detailInfo.businessType)">
-          {{ getOperateTypeLabel(detailInfo.businessType) }}
-        </a-tag>
+        <dict-tag
+            :value="detailInfo.businessType"
+            dict-type="sys_operate_type"
+        />
       </a-descriptions-item>
       <a-descriptions-item label="耗费时间">{{ detailInfo.costTimeDesc || '-' }}</a-descriptions-item>
       <a-descriptions-item label="操作人员">{{ detailInfo.operName || '-' }}</a-descriptions-item>
@@ -43,7 +45,6 @@
 </template>
 
 <script setup>
-import {defineEmits, defineProps, ref, watch} from 'vue'
 import {OPERATE_STATUS, OPERATE_TYPE} from '@/config'
 
 const props = defineProps({

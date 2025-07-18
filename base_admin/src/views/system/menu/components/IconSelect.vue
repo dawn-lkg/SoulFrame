@@ -12,7 +12,6 @@
 </template>
 
 <script setup>
-import {computed, ref} from 'vue'
 import * as Icons from '@ant-design/icons-vue'
 
 const props = defineProps({

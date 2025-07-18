@@ -19,6 +19,8 @@ const app = createApp(App)
 
 // 全局配置消息提示
 app.config.globalProperties.$message = message
+
+
 app.use(pinia)
 app.use(Antd)
 // 初始化 store

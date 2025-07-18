@@ -10,10 +10,14 @@
           <a-input v-model:value="queryParams.roleKey" placeholder="请输入角色编码" allow-clear />
         </a-form-item>
         <a-form-item label="状态" name="status">
-          <a-select v-model:value="queryParams.status" placeholder="角色状态" allow-clear style="width: 200px">
-            <a-select-option value="0">正常</a-select-option>
-            <a-select-option value="1">停用</a-select-option>
-          </a-select>
+          <dict-select
+              v-model:value="queryParams.status"
+              allow-clear
+              dict-type="sys_role_status"
+              placeholder="角色状态"
+              style="width: 200px"
+          />
+
         </a-form-item>
         <a-form-item>
           <a-space>
@@ -74,9 +78,10 @@
         @change="handleTableChange">
         <template #bodyCell="{ column, record }">
           <template v-if="column.dataIndex === 'status'">
-            <a-tag :color="record.status === '0' ? 'green' : 'red'">
-              {{ record.status === '0' ? '正常' : '停用' }}
-            </a-tag>
+            <dict-tag
+                :value="record.status"
+                dict-type="sys_role_status"
+            />
           </template>
           <template v-else-if="column.dataIndex === 'action'">
             <a-space>
@@ -101,7 +106,6 @@
 </template>
 
 <script setup>
-import {h, onMounted, reactive, ref} from 'vue'
 import {message, Modal} from 'ant-design-vue'
 import {
   DeleteOutlined,
@@ -114,7 +118,6 @@ import RoleForm from './components/RoleForm.vue'
 import PermissionForm from './components/PermissionForm.vue'
 import {batchDeleteRole, deleteRole, getRolePage} from '@/api/modules/role'
 import {handleDeletePagination, handleSingleDeletePagination} from '@/utils/pagination'
-import {useAppStore} from '@/stores/app'
 
 const appStore = useAppStore()
 

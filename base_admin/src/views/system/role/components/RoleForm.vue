@@ -12,10 +12,10 @@
         <a-input-number v-model:value="form.roleSort" :min="0" style="width: 100%" />
       </a-form-item>
       <a-form-item label="状态" name="status">
-        <a-radio-group v-model:value="form.status">
-          <a-radio value="0">正常</a-radio>
-          <a-radio value="1">停用</a-radio>
-        </a-radio-group>
+        <dict-radio
+            v-model:value="form.status"
+            dict-type="sys_role_status"
+        />
       </a-form-item>
       <a-form-item label="备注" name="remark">
         <a-textarea v-model:value="form.remark" placeholder="请输入备注" :rows="4" />
@@ -25,7 +25,6 @@
 </template>
 
 <script setup>
-import {computed, defineEmits, defineProps, reactive, ref, watch} from 'vue'
 import {message} from 'ant-design-vue'
 import { addRole, updateRole} from '@/api/modules/role'
 

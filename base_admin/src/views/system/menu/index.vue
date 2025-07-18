@@ -15,15 +15,14 @@
         />
       </a-form-item>
       <a-form-item label="状态" name="status">
-        <a-select
+        <DictSelect
+            dictType="sys_menu_status"
           v-model:value="queryParams.status"
           placeholder="菜单状态"
           allow-clear
           style="width: 200px"
-        >
-          <a-select-option value="0">正常</a-select-option>
-          <a-select-option value="1">停用</a-select-option>
-        </a-select>
+        />
+
       </a-form-item>
       <a-form-item>
         <a-space>
@@ -111,12 +110,10 @@
 </template>
 
 <script setup>
-import {h, onMounted, reactive, ref} from "vue";
 import {message, Modal} from "ant-design-vue";
 import {ExclamationCircleOutlined, PlusOutlined, ReloadOutlined, SearchOutlined} from "@ant-design/icons-vue";
 import MenuForm from "./components/MenuForm.vue";
 import {getMenuTreeList, removeMenu,} from "@/api/modules/menu";
-import {useAppStore} from "@/stores/app";
 
 const appStore = useAppStore();
 

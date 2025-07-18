@@ -50,6 +50,20 @@ export async function checkUsername(username){
     return request.get(`/system/user/checkUsername/${username}`)
 }
 
+// 修改用户信息
+export async function updateUserInfo(data) {
+    return request.put('/system/user/updateUserInfo', data)
+}
+
+// 修改用户密码
+export async function updateUserPassword(data) {
+    return request.put('/system/user/updatePassword', data)
+}
+
+// 修改用户头像
+export async function updateUserAvatar(data) {
+    return request.upload('/system/user/updateAvatar', data)
+}
 
 
 

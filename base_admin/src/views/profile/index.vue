@@ -18,7 +18,7 @@
           <div class="profile-info">
             <h2>{{ userInfo.nickName || userInfo.userName }}</h2>
             <div class="profile-role">
-              <tag v-for="role in userInfo.roles" :key="role" color="blue">{{ role.roleName }}</tag>
+              <a-tag v-for="role in userInfo.roles" :key="role" color="blue">{{ role.roleName }}</a-tag>
             </div>
             <div class="profile-detail">
               <p><user-outlined /> {{ userInfo.userName }}</p>
@@ -59,7 +59,7 @@
                     <a-radio value="1">女</a-radio>
                   </a-radio-group>
                 </a-form-item>
-                <a-form-item label="手机号码" name="phonenumber">
+                <a-form-item label="手机号码" name="phone">
                   <a-input v-model:value="userForm.phone" placeholder="请输入手机号码"/>
                 </a-form-item>
                 <a-form-item label="邮箱" name="email">
@@ -73,7 +73,7 @@
                   />
                 </a-form-item>
                 <a-form-item :wrapper-col="{ offset: 4 }">
-                  <a-button type="primary" @click="handleUpdateUserInfo">保存修改</a-button>
+                  <a-button :loading="loading" type="primary" @click="handleUpdateUserInfo">保存修改</a-button>
                 </a-form-item>
               </a-form>
             </a-card>
@@ -108,7 +108,7 @@
                   />
                 </a-form-item>
                 <a-form-item :wrapper-col="{ offset: 4 }">
-                  <a-button type="primary" @click="handleUpdatePassword">修改密码</a-button>
+                  <a-button :loading="loading" type="primary" @click="handleUpdatePassword">修改密码</a-button>
                 </a-form-item>
               </a-form>
             </a-card>
@@ -170,7 +170,7 @@
                   <a-switch v-model:checked="preferencesForm.tabsBar" />
                 </a-form-item>
                 <a-form-item :wrapper-col="{ offset: 4 }">
-                  <a-button type="primary" @click="handleUpdatePreferences">保存设置</a-button>
+                  <a-button :loading="loading" type="primary" @click="handleUpdatePreferences">保存设置</a-button>
                   <a-button style="margin-left: 10px" @click="handleResetPreferences">恢复默认</a-button>
                 </a-form-item>
               </a-form>
@@ -237,7 +237,8 @@
       :footer="null"
       @cancel="showLoginLog = false"
     >
-      <a-table :columns="loginLogColumns" :data-source="loginLogList" :pagination="{ pageSize: 5 }">
+      <a-table :columns="loginLogColumns" :data-source="loginLogList" :pagination="pagination"
+               @change="handleTableChange">
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'status'">
             <a-tag :color="record.status === '0' ? 'green' : 'red'">
@@ -251,9 +252,11 @@
 </template>
 
 <script setup>
-import {onMounted, reactive, ref} from 'vue'
 import {message} from 'ant-design-vue'
-import {useAuthStore} from '@/stores/auth'
+import {updateUserInfo, updateUserPassword, updateUserAvatar} from '@/api/modules/user'
+import router from '@/router'
+import {LOGIN_PATH} from '@/config'
+import {getCurrentUserLoginLog} from '@/api/modules/loginLog'
 import {
   CalendarOutlined,
   HistoryOutlined,
@@ -268,6 +271,9 @@ import {
 // 当前激活的标签页
 const activeTab = ref('basic')
 
+// 加载状态
+const loading = ref(false)
+
 // 用户信息
 const authStore = useAuthStore()
 const userInfo = ref({ ...authStore.userInfo })
@@ -279,7 +285,7 @@ const userForm = reactive({
   userName: '',
   nickName: '',
   sex: '0',
-  phonenumber: '',
+  phone: '',
   email: '',
   remark: ''
 })
@@ -290,7 +296,7 @@ const rules = {
   email: [
     { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }
   ],
-  phonenumber: [
+  phone: [
     { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码', trigger: 'blur' }
   ]
 }
@@ -337,35 +343,7 @@ const preferencesForm = reactive({
 
 // 登录日志相关
 const showLoginLog = ref(false)
-const loginLogList = ref([
-  {
-    key: '1',
-    ipaddr: '192.168.1.1',
-    loginLocation: '中国 广东 深圳',
-    browser: 'Chrome 91.0.4472.124',
-    os: 'Windows 10',
-    loginTime: '2023-10-15 08:30:25',
-    status: '0'
-  },
-  {
-    key: '2',
-    ipaddr: '192.168.1.1',
-    loginLocation: '中国 广东 深圳',
-    browser: 'Chrome 91.0.4472.124',
-    os: 'Windows 10',
-    loginTime: '2023-10-14 18:45:12',
-    status: '0'
-  },
-  {
-    key: '3',
-    ipaddr: '114.114.114.114',
-    loginLocation: '中国 北京',
-    browser: 'Firefox 92.0',
-    os: 'Windows 10',
-    loginTime: '2023-10-13 12:30:45',
-    status: '1'
-  }
-])
+const loginLogList = ref([])
 
 const loginLogColumns = [
   {
@@ -400,19 +378,41 @@ const loginLogColumns = [
   }
 ]
 
+const pagination = reactive({
+  current: 1,
+  pageSize: 10,
+  total: 0,
+  showSizeChanger: true,
+  showTotal: (total) => `共 ${total} 条记录`
+});
+
+const getUserLoginLog = async () => {
+  try {
+    loading.value = true
+    const data = await getCurrentUserLoginLog({
+      pageNum: pagination.current,
+      pageSize: pagination.pageSize
+    })
+    loginLogList.value = data.records
+    pagination.total = data.total
+  } catch (error) {
+    console.error('获取登录日志失败:', error)
+    message.error('获取登录日志失败')
+  } finally {
+    loading.value = false
+  }
+}
+
+
 // 组件挂载时获取用户详情
 onMounted(async () => {
   try {
-    // 实际项目中应该调用API获取用户详情
-    // const data = await getUserDetail(userInfo.value.userId)
-    // userInfo.value = data
-    
-    // 使用当前用户信息填充表单
     Object.assign(userForm, userInfo.value)
   } catch (error) {
     console.error('获取用户详情失败:', error)
     message.error('获取用户详情失败')
   }
+  await getUserLoginLog()
 })
 
 // 头像上传前校验
@@ -446,47 +446,51 @@ const handleAvatarChange = (info) => {
   }
 }
 
+const handleTableChange = (pag) => {
+  pagination.current = pag.current
+  pagination.pageSize = pag.pageSize
+  getUserLoginLog()
+}
+
 // 更新用户信息
 const handleUpdateUserInfo = async () => {
   try {
+    loading.value = true
     await userFormRef.value.validate()
-    
-    // 实际项目中应该调用API更新用户信息
-    // await updateUser(userForm)
-    
-    // 模拟更新成功
+    await updateUserInfo(userForm)
+    await authStore.getUserInfo();
     Object.assign(userInfo.value, userForm)
     message.success('个人信息更新成功')
   } catch (error) {
     console.error('表单校验失败:', error)
+  } finally {
+    loading.value = false
   }
 }
 
 // 更新密码
 const handleUpdatePassword = async () => {
   try {
+    loading.value = true
     await passwordFormRef.value.validate()
-    
-    // 实际项目中应该调用API更新密码
-    // await updatePassword(passwordForm)
+    await updateUserPassword(passwordForm)
     
     message.success('密码修改成功，请重新登录')
     passwordForm.oldPassword = ''
     passwordForm.newPassword = ''
     passwordForm.confirmPassword = ''
-    
-    // 实际项目中应该退出登录
-    // setTimeout(() => {
-    //   authStore.logout()
-    // }, 1500)
+    loading.value = false
+    await authStore.logout()
+    router.push(LOGIN_PATH)
   } catch (error) {
     console.error('表单校验失败:', error)
+  } finally {
+    loading.value = false
   }
 }
 
 // 更新系统偏好
 const handleUpdatePreferences = () => {
-  // 实际项目中应该调用API或更新本地存储
   message.success('系统偏好设置已保存')
 }
 
@@ -532,10 +536,6 @@ $transition-duration: 0.3s;
     overflow: hidden;
     transition: transform $transition-duration, box-shadow $transition-duration;
     border: none;
-    
-    &:hover {
-      box-shadow: $box-shadow;
-    }
   }
   
   .profile-card {

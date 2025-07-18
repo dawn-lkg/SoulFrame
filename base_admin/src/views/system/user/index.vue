@@ -23,15 +23,13 @@
         />
       </a-form-item>
       <a-form-item label="状态" name="status">
-        <a-select
+        <DictSelect
+            dictType="sys_user_status"
           v-model:value="queryParams.status"
           placeholder="用户状态"
           allow-clear
           style="width: 200px"
-        >
-          <a-select-option value="0">正常</a-select-option>
-          <a-select-option value="1">停用</a-select-option>
-        </a-select>
+        />
       </a-form-item>
       <a-form-item>
         <a-space>
@@ -110,7 +108,8 @@
             </a-tag>
           </template>
           <template v-else-if="column.dataIndex === 'sex'">
-            {{ record.sex === "0" ? "男" : "女" }}
+            <!-- {{ record.sex === "0" ? "男" : "女" }} -->
+            <DictTag :value="record.sex" dictType="sys_user_sex"/>
           </template>
           <template v-else-if="column.dataIndex === 'action'">
             <a-space>
@@ -134,13 +133,12 @@
       @update:open="open = $event"
       @success="handleFormSuccess"
     />
-    
+
     <!-- </a-card> -->
   </div>
 </template>
   
   <script setup>
-  import {h, onMounted, reactive, ref} from "vue";
   import {message, Modal} from "ant-design-vue";
   import {
     DeleteOutlined,
@@ -150,14 +148,21 @@
     SearchOutlined,
   } from "@ant-design/icons-vue";
   import UserForm from "./components/UserForm.vue";
-  import {batchDeleteUser, deleteUser, getUserPage, resetPassword,} from "@/api/modules/user";
+  import {
+    batchDeleteUser,
+    deleteUser,
+    getUserPage,
+    resetPassword,
+  } from "@/api/modules/user";
   import {getRoleList} from "@/api/modules/role";
-  import {handleDeletePagination, handleSingleDeletePagination,} from "@/utils/pagination";
-  import {useAppStore} from "@/stores/app";
+  import {
+    handleDeletePagination,
+    handleSingleDeletePagination,
+  } from "@/utils/pagination";
 
   const appStore = useAppStore();
 
-const tableContainerRef = ref(null)
+  const tableContainerRef = ref(null);
 
 // 查询参数
 const queryParams = reactive({
@@ -422,6 +427,5 @@ const handleResetPassword = (record) => {
 </script>
 
 <style lang="scss" scoped>
-
 </style>
 

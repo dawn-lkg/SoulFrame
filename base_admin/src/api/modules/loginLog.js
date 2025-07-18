@@ -24,3 +24,8 @@ export async function batchDeleteLoginLog(ids) {
 export async function exportLoginLog(params) {
   return request.download('/system/loginLog/export', '登录日志导出.xlsx', {}, params)
 }
+
+// 获取当前用户的登录日志
+export async function getCurrentUserLoginLog(params) {
+    return request.get('/system/loginLog/current', {params})
+}

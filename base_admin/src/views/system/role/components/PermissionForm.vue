@@ -32,7 +32,6 @@
 </template>
 
 <script setup>
-import { defineEmits, defineProps, nextTick, ref, watch } from "vue";
 import { message } from "ant-design-vue";
 import { getMenuTreeList } from "@/api/modules/menu";
 import { assignMenuPermissions, getRoleMenuList } from "@/api/modules/role";

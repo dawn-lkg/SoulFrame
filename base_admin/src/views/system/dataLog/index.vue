@@ -10,11 +10,12 @@
           </a-col>
           <a-col :md="6" :sm="24">
             <a-form-item label="操作类型" name="businessType">
-              <a-select v-model:value="queryParams.businessType" placeholder="请选择操作类型" allow-clear>
-                <a-select-option v-for="(value, key) in OPERATE_TYPE" :key="key" :value="value">
-                  {{ getOperateTypeLabel(value) }}
-                </a-select-option>
-              </a-select>
+              <dict-select
+                  v-model:value="queryParams.businessType"
+                  allow-clear
+                  dict-type="sys_operate_type"
+                  placeholder="请选择操作类型"
+              />
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="24">
@@ -34,11 +35,12 @@
             <a-row :gutter="24">
               <a-col :md="6" :sm="24">
                 <a-form-item label="操作状态" name="status">
-                  <a-select v-model:value="queryParams.status" placeholder="请选择操作状态" allow-clear>
-                    <a-select-option v-for="(value, key) in OPERATE_STATUS" :key="key" :value="value">
-                      {{ getOperateStatusLabel(value) }}
-                    </a-select-option>
-                  </a-select>
+                  <dict-select
+                      v-model:value="queryParams.status"
+                      allow-clear
+                      dict-type="sys_operate_status"
+                      placeholder="请选择操作状态"
+                  />
                 </a-form-item>
               </a-col>
               <a-col :md="6" :sm="24">
@@ -109,9 +111,10 @@
         :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }" @change="handleTableChange">
         <template #bodyCell="{ column, record }">
           <template v-if="column.dataIndex === 'businessType'">
-            <a-tag :color="getOperateTypeColor(record.businessType)">
-              {{ getOperateTypeLabel(record.businessType) }}
-            </a-tag>
+            <dict-tag
+                :value="record.businessType"
+                dictType="sys_operate_type"
+            />
           </template>
           <template v-else-if="column.dataIndex === 'operation'">
             <a-space>
@@ -120,6 +123,12 @@
                 <a>删除</a>
               </a-popconfirm>
             </a-space>
+          </template>
+          <template v-else-if="column.dataIndex === 'status'">
+            <dict-tag
+                :value="record.status"
+                dict-type="sys_operate_status"
+            />
           </template>
         </template>
       </a-table>
@@ -131,7 +140,6 @@
 </template>
 
 <script setup>
-import {onMounted, reactive, ref} from 'vue'
 import {message, Modal} from 'ant-design-vue'
 import {
   ClearOutlined,
@@ -146,7 +154,6 @@ import {batchDeleteDataLog, clearDataLog, deleteDataLog, exportDataLog, getDataL
 import {OPERATE_STATUS, OPERATE_TYPE} from '@/config'
 import {handleDeletePagination} from '@/utils/pagination'
 import DataLogDetail from './components/DataLogDetail.vue'
-import {useAppStore} from '@/stores/app'
 
 const appStore = useAppStore();
 
@@ -229,8 +236,8 @@ const columns = [
   },
   {
     title: '状态',
-    dataIndex: 'statusDesc',
-    key: 'statusDesc',
+    dataIndex: 'status',
+    key: 'status',
     width: 120,
     visible: true,
   },
@@ -291,77 +298,6 @@ const tableColumns = computed(() => {
   return tableConfig.columns.filter((column) => column.visible);
 });
 
-// 获取操作类型标签文字
-const getOperateTypeLabel = (type) => {
-  console.log(type);
-
-  switch (type) {
-    case OPERATE_TYPE.INSERT:
-      return '新增'
-    case OPERATE_TYPE.UPDATE:
-      return '修改'
-    case OPERATE_TYPE.DELETE:
-      return '删除'
-    case OPERATE_TYPE.QUERY:
-      return '查询'
-    case OPERATE_TYPE.EXPORT:
-      return '导出'
-    case OPERATE_TYPE.IMPORT:
-      return '导入'
-    case OPERATE_TYPE.CLEAN:
-      return '清空数据'
-    default:
-      return '其他'
-  }
-}
-
-
-// 获取操作类型标签颜色
-const getOperateTypeColor = (type) => {
-  switch (type) {
-    case OPERATE_TYPE.INSERT:
-      return 'success'
-    case OPERATE_TYPE.UPDATE:
-      return 'processing'
-    case OPERATE_TYPE.DELETE:
-      return 'error'
-    case OPERATE_TYPE.QUERY:
-      return 'warning'
-    case OPERATE_TYPE.EXPORT:
-      return 'warning'
-    case OPERATE_TYPE.IMPORT:
-      return 'warning'
-    case OPERATE_TYPE.CLEAN:
-      return 'warning'
-    default:
-      return 'default'
-  }
-}
-
-//获取操作状态标签文字
-const getOperateStatusLabel = (status) => {
-  switch (status) {
-    case OPERATE_STATUS.SUCCESS:
-      return '成功'
-    case OPERATE_STATUS.FAIL:
-      return '失败'
-    default:
-      return '未知'
-  }
-}
-
-// 获取操作状态标签颜色
-const getOperateStatusColor = (status) => {
-  switch (status) {
-    case OPERATE_STATUS.SUCCESS:
-      return 'success'
-    case OPERATE_STATUS.FAIL:
-      return 'error'
-    default:
-      return 'default'
-  }
-}
-
 // 获取数据日志列表
 const getList = async () => {
   try {
@@ -373,7 +309,6 @@ const getList = async () => {
       pageSize: pagination.pageSize,
     }
     
-    // 处理日期范围，转换为后端需要的开始和结束时间格式
     if (params.operTimeRange && params.operTimeRange.length === 2) {
       params.beginTime = params.operTimeRange[0]
       params.endTime = params.operTimeRange[1]
@@ -387,18 +322,6 @@ const getList = async () => {
     message.error(error.message || '获取数据日志列表失败')
   } finally {
     loading.value = false
-  }
-}
-
-// 导出日志
-const exportLog = async () => {
-  try {
-    message.loading('正在导出数据...')
-    await exportDataLog(queryParams)
-    message.success('导出成功')
-  } catch (error) {
-    console.error('导出失败', error)
-    message.error('导出失败')
   }
 }
 

@@ -53,10 +53,11 @@
         <a-input v-model:value="form.perms" placeholder="请输入权限标识" />
       </a-form-item>
       <a-form-item label="状态" name="status">
-        <a-radio-group v-model:value="form.status">
-          <a-radio value="0">正常</a-radio>
-          <a-radio value="1">停用</a-radio>
-        </a-radio-group>
+        <dict-radio
+            v-model:value="form.status"
+            dict-type="sys_menu_status"
+        />
+
       </a-form-item>
       <a-form-item v-if="form.menuType === 'C'" label="是否缓存" name="isCache">
         <a-radio-group v-model:value="form.isCache">
@@ -74,7 +75,6 @@
 </template>
 
 <script setup>
-import {computed, defineEmits, defineProps, reactive, ref, watch} from 'vue'
 import {message} from 'ant-design-vue'
 import * as Icons from '@ant-design/icons-vue'
 import {SearchOutlined} from '@ant-design/icons-vue'

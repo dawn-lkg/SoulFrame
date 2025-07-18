@@ -145,20 +145,15 @@ const handleAuthenticatedUser = async (to, from, next, store) => {
     return
   }
   
-  // 检查是否是根路径访问
   if (to.path === '/') {
     next({ path: HOME_PATH, replace: true })
     return
   }
   
-  //如果路由不存在，则跳转到404
-  // 正确检查路由是否存在
   if (to.matched.length === 0) {
-    // 如果当前不是已经在导航到404，则导航到404
     if (to.path !== '/404') {
       next({ path: '/404' });
     } else {
-      // 已经是404页面，直接放行，避免循环
       next();
     }
     return;

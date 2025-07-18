@@ -145,7 +145,6 @@
 </template>
 
 <script setup>
-import {ref} from 'vue'
 import {getServerInfo} from '@/api/modules/monitor-server'
 
 

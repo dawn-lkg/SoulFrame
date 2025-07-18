@@ -52,8 +52,6 @@
 </template>
 
 <script setup>
-import {reactive, ref, watch} from 'vue';
-import {message} from 'ant-design-vue';
 import {CheckCircleOutlined, CloseCircleOutlined, InboxOutlined, LoadingOutlined} from '@ant-design/icons-vue';
 import {uploadFile} from '@/api/modules/file';
 
@@ -87,9 +85,9 @@ watch(() => props.visible, (val) => {
 
 // 上传前检查
 const beforeUpload = (file) => {
-  const isLt100M = file.size / 1024 / 1024 < 100;
+  const isLt100M = file.size / 1024 / 1024 < 500;
   if (!isLt100M) {
-    message.error('文件大小不能超过100MB!');
+    message.error('文件大小不能超过500MB!');
   }
   return isLt100M || Upload.LIST_IGNORE;
 };

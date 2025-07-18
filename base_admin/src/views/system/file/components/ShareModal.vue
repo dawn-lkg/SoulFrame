@@ -48,7 +48,6 @@
 </template>
 
 <script setup>
-import {reactive, ref, watch} from 'vue';
 import {message} from 'ant-design-vue';
 import {CopyOutlined} from '@ant-design/icons-vue';
 

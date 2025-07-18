@@ -167,7 +167,6 @@
 </template>
 
 <script setup>
-import {computed, onMounted, reactive, ref} from 'vue';
 import {message} from 'ant-design-vue';
 import {
   DeleteOutlined,
@@ -186,7 +185,6 @@ import {getFilePage, getFileUrl} from '@/api/modules/file';
 import UploadModal from './components/UploadModal.vue';
 import PreviewModal from './components/PreviewModal.vue';
 import ShareModal from './components/ShareModal.vue';
-import {useAppStore} from '@/stores/app';
 
 // 状态
 const loading = ref(false);
@@ -485,7 +483,6 @@ const formatFileSize = (size) => {
   .file-name-cell {
     display: flex;
     align-items: center;
-
     .file-icon {
       margin-right: 8px;
     }
@@ -496,6 +493,16 @@ const formatFileSize = (size) => {
     background-color: #f5f5f5;
     padding: 12px;
     border-radius: 4px;
+  }
+}
+
+.file-name-cell {
+  display: flex;
+  align-items: center;
+
+  a {
+    display: flex;
+    align-items: center;
   }
 }
 </style> 

@@ -48,7 +48,8 @@
         />
       </div>
 
-      <a-table :loading="loading" row-key="tokenId" :columns="columns" :data-source="onlineUserList" :pagination="pagination"
+    <a-table :columns="tableColumns" :data-source="onlineUserList" :loading="loading" :pagination="pagination"
+             row-key="tokenId"
         :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }" @change="handleTableChange">
         <template #bodyCell="{ column, record }">
           <template v-if="column.dataIndex === 'operation'">
@@ -64,12 +65,9 @@
 </template>
 
 <script setup>
-import {onMounted, reactive, ref} from 'vue'
 import {message, Modal} from 'ant-design-vue'
 import {PoweroffOutlined, RedoOutlined, SearchOutlined} from '@ant-design/icons-vue'
 import {batchForceLogout, forceLogout, getOnlineUserList} from '@/api/modules/onlineUser'
-import {useAppStore} from "@/stores/app";
-// import {createQueryParams, OnlineUserQueryParams} from '@/api/modules/request.model'
 
 const appStore = useAppStore()
 

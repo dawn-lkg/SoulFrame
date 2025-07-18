@@ -6,9 +6,10 @@
       <a-descriptions-item label="用户账号" span="1">{{ detailInfo.userName || '-' }}</a-descriptions-item>
       <a-descriptions-item label="用户ID" span="1">{{ detailInfo.userId || '-' }}</a-descriptions-item>
       <a-descriptions-item label="登录状态" span="1">
-        <a-tag :color="detailInfo.status === '0' ? 'success' : 'error'">
-          {{ detailInfo.statusDesc || '-' }}
-        </a-tag>
+        <dict-tag
+            :value="detailInfo.status"
+            dict-type="sys_loginLog_status"
+        />
       </a-descriptions-item>
       <a-descriptions-item label="登录IP" span="1">{{ detailInfo.ipaddr || '-' }}</a-descriptions-item>
       <a-descriptions-item label="登录地点" span="1">{{ detailInfo.loginLocation || '-' }}</a-descriptions-item>
@@ -21,8 +22,6 @@
 </template>
 
 <script setup>
-import {defineEmits, defineProps, ref, watch} from 'vue'
-
 const props = defineProps({
   visible: {
     type: Boolean,

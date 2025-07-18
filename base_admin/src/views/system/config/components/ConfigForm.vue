@@ -66,7 +66,6 @@
 </template>
 
 <script setup>
-import {defineEmits, defineProps, nextTick, reactive, ref, watch} from 'vue'
 import {message} from 'ant-design-vue'
 import {addConfig, updateConfig} from '@/api/modules/config'
 

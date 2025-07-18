@@ -29,10 +29,7 @@
         <a-input v-model:value="form.email" placeholder="请输入邮箱" />
       </a-form-item>
       <a-form-item label="性别" name="sex">
-        <a-radio-group v-model:value="form.sex">
-          <a-radio value="0">男</a-radio>
-          <a-radio value="1">女</a-radio>
-        </a-radio-group>
+        <DictRadio v-model:value="form.sex" dict-type="sys_user_sex"/>
       </a-form-item>
       <a-form-item label="用户角色" name="roleIds">
         <a-select
@@ -51,19 +48,16 @@
         </a-select>
       </a-form-item>
       <a-form-item label="状态" name="status">
-        <a-radio-group v-model:value="form.status">
-          <a-radio value="0">正常</a-radio>
-          <a-radio value="1">停用</a-radio>
-        </a-radio-group>
+        <DictRadio v-model:value="form.status" dict-type="sys_user_status"/>
       </a-form-item>
     </a-form>
   </a-modal>
 </template>
 
 <script setup>
-import { computed, defineEmits, defineProps, reactive, ref, watch } from "vue";
 import { message } from "ant-design-vue";
 import { addUser, updateUser, checkUsername } from "@/api/modules/user";
+import DictRadio from "../../dict/components/DictRadio.vue";
 
 const props = defineProps({
   open: {

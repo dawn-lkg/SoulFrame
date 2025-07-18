@@ -10,10 +10,12 @@
           </a-col>
           <a-col :md="6" :sm="24">
             <a-form-item label="登录状态" name="status">
-              <a-select v-model:value="queryParams.status" placeholder="请选择登录状态" allow-clear>
-                <a-select-option value="0">成功</a-select-option>
-                <a-select-option value="1">失败</a-select-option>
-              </a-select>
+              <dict-select
+                  v-model:value="queryParams.status"
+                  allow-clear
+                  dict-type="sys_loginLog_status"
+                  placeholder="请选择登录状态"
+              />
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="24">
@@ -71,9 +73,10 @@
         :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }" @change="handleTableChange">
         <template #bodyCell="{ column, record }">
           <template v-if="column.dataIndex === 'status'">
-            <a-tag :color="record.status === '0' ? 'success' : 'error'">
-              {{ record.statusDesc }}
-            </a-tag>
+            <dict-tag
+                :value="record.status"
+                dict-type="sys_loginLog_status"
+            />
           </template>
           <template v-else-if="column.dataIndex === 'operation'">
             <a-space>
@@ -93,7 +96,6 @@
 </template>
 
 <script setup>
-import {onMounted, reactive, ref} from 'vue'
 import {message, Modal} from 'ant-design-vue'
 import {ClearOutlined, DeleteOutlined, ExportOutlined, RedoOutlined, SearchOutlined} from '@ant-design/icons-vue'
 import {
@@ -104,7 +106,6 @@ import {
   getLoginLogPage
 } from '@/api/modules/loginLog'
 import LoginLogDetail from './components/LoginLogDetail.vue'
-import {useAppStore} from '@/stores/app'
 
 const appStore = useAppStore()
 
@@ -237,11 +238,9 @@ const getList = async () => {
       pageSize: pagination.pageSize,
     }
     
-    // 处理日期范围，转换为后端需要的开始和结束时间格式
     if (params.loginTimeRange && params.loginTimeRange.length === 2) {
       params.beginTime = params.loginTimeRange[0]
       params.endTime = params.loginTimeRange[1]
-      // 删除原始的loginTimeRange参数，避免传递数组
       delete params.loginTimeRange
     }
     
