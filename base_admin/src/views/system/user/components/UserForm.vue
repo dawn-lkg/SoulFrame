@@ -55,9 +55,8 @@
 </template>
 
 <script setup>
-import { message } from "ant-design-vue";
-import { addUser, updateUser, checkUsername } from "@/api/modules/user";
-import DictRadio from "../../dict/components/DictRadio.vue";
+import {message} from "ant-design-vue";
+import {addUser, checkUsername, updateUser} from "@/api/modules/user";
 
 const props = defineProps({
   open: {
