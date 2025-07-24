@@ -1,5 +1,5 @@
 <template>
-  <a-drawer :body-style="{ padding: 0,border: '1px solid black' }" :closable="false" :header-style="{ padding: 0
+  <a-drawer :body-style="{ padding: 0}" :closable="false" :header-style="{ padding: 0
   }" :open="open"
             :width="200" placement="left" @close="handleClose">
     <template #title>

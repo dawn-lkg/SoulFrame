@@ -10,10 +10,6 @@
 
 
 <script setup>
-import { useRoute } from 'vue-router'
-
-const route = useRoute()
-
 
 </script>
 
@@ -21,16 +17,16 @@ const route = useRoute()
 
 .content-animation-enter-active,
 .content-animation-leave-active {
-  transition: all 0.25s cubic-bezier(0.645, 0.045, 0.355, 1);
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
 }
 
 .content-animation-enter-from {
   opacity: 0;
-  transform: translateX(-20px);
+  transform: translateX(-30px);
 }
 
 .content-animation-leave-to {
   opacity: 0;
-  transform: translateX(10px);
+  transform: translateX(30px);
 }
 </style>

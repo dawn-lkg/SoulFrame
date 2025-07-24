@@ -14,12 +14,12 @@
                        class="layout-header">
         <global-header />
       </a-layout-header>
-      <!-- 头部占位符，在固定头部时使用 -->
+      <!-- 头部占位符 -->
       <div v-if="themeStore.layoutConfig.fixedHeader" class="header-placeholder"></div>
       <!-- 头部tab-->
       <global-tab v-if="themeStore.layoutConfig.showTagsView"
                   :class="{ 'fixed-tab': themeStore.layoutConfig.fixedHeader,'hide-menu': app.hideMenu}"/>
-      <!-- 标签页占位符，在固定标签页时使用 -->
+      <!-- 标签页占位符 -->
       <div v-if="themeStore.layoutConfig.fixedHeader && themeStore.layoutConfig.showTagsView" class="tab-placeholder"></div>
       <!-- 内容 -->
       <a-layout-content class="layout-content">
@@ -35,7 +35,7 @@
 </template>
 
 <script setup>
-import {computed} from "vue";
+import {computed, onUnmounted} from "vue";
 import {useAppStore, useThemeStore} from "@/stores";
 import globalSider from "../common/global-sider/index.vue";
 import globalLogo from "../common/global-logo/index.vue";
@@ -43,12 +43,10 @@ import GlobalHeader from "../common/global-header/index.vue";
 import SettingDrawer from "../common/setting-drawer/index.vue";
 import globalTab from "../common/global-tab/index.vue"
 import globalContent from "../common/global-content/index.vue";
-import {useAuthStore} from '@/stores/auth'
 import menuFloatButton from "../common/global-floatButton/menu_float_button.vue"
 
 const themeStore = useThemeStore();
 const app = useAppStore()
-const authStore = useAuthStore()
 
 const menuDrawerOpen = ref(false)
 
@@ -59,11 +57,6 @@ const layoutClass = computed(() => ({
   'dark-mode': themeStore.isDarkMode,
   'fixed-header-layout': themeStore.layoutConfig.fixedHeader
 }));
-
-// 将fixedHeader改为直接获取配置，不再需要检查侧边栏状态
-const fixedHeader = computed(() => {
-  return themeStore.layoutConfig.fixedHeader;
-});
 
 // 侧边栏样式
 const siderStyle = computed(() => ({
@@ -83,6 +76,19 @@ const layoutStyle = computed(() => ({
 const handleMenuDrawerOpen = (value) => {
   menuDrawerOpen.value = value
 }
+
+const handleResize = () => {
+  if (window.innerWidth < 1200) {
+    app.hideMenu = true
+  } else {
+    app.hideMenu = false
+  }
+}
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
+})
+window.addEventListener('resize', handleResize)
 </script>
 
 <style lang="scss" scoped>
