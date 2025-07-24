@@ -99,11 +99,11 @@ export const beforeResolveGuard = (to, from, next) => {
     return
   }
 
-  if (isRateLimited(to)) {
-    console.warn('访问过于频繁，请稍后再试')
-    next(false)
-    return
-  }
+  // if (isRateLimited(to)) {
+  //   console.warn('访问过于频繁，请稍后再试')
+  //   next(false)
+  //   return
+  // }
 
   next()
 }

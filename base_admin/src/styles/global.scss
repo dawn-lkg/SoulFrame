@@ -1,4 +1,7 @@
 @use './variables' as *;
+@use './theme/transitions';
+@use './theme/menu';
+@use './theme/animations';
 
 // 重置样式
 * {
@@ -26,19 +29,7 @@ html, body {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   position: relative;
   overflow: hidden;
-  animation: fadeIn 0.5s ease-out;
-  
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
+  animation: fadeInUp $animation-duration-slow ease-out;
   
   &:hover::before {
     opacity: 1;
@@ -47,7 +38,7 @@ html, body {
   //表格
   .common-table-container {
     transition: all 0.3s ease;
-    animation: fadeIn 0.6s ease-out;
+    animation: fadeIn $animation-duration-slow ease-out;
     background-color: $component-bg;
   }
 
@@ -78,18 +69,7 @@ html, body {
     border-radius: $border-radius-base;
     margin-bottom: 20px;
     transition: all 0.3s ease;
-    animation: slideDown 0.4s ease-out;
-    
-    @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+    animation: fadeInDown $animation-duration-slow ease-out;
     
     .ant-form-item {
       margin-bottom: 16px;
@@ -113,7 +93,7 @@ html, body {
   // 表格样式优化
   .ant-table-wrapper {
     transition: all 0.3s ease;
-    animation: fadeIn 0.6s ease-out;
+    animation: fadeIn $animation-duration-slow ease-out;
     
     .ant-table {
       border-radius: $border-radius-base;
@@ -194,7 +174,7 @@ html, body {
   
   // 卡片内容区域淡入效果
   .ant-card {
-    animation: fadeIn 0.5s ease-out;
+    animation: fadeIn $animation-duration-slow ease-out;
     transition: all 0.3s ease;
     
     &:hover {

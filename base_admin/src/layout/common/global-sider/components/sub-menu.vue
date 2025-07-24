@@ -1,19 +1,19 @@
 <template>
   <template v-for="item in menuList" :key="item.menuId">
-    <a-sub-menu v-if="item.menuType==='M'" :key="item.path">
+    <a-sub-menu v-if="item.menuType==='M'" :key="item.path" class="custom-submenu">
       <template #icon>
-        <Icon :name="item.icon"/>
+        <Icon :name="item.icon" class="menu-icon"/>
       </template>
       <template #title>
-        <span class="menu-name">{{ item.menuName }}</span>
+        <span class="menu-text">{{ item.menuName }}</span>
       </template>
       <subMenu :menuList="item.children" />
     </a-sub-menu>
-    <a-menu-item v-if="item.menuType==='C'" @click="handleClickMenu(item)" :key="item.path">
+    <a-menu-item v-if="item.menuType==='C'" :key="item.path" class="custom-menu-item" @click="handleClickMenu(item)">
       <template #icon>
-        <Icon :name="item.icon"/>
+        <Icon :name="item.icon" class="menu-icon"/>
       </template>
-      <span class="menu-name">{{ item.menuName }}</span>
+      <span class="menu-text">{{ item.menuName }}</span>
     </a-menu-item>
   </template>
 </template>
@@ -30,24 +30,29 @@ const props = defineProps({
   },
 });
 const handleClickMenu = (item) => {
-  router.push(item.path)
+  if (router.currentRoute.value.path === item.path) return;
+
+  router.push(item.path).catch(err => {
+    if (err.name !== 'NavigationDuplicated') {
+      console.error(err);
+    }
+  });
 }
 </script>
 
-<style scoped>
-.menu-name{
-  user-select: none;
-  transition: color 0.3s ease;
-}
+<style lang="scss" scoped>
+// 导入全局菜单样式，但不使用@extend
+@use '@/styles/theme/menu';
 
-:deep(.ant-menu-item:hover .menu-name),
-:deep(.ant-menu-submenu-title:hover .menu-name) {
-  color: var(--ant-primary-color, #1890ff);
-}
-
-:deep(.ant-menu-dark .ant-menu-item:hover .menu-name),
-:deep(.ant-menu-dark .ant-menu-submenu-title:hover .menu-name) {
-  color: #fff;
-  opacity: 0.85;
+// 特定组件样式，使用直接类名而不是@extend
+:deep(.custom-menu-item),
+:deep(.custom-submenu .ant-menu-submenu-title) {
+  padding-left: 12px !important;
+  margin: 4px 8px;
+  border-radius: 8px;
+  height: 40px;
+  line-height: 40px;
+  position: relative;
+  overflow: hidden;
 }
 </style>
