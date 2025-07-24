@@ -1,5 +1,6 @@
 package com.clm.framework.aspect;
 
+import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -170,6 +171,8 @@ public class LogAspect {
             
             // 保存操作日志
             operLogService.insertOperLogAsync(operLog);
+        } catch (NotLoginException exp) {
+            log.error("未登录");
         } catch (Exception exp) {
             log.error("记录操作日志发生异常：", exp);
         } finally {

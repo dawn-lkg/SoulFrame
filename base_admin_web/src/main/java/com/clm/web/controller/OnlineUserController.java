@@ -3,14 +3,18 @@ package com.clm.web.controller;
 import com.clm.common.core.controller.BaseController;
 import com.clm.common.core.domain.Result;
 import com.clm.common.enums.BusinessType;
+import com.clm.common.security.LoginHelper;
 import com.clm.framework.annotation.Log;
+import com.clm.sse.SseTemplate;
 import com.clm.system.domain.entity.OnlineUser;
 import com.clm.system.domain.param.OnlineUserQueryParam;
 import com.clm.system.service.OnlineUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 
@@ -29,6 +33,8 @@ public class OnlineUserController extends BaseController {
 
     private final OnlineUserService onlineUserService;
 
+    private final SseTemplate sseTemplate;
+
     @Operation(summary = "获取在线用户列表")
     @GetMapping("/list")
     @Log(businessType = BusinessType.QUERY)
@@ -38,18 +44,24 @@ public class OnlineUserController extends BaseController {
     }
 
     @Operation(summary = "强制退出用户")
-    @DeleteMapping("/{tokenId}")
+    @DeleteMapping("/{userId}")
     @Log(businessType = BusinessType.FORCE)
-    public Result<?> forceLogout(@PathVariable String tokenId) {
-        onlineUserService.forceLogout(tokenId);
+    public Result<?> forceLogout(@PathVariable String userId) {
+        onlineUserService.forceLogout(userId);
         return success();
     }
 
     @Operation(summary = "批量退出用户")
     @DeleteMapping("batch")
     @Log(businessType = BusinessType.FORCE)
-    public Result<?> forceLogout(@RequestBody List<String> tokenIds) {
-        tokenIds.forEach(onlineUserService::forceLogout);
+    public Result<?> forceLogout(@RequestBody List<String> userIds) {
+        userIds.forEach(onlineUserService::forceLogout);
         return success();
+    }
+
+    @GetMapping(value = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter sse() {
+        String username = LoginHelper.getUsername();
+        return sseTemplate.connect(username);
     }
 } 

@@ -2,11 +2,14 @@ package com.clm.framework.listener;
 
 import cn.dev33.satoken.listener.SaTokenListener;
 import cn.dev33.satoken.stp.SaLoginModel;
-import com.clm.common.utils.RedisUtils;
+import com.clm.sse.SseConstant;
+import com.clm.sse.SseTemplate;
 import com.clm.system.service.OnlineUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 /**
  * 用户登出监听器
@@ -17,10 +20,10 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class UserLogoutListener implements SaTokenListener {
+public class UserAuthListener implements SaTokenListener {
 
     private final OnlineUserService onlineUserService;
-    private final RedisUtils redisUtils;
+    private final SseTemplate sseTemplate;
 
 //    /**
 //     * 每次登录时触发
@@ -43,6 +46,7 @@ public class UserLogoutListener implements SaTokenListener {
     @Override
     public void doLogin(String s, Object o, String s1, SaLoginModel saLoginModel) {
         log.debug("用户登录成功，loginId={}, token={}", o, s1);
+        sseTemplate.broadcast(SseConstant.ONLINE_USER_EVENT, UUID.randomUUID());
     }
 
     /**
@@ -52,7 +56,8 @@ public class UserLogoutListener implements SaTokenListener {
     public void doLogout(String loginType, Object loginId, String tokenValue) {
         log.debug("用户注销，loginId={}, token={}", loginId, tokenValue);
         // 删除在线用户信息
-        onlineUserService.forceLogout(tokenValue);
+        onlineUserService.forceLogout(String.valueOf(loginId));
+        sseTemplate.broadcast(SseConstant.ONLINE_USER_EVENT, UUID.randomUUID());
     }
 
     /**
@@ -62,7 +67,8 @@ public class UserLogoutListener implements SaTokenListener {
     public void doKickout(String loginType, Object loginId, String tokenValue) {
         log.debug("用户被踢下线，loginId={}, token={}", loginId, tokenValue);
         // 删除在线用户信息
-        onlineUserService.forceLogout(tokenValue);
+        onlineUserService.forceLogout(String.valueOf(loginId));
+        sseTemplate.broadcast(SseConstant.ONLINE_USER_EVENT, System.currentTimeMillis());
     }
 
     /**
@@ -72,7 +78,8 @@ public class UserLogoutListener implements SaTokenListener {
     public void doReplaced(String loginType, Object loginId, String tokenValue) {
         log.debug("用户被顶下线，loginId={}, token={}", loginId, tokenValue);
         // 删除在线用户信息
-        onlineUserService.forceLogout(tokenValue);
+        onlineUserService.forceLogout(String.valueOf(loginId));
+        sseTemplate.broadcast(SseConstant.ONLINE_USER_EVENT, System.currentTimeMillis());
     }
 
     /**

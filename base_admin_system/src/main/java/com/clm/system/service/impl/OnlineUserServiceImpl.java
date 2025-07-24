@@ -17,10 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -86,23 +83,23 @@ public class OnlineUserServiceImpl implements OnlineUserService {
     }
 
     @Override
-    public boolean forceLogout(String tokenId) {
-        if (StrUtil.isBlank(tokenId)) {
+    public boolean forceLogout(String userId) {
+        if (Objects.isNull(userId)) {
             return false;
         }
         
         // 从缓存中获取在线用户
-        OnlineUser onlineUser = getOnlineUser(tokenId);
+        OnlineUser onlineUser = getOnlineUser(userId);
         if (onlineUser == null) {
             return false;
         }
         
         try {
             // 删除在线用户缓存
-            redisUtils.delete(ONLINE_USER_KEY_PREFIX + tokenId);
+            redisUtils.delete(ONLINE_USER_KEY_PREFIX + userId);
             
             // 强制注销用户
-            StpUtil.kickoutByTokenValue(tokenId);
+            StpUtil.kickout(userId);
             
             return true;
         } catch (Exception e) {
@@ -134,18 +131,18 @@ public class OnlineUserServiceImpl implements OnlineUserService {
             onlineUser.setLoginTime(new Date());
             
             // 存储在线用户信息到Redis
-            redisUtils.set(ONLINE_USER_KEY_PREFIX + tokenId, onlineUser, ONLINE_USER_TIMEOUT, TimeUnit.HOURS);
+            redisUtils.set(ONLINE_USER_KEY_PREFIX + user.getUserId(), onlineUser, ONLINE_USER_TIMEOUT, TimeUnit.HOURS);
         } catch (Exception e) {
             log.error("设置在线用户信息失败", e);
         }
     }
 
     @Override
-    public OnlineUser getOnlineUser(String tokenId) {
-        if (StrUtil.isBlank(tokenId)) {
+    public OnlineUser getOnlineUser(String userId) {
+        if (Objects.isNull(userId)) {
             return null;
         }
-        
-        return redisUtils.get(ONLINE_USER_KEY_PREFIX + tokenId, OnlineUser.class);
+
+        return redisUtils.get(ONLINE_USER_KEY_PREFIX + userId, OnlineUser.class);
     }
 } 

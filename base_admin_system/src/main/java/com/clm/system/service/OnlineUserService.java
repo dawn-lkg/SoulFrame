@@ -35,7 +35,6 @@ public interface OnlineUserService {
      *
      * @param user 用户信息
      * @param tokenId 令牌ID
-     * @param loginTime 登录时间
      */
     void setOnlineUser(User user, String tokenId);
     
