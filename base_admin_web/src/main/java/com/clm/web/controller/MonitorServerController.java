@@ -2,6 +2,7 @@ package com.clm.web.controller;
 
 import com.clm.common.core.controller.BaseController;
 import com.clm.common.core.domain.Result;
+import com.clm.common.core.domain.server.Cpu;
 import com.clm.common.enums.BusinessType;
 import com.clm.framework.annotation.Log;
 import com.clm.system.domain.entity.Server;
@@ -10,6 +11,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import oshi.SystemInfo;
+import oshi.hardware.HardwareAbstractionLayer;
 
 /**
  * @author 陈黎明
@@ -29,4 +32,28 @@ public class MonitorServerController extends BaseController {
         server.copyTo();
         return success(server);
     }
+
+    @Log(businessType = BusinessType.QUERY)
+    @Operation(summary = "获取cpu信息")
+    @GetMapping("/cpu")
+    public Result<Cpu> getCpuInfo() {
+        Server server = new Server();
+        SystemInfo systemInfo = new SystemInfo();
+        HardwareAbstractionLayer hardware = systemInfo.getHardware();
+        server.setCpuInfo(hardware.getProcessor());
+        return success(server.getCpu());
+    }
+
+    @Log(businessType = BusinessType.QUERY)
+    @Operation(summary = "获取内存信息")
+    @GetMapping("/mem")
+    public Result<Server> getMemInfo() {
+        Server server = new Server();
+        SystemInfo systemInfo = new SystemInfo();
+        HardwareAbstractionLayer hardware = systemInfo.getHardware();
+        server.setMemInfo(hardware.getMemory());
+        return success(server);
+    }
+
+
 }

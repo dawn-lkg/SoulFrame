@@ -142,6 +142,7 @@ public class LogAspect {
             String userAgent = UserAgentUtils.getUserAgent(request);
             operLog.setOs(UserAgentUtils.getOs(userAgent));
             operLog.setBrowser(UserAgentUtils.getBrowser(userAgent));
+            operLog.setUserAgent(userAgent);
             
             // 记录操作类型、标题等
             operLog.setTitle(getSummary(method, controllerLog));

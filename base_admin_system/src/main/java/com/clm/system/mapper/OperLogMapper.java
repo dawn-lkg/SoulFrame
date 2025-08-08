@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.clm.system.domain.entity.OperLog;
 import com.clm.system.domain.param.OperLogQueryParam;
+import com.clm.system.domain.param.VisitingStatisticParam;
 import com.clm.system.domain.vo.OperLogVO;
+import com.clm.system.domain.vo.VisitingRangeDataVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -38,4 +40,19 @@ public interface OperLogMapper extends BaseMapper<OperLog> {
      * 清空操作日志
      */
     void cleanOperLog();
-} 
+
+    /**
+     * 获取访问统计
+     *
+     * @param param
+     * @return 访问统计信息
+     */
+    Long getVisitingCount(@Param("param") VisitingStatisticParam param);
+
+    /**
+     * 获取范围内访问统计
+     *
+     * @param param
+     */
+    List<VisitingRangeDataVO> getVisitingCountRange(@Param("param") VisitingStatisticParam param);
+}

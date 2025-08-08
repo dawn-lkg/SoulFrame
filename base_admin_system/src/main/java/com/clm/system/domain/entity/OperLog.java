@@ -115,4 +115,9 @@ public class OperLog implements Serializable {
      * 耗费时间（毫秒）
      */
     private Long costTime;
+
+    /**
+     * 用户代理
+     */
+    private String userAgent;
 } 

@@ -1,5 +1,9 @@
 package com.clm.common.constants;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 public interface Constants {
     
     /**
@@ -41,4 +45,9 @@ public interface Constants {
      * 字典状态
      */
     String DICT_NORMAL = "0";
+
+    // Object类的默认方法集合
+    Set<String> OBJECT_METHODS = new HashSet<>(Arrays.asList(
+            "equals", "hashCode", "toString", "getClass", "notify", "notifyAll", "wait"
+    ));
 } 

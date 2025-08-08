@@ -86,6 +86,7 @@ public class SqlInterceptor implements Interceptor {
      */
     private Set<String> excludeSqlIds = new HashSet<>(){{
         add("com.clm.system.mapper.OperLogMapper.insert");
+        add("com.clm.quartz.mapper.SysJobLogMapper.insert");
     }};
 
     /**

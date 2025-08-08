@@ -13,6 +13,6 @@ import java.time.Duration;
 @Data
 public class SseProperties {
     private Duration defaultTimeout = Duration.ZERO;
-    private Duration heartbeat = Duration.ofSeconds(5);
+    private Duration heartbeat = Duration.ofSeconds(45);
     private int maxRetry = 3;
 }

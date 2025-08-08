@@ -65,7 +65,7 @@ public class Server {
     /**
      * 设置CPU信息
      */
-    private void setCpuInfo(CentralProcessor processor)
+    public void setCpuInfo(CentralProcessor processor)
     {
         // CPU信息
         long[] prevTicks = processor.getSystemCpuLoadTicks();
@@ -107,7 +107,7 @@ public class Server {
     /**
      * 设置内存信息
      */
-    private void setMemInfo(GlobalMemory memory){
+    public void setMemInfo(GlobalMemory memory) {
         mem.setTotal(memory.getTotal());
         mem.setUsed(memory.getTotal() - memory.getAvailable());
         mem.setFree(memory.getAvailable());

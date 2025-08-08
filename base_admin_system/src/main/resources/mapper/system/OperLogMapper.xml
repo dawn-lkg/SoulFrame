@@ -48,6 +48,66 @@
     <select id="selectListRel" resultType="com.clm.system.domain.vo.OperLogVO">
         <include refid="selectSql"/>
     </select>
+    <select id="getVisitingCount" resultType="Long">
+        SELECT COUNT(DISTINCT concat(oper_ip,user_agent)) from sys_oper_log
+        <where>
+            <!-- 今日访问 -->
+            <if test="param.type==1">
+                AND oper_time >=CURDATE()
+            </if>
+            <!-- 昨日访问 -->
+            <if test="param.type==2">
+                AND oper_time &lt; CURDATE() and oper_time>=DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+            </if>
+            <!-- 本周访问 -->
+            <if test="param.type==3">
+                AND oper_time &lt;= DATE_ADD(CURDATE(),INTERVAL 1 DAY)
+                AND oper_time>=DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)
+            </if>
+            <!-- 上周访问 -->
+            <if test="param.type==4">
+                AND oper_time >= DATE(DATE_SUB(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY), INTERVAL 1 WEEK))
+                AND oper_time &lt; DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)
+            </if>
+            <!-- 本月访问 -->
+            <if test="param.type==5">
+                AND oper_time >= DATE_FORMAT(CURDATE(), '%Y-%m-01')
+                AND oper_time &lt; DATE_FORMAT(CURDATE(), '%Y-%m-01') + INTERVAL 1 MONTH;
+            </if>
+            <!-- 上月访问 -->
+            <if test="param.type==6">
+                AND oper_time >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-01')
+                AND oper_time &lt; DATE_FORMAT(CURDATE(), '%Y-%m-01')
+            </if>
+        </where>
+    </select>
+    <select id="getVisitingCountRange" resultType="com.clm.system.domain.vo.VisitingRangeDataVO">
+        SELECT
+        CONCAT(LPAD(seq.h, 2, '0'), ':00') AS `time`,
+        COALESCE(stat.count, 0) AS count
+        FROM (
+        SELECT 0 AS h UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL
+        SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL
+        SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10 UNION ALL SELECT 11 UNION ALL
+        SELECT 12 UNION ALL SELECT 13 UNION ALL SELECT 14 UNION ALL SELECT 15 UNION ALL
+        SELECT 16 UNION ALL SELECT 17 UNION ALL SELECT 18 UNION ALL SELECT 19 UNION ALL
+        SELECT 20 UNION ALL SELECT 21 UNION ALL SELECT 22 UNION ALL SELECT 23
+        ) seq
+        LEFT JOIN (
+        SELECT
+        HOUR(oper_time) AS h,
+        COUNT(DISTINCT CONCAT(oper_ip, user_agent)) AS count
+        FROM sys_oper_log
+        <where>
+            <if test="param.startTime!=null and param.endTime!=null">
+                AND oper_time>= #{param.startTime}
+                AND oper_time&lt;= #{param.endTime}
+            </if>
+        </where>
+        GROUP BY h
+        ) stat ON stat.h = seq.h
+        ORDER BY seq.h;
+    </select>
 
     <update id="cleanOperLog">
         TRUNCATE TABLE sys_oper_log

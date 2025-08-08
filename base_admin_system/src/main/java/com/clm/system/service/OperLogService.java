@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.clm.system.domain.entity.OperLog;
 import com.clm.system.domain.param.OperLogQueryParam;
 import com.clm.system.domain.vo.OperLogVO;
+import com.clm.system.domain.vo.VisitingStatisticVO;
 
 import java.util.List;
 
@@ -65,4 +66,11 @@ public interface OperLogService extends IService<OperLog> {
      * @param param 查询条件
      */
     void exportOperLog(OperLogQueryParam param);
-} 
+
+    /**
+     * 获取访问统计
+     *
+     * @return 访问统计结果
+     */
+    VisitingStatisticVO getVisitingStatistic();
+}

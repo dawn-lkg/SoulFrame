@@ -33,3 +33,4 @@ router:
     - /v3/api-docs/**
     - /swagger-resources/**
     - /system/config/configGroup
+    - /quartz/**

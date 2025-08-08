@@ -6,6 +6,7 @@ import com.clm.common.core.controller.BaseController;
 import com.clm.common.core.domain.Result;
 import com.clm.system.domain.param.OperLogQueryParam;
 import com.clm.system.domain.vo.OperLogVO;
+import com.clm.system.domain.vo.VisitingStatisticVO;
 import com.clm.system.service.OperLogService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -73,5 +74,11 @@ public class OperLogController extends BaseController {
     @GetMapping("/export")
     public void export(OperLogQueryParam param) {
         operLogService.exportOperLog(param);
+    }
+
+    @Operation(summary = "获取操作访问统计")
+    @GetMapping("/visitingStatistic")
+    public Result<VisitingStatisticVO> getVisitingStatistic() {
+        return success(operLogService.getVisitingStatistic());
     }
 } 

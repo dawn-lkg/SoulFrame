@@ -1,5 +1,7 @@
 package com.clm.system.service.impl;
 
+import cn.hutool.core.date.DateField;
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -13,8 +15,11 @@ import com.clm.common.utils.ServletUtils;
 import com.clm.common.utils.UserAgentUtils;
 import com.clm.system.domain.entity.OperLog;
 import com.clm.system.domain.param.OperLogQueryParam;
+import com.clm.system.domain.param.VisitingStatisticParam;
 import com.clm.system.domain.vo.OperLogExportVO;
 import com.clm.system.domain.vo.OperLogVO;
+import com.clm.system.domain.vo.VisitingRangeDataVO;
+import com.clm.system.domain.vo.VisitingStatisticVO;
 import com.clm.system.mapper.OperLogMapper;
 import com.clm.system.service.OperLogService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,6 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.OutputStream;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  * 操作日志记录(OperLog)表服务实现类
@@ -176,5 +183,49 @@ public class OperLogServiceImpl extends ServiceImpl<OperLogMapper, OperLog> impl
         if (vo.getCostTime() != null) {
             vo.setCostTimeDesc(UserAgentUtils.formatCostTime(vo.getCostTime()));
         }
+    }
+
+    @Override
+    public VisitingStatisticVO getVisitingStatistic() {
+        VisitingStatisticVO visitingStatisticVO = new VisitingStatisticVO();
+        // 今日访问
+        CompletableFuture<Long> todayCountFuture = CompletableFuture.supplyAsync(() -> baseMapper.getVisitingCount(new VisitingStatisticParam(1)));
+        //昨日访问
+        CompletableFuture<Long> yesterdayCountFuture = CompletableFuture.supplyAsync(() -> baseMapper.getVisitingCount(new VisitingStatisticParam(2)));
+        // 本周访问
+        CompletableFuture<Long> thisWeekCountFuture = CompletableFuture.supplyAsync(() -> baseMapper.getVisitingCount(new VisitingStatisticParam(3)));
+        // 上周访问
+        CompletableFuture<Long> lastWeekCountFuture = CompletableFuture.supplyAsync(() -> baseMapper.getVisitingCount(new VisitingStatisticParam(4)));
+        // 本月访问
+        CompletableFuture<Long> thisMonthCountFuture = CompletableFuture.supplyAsync(() -> baseMapper.getVisitingCount(new VisitingStatisticParam(5)));
+        // 上月访问
+        CompletableFuture<Long> lastMonthCountFuture = CompletableFuture.supplyAsync(() -> baseMapper.getVisitingCount(new VisitingStatisticParam(6)));
+        // 访问图表
+        CompletableFuture<List<VisitingRangeDataVO>> rangeDataFuture = CompletableFuture.supplyAsync(() -> {
+            String endTime = DateUtil.date().toString("yyyy-MM-dd HH");
+            String startTime = DateUtil.date().offset(DateField.HOUR, -24).toString("yyyy-MM-dd HH");
+            return baseMapper.getVisitingCountRange(new VisitingStatisticParam(startTime, endTime));
+        });
+        // 所有访问
+        CompletableFuture<Void> voidCompletableFuture = CompletableFuture.allOf(todayCountFuture, yesterdayCountFuture, thisWeekCountFuture, lastWeekCountFuture, thisMonthCountFuture, lastMonthCountFuture);
+        voidCompletableFuture.join();
+        try {
+            Long todayCount = todayCountFuture.get();
+            Long yesterdayCount = yesterdayCountFuture.get();
+            Long thisWeekCount = thisWeekCountFuture.get();
+            Long lastWeekCount = lastWeekCountFuture.get();
+            Long thisMonthCount = thisMonthCountFuture.get();
+            Long lastMonthCount = lastMonthCountFuture.get();
+            visitingStatisticVO.setList(rangeDataFuture.get());
+            visitingStatisticVO.setVisitsTodayCount(Math.toIntExact(todayCount));
+            visitingStatisticVO.setVisitsYesterdayCount(Math.toIntExact(yesterdayCount));
+            visitingStatisticVO.setVisitsThisWeekCount(Math.toIntExact(thisWeekCount));
+            visitingStatisticVO.setVisitsLastWeekCount(Math.toIntExact(lastWeekCount));
+            visitingStatisticVO.setVisitsThisMonthCount(Math.toIntExact(thisMonthCount));
+            visitingStatisticVO.setVisitsLastMonthCount(Math.toIntExact(lastMonthCount));
+        } catch (InterruptedException | ExecutionException e) {
+            log.error("获取访问统计数据失败");
+        }
+        return visitingStatisticVO;
     }
 } 
