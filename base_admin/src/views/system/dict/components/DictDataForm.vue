@@ -61,7 +61,7 @@
 </template>
 
 <script setup>
-import {reactive, ref, watch} from 'vue';
+import {computed, reactive, ref, watch} from 'vue';
 import {message} from 'ant-design-vue';
 import {addDictData, updateDictData} from '@/api/modules/dict';
 
@@ -70,10 +70,6 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  title: {
-    type: String,
-    default: ''
-  },
   dictData: {
     type: Object,
     default: () => ({})
@@ -81,10 +77,19 @@ const props = defineProps({
   dictType: {
     type: String,
     default: ''
+  },
+  isEdit: {
+    type: Boolean,
+    default: false
   }
 });
 
 const emit = defineEmits(['update:open', 'success']);
+
+// 计算弹窗标题
+const title = computed(() => {
+  return props.isEdit ? '修改字典数据' : '新增字典数据';
+});
 
 // 表单相关
 const submitLoading = ref(false);

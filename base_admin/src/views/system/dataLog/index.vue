@@ -118,9 +118,19 @@
           </template>
           <template v-else-if="column.dataIndex === 'operation'">
             <a-space>
-              <a @click="handleDetail(record)">详情</a>
+              <a-button size="small" style="color: #1890ff;" type="link" @click="handleDetail(record)">
+                <template #icon>
+                  <EyeOutlined/>
+                </template>
+                详情
+              </a-button>
               <a-popconfirm title="确定要删除该数据日志吗？" ok-text="确定" cancel-text="取消" @confirm="handleDelete(record)">
-                <a>删除</a>
+                <a-button size="small" style="color: red;" type="link">
+                  <template #icon>
+                    <delete-outlined/>
+                  </template>
+                  删除
+                </a-button>
               </a-popconfirm>
             </a-space>
           </template>
@@ -146,12 +156,12 @@ import {
   DeleteOutlined,
   DownOutlined,
   ExportOutlined,
+  EyeOutlined,
   RedoOutlined,
   SearchOutlined,
   UpOutlined
 } from '@ant-design/icons-vue'
 import {batchDeleteDataLog, clearDataLog, deleteDataLog, exportDataLog, getDataLogPage} from '@/api/modules/dataLog'
-import {OPERATE_STATUS, OPERATE_TYPE} from '@/config'
 import {handleDeletePagination} from '@/utils/pagination'
 import DataLogDetail from './components/DataLogDetail.vue'
 
@@ -282,7 +292,7 @@ const columns = [
     dataIndex: 'operation',
     key: 'operation',
     fixed: 'right',
-    width: 120,
+    width: 180,
     visible: true,
   },
 ]

@@ -85,18 +85,31 @@
           </template>
           <template v-else-if="column.dataIndex === 'action'">
             <a-space>
-              <a @click="handleEdit(record)">编辑</a>
-              <a-divider type="vertical" />
-              <a @click="handlePermission(record)">分配权限</a>
-              <a-divider type="vertical" />
-              <a @click="handleDelete(record)">删除</a>
+              <a-button size="small" style="color: #1890ff;" type="link" @click="handleEdit(record)">
+                <template #icon>
+                  <edit-outlined/>
+                </template>
+                编辑
+              </a-button>
+              <a-button size="small" style="color: #1890ff;" type="link" @click="handlePermission(record)">
+                <template #icon>
+                  <safety-outlined/>
+                </template>
+                分配权限
+              </a-button>
+              <a-button size="small" style="color: red;" type="link" @click="handleDelete(record)">
+                <template #icon>
+                  <delete-outlined/>
+                </template>
+                删除
+              </a-button>
             </a-space>
           </template>
         </template>
       </a-table>
       </div>
       <!-- 引入角色表单组件 -->
-      <RoleForm v-model:open="open" :title="title" :roleData="currentRole" @update:open="open = $event"
+    <RoleForm v-model:open="open" :is-edit="isEdit" :role-data="currentRole" @update:open="open = $event"
         @success="handleFormSuccess" />
 
       <!-- 引入权限分配组件 -->
@@ -109,9 +122,11 @@
 import {message, Modal} from 'ant-design-vue'
 import {
   DeleteOutlined,
+  EditOutlined,
   ExclamationCircleOutlined,
   PlusOutlined,
   ReloadOutlined,
+  SafetyOutlined,
   SearchOutlined
 } from '@ant-design/icons-vue'
 import RoleForm from './components/RoleForm.vue'
@@ -135,13 +150,6 @@ const queryParams = reactive({
 // 表格列定义
 const columns = [
   {
-    title: '角色ID',
-    dataIndex: 'roleId',
-    key: 'roleId',
-    width: 80,
-    visible: true
-  },
-  {
     title: '角色名称',
     dataIndex: 'roleName',
     key: 'roleName',
@@ -158,28 +166,19 @@ const columns = [
     title: '排序',
     dataIndex: 'roleSort',
     key: 'roleSort',
-    width: 80,
     visible: true
   },
   {
     title: '状态',
     dataIndex: 'status',
     key: 'status',
-    width: 100,
-    visible: true
-  },
-  {
-    title: '创建时间',
-    dataIndex: 'createTime',
-    key: 'createTime',
-    width: 180,
     visible: true
   },
   {
     title: '操作',
     dataIndex: 'action',
     key: 'action',
-    width: 250,
+    width: 260,
     visible: true,
     fixed: 'right'
   }
@@ -216,8 +215,8 @@ const selectedRowKeys = ref([])
 
 // 角色表单相关
 const open = ref(false)
-const title = ref('添加角色')
 const currentRole = ref({}) // 当前选中的角色数据
+const isEdit = ref(false)
 
 // 权限相关
 const permissionOpen = ref(false)
@@ -270,7 +269,7 @@ const onSelectChange = (keys) => {
 // 新增角色
 const handleAdd = () => {
   currentRole.value = {}
-  title.value = '添加角色'
+  isEdit.value = false
   setTimeout(() => {
     open.value = true
   }, 100)
@@ -279,7 +278,7 @@ const handleAdd = () => {
 // 编辑角色
 const handleEdit = (record) => {
   currentRole.value = { ...record }
-  title.value = '修改角色'
+  isEdit.value = true
   setTimeout(() => {
     open.value = true
   }, 100)

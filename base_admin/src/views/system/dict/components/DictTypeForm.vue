@@ -45,13 +45,13 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  title: {
-    type: String,
-    default: ''
-  },
   dictTypeData: {
     type: Object,
     default: () => ({})
+  },
+  isEdit: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -68,9 +68,14 @@ const form = reactive({
   remark: ''
 });
 
+// 计算弹窗标题
+const title = computed(() => {
+  return props.isEdit ? '修改字典类型' : '新增字典类型';
+});
+
 // 计算是否为编辑模式
 const isEdit = computed(() => {
-  return form.dictId !== undefined && form.dictId !== null && form.dictId !== '';
+  return props.isEdit;
 });
 
 // 表单验证规则

@@ -88,17 +88,30 @@
           <!-- 操作列 -->
           <template v-if="column.key === 'action'">
             <a-space>
-              <a @click="handleData(record)">数据</a>
-              <a-divider type="vertical"/>
-              <a @click="handleEdit(record)">修改</a>
-              <a-divider type="vertical"/>
+              <a-button size="small" style="color: #1890ff;" type="link" @click="handleData(record)">
+                <template #icon>
+                  <database-outlined/>
+                </template>
+                数据
+              </a-button>
+              <a-button size="small" style="color: #1890ff;" type="link" @click="handleEdit(record)">
+                <template #icon>
+                  <edit-outlined/>
+                </template>
+                修改
+              </a-button>
               <a-popconfirm
                   cancel-text="取消"
                   ok-text="确定"
                   title="确定删除该字典类型吗？"
                   @confirm="handleDelete(record)"
               >
-                <a>删除</a>
+                <a-button size="small" style="color: red;" type="link">
+                  <template #icon>
+                    <delete-outlined/>
+                  </template>
+                  删除
+                </a-button>
               </a-popconfirm>
             </a-space>
           </template>
@@ -110,7 +123,7 @@
     <dict-type-form
         v-model:open="dictTypeFormOpen"
         :dict-type-data="currentDictType"
-        :title="dictTypeFormTitle"
+        :is-edit="isEdit"
         @success="handleDictTypeSuccess"
     />
 
@@ -125,7 +138,9 @@
 <script setup>
 import {message, Modal} from 'ant-design-vue';
 import {
+  DatabaseOutlined,
   DeleteOutlined,
+  EditOutlined,
   ExclamationCircleOutlined,
   PlusOutlined,
   ReloadOutlined,
@@ -195,7 +210,7 @@ const columns = [
   {
     title: '操作',
     key: 'action',
-    width: 200,
+    width: 250,
     fixed: 'right',
     visible: true
   }
@@ -235,8 +250,8 @@ const queryParams = reactive({
 
 // 字典类型表单相关
 const dictTypeFormOpen = ref(false);
-const dictTypeFormTitle = ref('新增字典类型');
 const currentDictType = ref({});
+const isEdit = ref(false);
 
 // 字典数据相关
 const dictDataOpen = ref(false);
@@ -311,7 +326,6 @@ const resetQuery = () => {
 
 // 新增字典类型
 const handleAdd = () => {
-  dictTypeFormTitle.value = '新增字典类型';
   currentDictType.value = {
     dictId: undefined,
     dictName: '',
@@ -319,13 +333,14 @@ const handleAdd = () => {
     status: '0',
     remark: ''
   };
+  isEdit.value = false;
   dictTypeFormOpen.value = true;
 };
 
 // 编辑字典类型
 const handleEdit = (record) => {
-  dictTypeFormTitle.value = '修改字典类型';
   currentDictType.value = {...record};
+  isEdit.value = true;
   dictTypeFormOpen.value = true;
 };
 

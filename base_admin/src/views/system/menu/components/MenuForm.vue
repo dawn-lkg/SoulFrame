@@ -17,9 +17,18 @@
         <a-input v-model:value="form.menuName" placeholder="请输入菜单名称" />
       </a-form-item>
       <a-form-item v-if="form.menuType !== 'F'" label="菜单图标" name="icon">
-        <a-input-group compact>
-          <a-input v-model:value="form.icon" placeholder="点击选择图标" readonly style="width: calc(100% - 40px)" />
-          <a-button @click="handleIconSelect">
+        <a-input-group compact style="display: flex;">
+          <a-input
+              v-model:value="form.icon"
+              placeholder="点击选择图标"
+              readonly
+              style="flex: 1 1 auto;"
+          />
+          <a-button
+              style="flex-shrink: 0; min-width: 40px;"
+              type="default"
+              @click="handleIconSelect"
+          >
             <template #icon>
               <component :is="getIcon(form.icon)" v-if="form.icon" />
               <SearchOutlined v-else />
@@ -86,10 +95,6 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  title: {
-    type: String,
-    default: ''
-  },
   menuData: {
     type: Object,
     default: () => ({})
@@ -97,10 +102,19 @@ const props = defineProps({
   menuOptions: {
     type: Array,
     default: () => []
+  },
+  isEdit: {
+    type: Boolean,
+    default: false
   }
 })
 
 const emit = defineEmits(['update:open', 'success'])
+
+// 计算弹窗标题
+const title = computed(() => {
+  return props.isEdit ? '修改菜单' : '新增菜单';
+})
 
 // 表单相关
 const submitLoading = ref(false)
@@ -123,7 +137,7 @@ const form = reactive({
 
 // 计算是否为编辑模式
 const isEdit = computed(() => {
-  return form.menuId !== undefined && form.menuId !== null && form.menuId !== ''
+  return props.isEdit
 })
 
 // 表单验证规则
@@ -170,12 +184,10 @@ watch(
   () => props.menuData,
   (menuData) => {
     if (menuData && Object.keys(menuData).length > 0) {
-      // 清空表单，然后填充数据
       resetForm()
       Object.assign(form, menuData)
       selectedIcon.value = menuData.icon || '' // 同步图标选择器的值
     } else {
-      // 如果是新增模式，重置表单
       resetForm()
     }
   },

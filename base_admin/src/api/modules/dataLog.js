@@ -31,4 +31,9 @@ export async function exportDataLog(params) {
   return request.download('/system/operLog/export', '数据日志导出.xlsx',{},params)
 }
 
+// 获取访问统计
+export async function getVisitingStatistic() {
+  return request.get('/system/operLog/visitingStatistic')
+}
+
 

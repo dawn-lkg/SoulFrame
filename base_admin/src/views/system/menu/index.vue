@@ -45,6 +45,7 @@
     <div class="common-table-container" ref="tableContainerRef">
       <!-- 操作按钮区域 -->
       <div class="action-buttons">
+        <a-space>
         <a-button type="primary" @click="handleAdd">
           <template #icon>
             <PlusOutlined />
@@ -52,6 +53,20 @@
           新增
         </a-button>
 
+          <a-button v-if="expandedRowKeys.length > 0" type="danger" @click="collapseAllRows">
+            <template #icon>
+              <MinusOutlined/>
+            </template>
+            折叠所有
+          </a-button>
+
+          <a-button v-else type="danger" @click="expandAllRows">
+            <template #icon>
+              <UnorderedListOutlined/>
+            </template>
+            展开所有
+        </a-button>
+        </a-space>
         <TableTool
           @refresh="getList"
           v-model:tableSize="tableConfig.size"
@@ -69,10 +84,13 @@
         :pagination="false"
         :loading="loading"
         :scroll="{ x: 1300 }"
+        v-model:expandedRowKeys="expandedRowKeys"
+        :defaultExpandAllRows="true"
+        :defaultExpandedRowKeys="expandedRowKeys"
         :expandable="{
-          defaultExpandAllRows: true,
           getRecordKey: (record) => record.menuId,
           getChildrenColumnName: 'children',
+          
         }"
       >
         <template #bodyCell="{ column, record }">
@@ -86,11 +104,24 @@
           </template>
           <template v-else-if="column.dataIndex === 'action'">
             <a-space>
-              <a @click="handleAdd(record)">新增</a>
-              <a-divider type="vertical" />
-              <a @click="handleEdit(record)">修改</a>
-              <a-divider type="vertical" />
-              <a @click="handleDelete(record)">删除</a>
+              <a-button size="small" type="link" @click="handleAdd(record)">
+                <template #icon>
+                  <plus-outlined/>
+                </template>
+                新增
+              </a-button>
+              <a-button size="small" type="link" @click="handleEdit(record)">
+                <template #icon>
+                  <edit-outlined/>
+                </template>
+                修改
+              </a-button>
+              <a-button size="small" style="color: red;" type="link" @click="handleDelete(record)">
+                <template #icon>
+                  <delete-outlined/>
+                </template>
+                删除
+              </a-button>
             </a-space>
           </template>
         </template>
@@ -100,7 +131,7 @@
     <!-- 使用MenuForm组件 -->
     <menu-form
       :open="open"
-      :title="title"
+      :is-edit="isEdit"
       :menu-data="currentMenu"
       :menu-options="menuOptions"
       @update:open="open = $event"
@@ -111,7 +142,16 @@
 
 <script setup>
 import {message, Modal} from "ant-design-vue";
-import {ExclamationCircleOutlined, PlusOutlined, ReloadOutlined, SearchOutlined} from "@ant-design/icons-vue";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  ExclamationCircleOutlined,
+  MinusOutlined,
+  PlusOutlined,
+  ReloadOutlined,
+  SearchOutlined,
+  UnorderedListOutlined
+} from "@ant-design/icons-vue";
 import MenuForm from "./components/MenuForm.vue";
 import {getMenuTreeList, removeMenu,} from "@/api/modules/menu";
 
@@ -125,6 +165,9 @@ const queryParams = reactive({
   menuName: "",
   status: undefined,
 });
+
+// 展开行
+const expandedRowKeys = ref([]);
 
 // 表格列定义
 const columns = [
@@ -150,9 +193,16 @@ const columns = [
     visible: true,
   },
   {
-    title: "权限标识",
-    dataIndex: "perms",
-    key: "perms",
+    title: "状态",
+    dataIndex: "status",
+    key: "status",
+    width: 100,
+    visible: true,
+  },
+  {
+    title: "路由地址",
+    dataIndex: "path",
+    key: "path",
     ellipsis: true,
     visible: true,
   },
@@ -164,24 +214,19 @@ const columns = [
     visible: true,
   },
   {
-    title: "状态",
-    dataIndex: "status",
-    key: "status",
-    width: 100,
+    title: "权限标识",
+    dataIndex: "perms",
+    key: "perms",
+    ellipsis: true,
     visible: true,
   },
-  {
-    title: "创建时间",
-    dataIndex: "createTime",
-    key: "createTime",
-    width: 180,
-    visible: true,
-  },
+
+
   {
     title: "操作",
     dataIndex: "action",
     key: "action",
-    width: 220,
+    width: 240,
     visible: true,
     fixed: 'right',
   },
@@ -210,12 +255,13 @@ const loading = ref(false);
 
 // 表单相关
 const open = ref(false);
-const title = ref("添加菜单");
 const currentMenu = ref({});
+const isEdit = ref(false);
 
 // 组件挂载时获取数据
-onMounted(() => {
-  getList();
+onMounted(async () => {
+  await getList();
+  expandedRowKeys.value = getAllMenuIds(menuList.value);
 });
 
 // 将菜单数据转换为树形选择器选项格式
@@ -243,10 +289,10 @@ const updateMenuOptions = (menuData) => {
 };
 
 // 获取菜单列表
-const getList = () => {
+const getList = async () => {
   loading.value = true;
 
-  getMenuTreeList(queryParams).then((data) => {
+  await getMenuTreeList(queryParams).then((data) => {
     menuList.value = data;
     updateMenuOptions(menuList.value);
     loading.value = false;
@@ -267,8 +313,6 @@ const resetQuery = () => {
 
 // 新增菜单
 const handleAdd = (record) => {
-  title.value = "添加菜单";
-
   // 准备新菜单数据
   currentMenu.value = {
     menuId: undefined,
@@ -283,6 +327,8 @@ const handleAdd = (record) => {
     status: "0",
   };
 
+  isEdit.value = false;
+
   // 延迟打开弹窗
   setTimeout(() => {
     open.value = true;
@@ -291,8 +337,8 @@ const handleAdd = (record) => {
 
 // 编辑菜单
 const handleEdit = (record) => {
-  title.value = "修改菜单";
   currentMenu.value = { ...record };
+  isEdit.value = true;
 
   // 延迟打开弹窗
   setTimeout(() => {
@@ -325,6 +371,28 @@ const handleDelete = (record) => {
 // 表单提交成功
 const handleFormSuccess = (formData) => {
   getList();
+};
+
+//获取所有menuId
+const getAllMenuIds = (data) => {
+  const menuIds = [];
+  data.forEach((item) => {
+    menuIds.push(item.menuId);
+    if (item.children) {
+      menuIds.push(...getAllMenuIds(item.children));
+    }
+  });
+  return menuIds;
+};
+
+// 展开所有行
+const expandAllRows = () => {
+  expandedRowKeys.value = getAllMenuIds(menuList.value);
+};
+
+// 折叠所有行
+const collapseAllRows = () => {
+  expandedRowKeys.value = [];
 };
 </script>
 

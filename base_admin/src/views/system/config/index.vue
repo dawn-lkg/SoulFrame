@@ -105,11 +105,25 @@
           </template>
           <template v-else-if="column.dataIndex === 'action'">
             <a-space>
-              <a @click="handleUpdate(record)">修改</a>
-              <a-divider type="vertical" />
-              <a @click="handleRefreshConfigByKey(record.configKey)">刷新</a>
-              <a-divider type="vertical"/>
-              <a @click="handleDelete(record)">删除</a>
+              <a-button size="small" style="color: #1890ff;" type="link" @click="handleUpdate(record)">
+                <template #icon>
+                  <edit-outlined/>
+                </template>
+                修改
+              </a-button>
+              <a-button size="small" style="color: #1890ff;" type="link"
+                        @click="handleRefreshConfigByKey(record.configKey)">
+                <template #icon>
+                  <reload-outlined/>
+                </template>
+                刷新
+              </a-button>
+              <a-button size="small" style="color: red;" type="link" @click="handleDelete(record)">
+                <template #icon>
+                  <delete-outlined/>
+                </template>
+                删除
+              </a-button>
             </a-space>
           </template>
           </template>
@@ -130,6 +144,7 @@
 import {message, Modal} from 'ant-design-vue'
 import {
   DeleteOutlined,
+  EditOutlined,
   ExclamationCircleOutlined,
   PlusOutlined,
   ReloadOutlined,
@@ -168,13 +183,6 @@ const groupOptions = ref([
 // 表格列定义
 const columns = [
   {
-    title: '配置ID',
-    dataIndex: 'id',
-    key: 'id',
-    width: 80,
-    visible: true
-  },
-  {
     title: '配置名称',
     dataIndex: 'configName',
     key: 'configName',
@@ -199,42 +207,31 @@ const columns = [
     title: '配置类型',
     dataIndex: 'configType',
     key: 'configType',
-    width: 100,
     visible: true
   },
   {
     title: '配置分组',
     dataIndex: 'configGroup',
     key: 'configGroup',
-    width: 120,
     visible: true
   },
   {
     title: '是否启用',
     dataIndex: 'isEnabled',
     key: 'isEnabled',
-    width: 100,
     visible: true
   },
   {
-    title: '是否系统配置',
+    title: '系统配置',
     dataIndex: 'isSystem',
     key: 'isSystem',
-    width: 120,
-    visible: true
-  },
-  {
-    title: '创建时间',
-    dataIndex: 'createTime',
-    key: 'createTime',
-    width: 180,
     visible: true
   },
   {
     title: '操作',
     dataIndex: 'action',
     key: 'action',
-    width: 200,
+    width: 260,
     visible: true,
     fixed: 'right'
   }

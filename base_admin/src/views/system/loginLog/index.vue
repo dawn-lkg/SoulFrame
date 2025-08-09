@@ -80,9 +80,19 @@
           </template>
           <template v-else-if="column.dataIndex === 'operation'">
             <a-space>
-              <a @click="handleDetail(record)">详情</a>
+              <a-button size="small" style="color: #1890ff;" type="link" @click="handleDetail(record)">
+                <template #icon>
+                  <EyeOutlined/>
+                </template>
+                详情
+              </a-button>
               <a-popconfirm title="确定要删除该登录日志吗？" ok-text="确定" cancel-text="取消" @confirm="handleDelete(record)">
-                <a>删除</a>
+                <a-button size="small" style="color: red;" type="link">
+                  <template #icon>
+                    <delete-outlined/>
+                  </template>
+                  删除
+                </a-button>
               </a-popconfirm>
             </a-space>
           </template>
@@ -97,7 +107,14 @@
 
 <script setup>
 import {message, Modal} from 'ant-design-vue'
-import {ClearOutlined, DeleteOutlined, ExportOutlined, RedoOutlined, SearchOutlined} from '@ant-design/icons-vue'
+import {
+  ClearOutlined,
+  DeleteOutlined,
+  ExportOutlined,
+  EyeOutlined,
+  RedoOutlined,
+  SearchOutlined
+} from '@ant-design/icons-vue'
 import {
   batchDeleteLoginLog,
   clearLoginLog,
@@ -168,7 +185,7 @@ const columns = [
     title: '登录地点',
     dataIndex: 'loginLocation',
     key: 'loginLocation',
-    width: 180,
+    autoWidth: true,
     visible: true,
   },
   {
@@ -189,7 +206,6 @@ const columns = [
     title: '登录状态',
     dataIndex: 'status',
     key: 'status',
-    width: 100,
     visible: true,
   },
   {
@@ -212,7 +228,7 @@ const columns = [
     dataIndex: 'operation',
     key: 'operation',
     fixed: 'right',
-    width: 100,
+    width: 180,
     visible: true,
   },
 ]

@@ -26,24 +26,29 @@
 
 <script setup>
 import {message} from 'ant-design-vue'
-import { addRole, updateRole} from '@/api/modules/role'
+import {addRole, updateRole} from '@/api/modules/role'
 
 const props = defineProps({
   open: {
     type: Boolean,
     default: false
   },
-  title: {
-    type: String,
-    default: ''
-  },
   roleData: {
     type: Object,
     default: () => ({})
+  },
+  isEdit: {
+    type: Boolean,
+    default: false
   }
 })
 
 const emit = defineEmits(['update:open', 'success'])
+
+// 计算弹窗标题
+const title = computed(() => {
+  return props.isEdit ? '修改角色' : '新增角色';
+})
 
 // 表单相关
 const submitLoading = ref(false)
@@ -59,7 +64,7 @@ const form = reactive({
 
 // 计算是否为编辑模式
 const isEdit = computed(() => {
-  return form.roleId !== undefined && form.roleId !== null && form.roleId !== ''
+  return props.isEdit
 })
 
 // 表单验证规则
@@ -119,12 +124,10 @@ watch(
   () => props.roleData,
   (roleData) => {
     if (roleData && Object.keys(roleData).length > 0) {
-      // 清空表单，然后填充数据
       resetForm()
       Object.assign(form, roleData)
       console.log('表单数据已更新:', form)
     } else {
-      // 如果是新增模式，重置表单
       resetForm()
     }
   },

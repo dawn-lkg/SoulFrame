@@ -85,7 +85,12 @@
                 title="确定要强制退出该用户吗？"
                 @confirm="handleForceLogout(record)"
             >
-              <a-button danger type="link">强退</a-button>
+              <a-button style="color: red;" type="link">
+                <template #icon>
+                  <poweroff-outlined/>
+                </template>
+                强退
+              </a-button>
             </a-popconfirm>
           </a-space>
         </template>
@@ -137,56 +142,50 @@ const columns = [
     title: "用户ID",
     dataIndex: "userId",
     key: "userId",
-    visible: true,
+    visible: false,
     width: 100,
   },
   {
     title: "用户名",
     dataIndex: "userName",
     key: "userName",
-    width: 120,
     visible: true,
   },
   {
     title: "用户昵称",
     dataIndex: "nickName",
     key: "nickName",
-    width: 120,
     visible: true,
   },
   {
     title: "登录IP",
     dataIndex: "ipaddr",
     key: "ipaddr",
-    width: 140,
     visible: true,
   },
   {
     title: "登录地点",
     dataIndex: "loginLocation",
     key: "loginLocation",
-    width: 180,
+    width: 200,
     visible: true,
   },
   {
     title: "浏览器",
     dataIndex: "browser",
     key: "browser",
-    width: 140,
     visible: true,
   },
   {
     title: "操作系统",
     dataIndex: "os",
     key: "os",
-    width: 140,
     visible: true,
   },
   {
     title: "登录时间",
     dataIndex: "loginTime",
     key: "loginTime",
-    width: 180,
     visible: true,
   },
   {
@@ -194,7 +193,7 @@ const columns = [
     dataIndex: "operation",
     key: "operation",
     fixed: "right",
-    width: 100,
+    width: 180,
     visible: true,
   },
 ];

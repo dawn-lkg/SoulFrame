@@ -52,15 +52,24 @@
         <!-- 操作列 -->
         <template v-if="column.key === 'action'">
           <a-space>
-            <a @click="handleEdit(record)">修改</a>
-            <a-divider type="vertical"/>
+            <a-button size="small" style="color: #1890ff;" type="link" @click="handleEdit(record)">
+              <template #icon>
+                <edit-outlined/>
+              </template>
+              修改
+            </a-button>
             <a-popconfirm
                 cancel-text="取消"
                 ok-text="确定"
                 title="确定删除该字典数据吗？"
                 @confirm="handleDelete(record)"
             >
-              <a>删除</a>
+              <a-button size="small" style="color: red;" type="link">
+                <template #icon>
+                  <delete-outlined/>
+                </template>
+                删除
+              </a-button>
             </a-popconfirm>
           </a-space>
         </template>
@@ -72,7 +81,7 @@
         v-model:open="dictDataFormOpen"
         :dict-data="currentDictData"
         :dict-type="dictType.dictType"
-        :title="dictDataFormTitle"
+        :is-edit="isEdit"
         @success="handleDictDataSuccess"
     />
   </a-drawer>
@@ -81,7 +90,7 @@
 <script setup>
 import {reactive, ref, watch} from 'vue';
 import {message} from 'ant-design-vue';
-import {PlusOutlined} from '@ant-design/icons-vue';
+import {DeleteOutlined, EditOutlined, PlusOutlined} from '@ant-design/icons-vue';
 import {deleteDictData, getDictDataPage} from '@/api/modules/dict';
 import DictDataForm from './DictDataForm.vue';
 import {handleSingleDeletePagination} from '@/utils/pagination';
@@ -177,8 +186,8 @@ const pagination = reactive({
 
 // 字典数据表单相关
 const dictDataFormOpen = ref(false);
-const dictDataFormTitle = ref('新增字典数据');
 const currentDictData = ref({});
+const isEdit = ref(false);
 
 // 监听dictType变化
 watch(
@@ -240,7 +249,6 @@ const handleTableChange = (pag, filters, sorter) => {
 
 // 新增字典数据
 const handleAdd = () => {
-  dictDataFormTitle.value = '新增字典数据';
   currentDictData.value = {
     dictCode: undefined,
     dictSort: 0,
@@ -253,13 +261,14 @@ const handleAdd = () => {
     status: '0',
     remark: ''
   };
+  isEdit.value = false;
   dictDataFormOpen.value = true;
 };
 
 // 编辑字典数据
 const handleEdit = (record) => {
-  dictDataFormTitle.value = '修改字典数据';
   currentDictData.value = {...record};
+  isEdit.value = true;
   dictDataFormOpen.value = true;
 };
 

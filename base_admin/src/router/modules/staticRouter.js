@@ -64,4 +64,25 @@ export const profileRoute = {
   component: () => import('@/views/profile/index.vue'),
 }
 
+// 示例页面
+export const exampleRoute = {
+    path: '/example',
+    name: 'example',
+    meta: {
+        title: '示例页面',
+        icon: 'AppstoreOutlined'
+    },
+    children: [
+        {
+            path: 'common-table',
+            name: 'commonTable',
+            component: () => import('@/views/example/CommonTableDemo.vue'),
+            meta: {
+                title: '通用表格',
+                icon: 'TableOutlined'
+            }
+        }
+    ]
+}
+
 

@@ -63,10 +63,6 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  title: {
-    type: String,
-    default: "",
-  },
   userData: {
     type: Object,
     default: () => ({}),
@@ -75,9 +71,18 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  isEdit: {
+    type: Boolean,
+    default: false,
+  }
 });
 
 const emit = defineEmits(["update:open", "success"]);
+
+// 计算弹窗标题
+const title = computed(() => {
+  return props.isEdit ? '修改用户' : '添加用户';
+});
 
 // 表单相关
 const submitLoading = ref(false);
@@ -94,9 +99,7 @@ const form = reactive({
 
 // 计算是否为编辑模式
 const isEdit = computed(() => {
-  return (
-    form.userId !== undefined && form.userId !== null && form.userId !== ""
-  );
+  return props.isEdit;
 });
 
 // 表单验证规则 - 根据是否编辑模式调整规则
@@ -142,8 +145,6 @@ const resetForm = () => {
   form.email = "";
   form.roleIds = [];
   (form.status = "0"), (form.sex = "0"), (form.nickName = "");
-
-  // 延迟清除验证，确保在表单可见后进行
   setTimeout(() => {
     formRef.value?.resetFields();
   }, 0);
@@ -154,12 +155,10 @@ watch(
   () => props.userData,
   (userData) => {
     if (userData && Object.keys(userData).length > 0) {
-      // 清空表单，然后填充数据
       resetForm();
       Object.assign(form, userData);
       console.log("表单数据已更新:", form);
     } else {
-      // 如果是新增模式，重置表单
       resetForm();
     }
   },

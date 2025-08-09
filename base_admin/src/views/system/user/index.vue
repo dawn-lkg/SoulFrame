@@ -113,11 +113,24 @@
           </template>
           <template v-else-if="column.dataIndex === 'action'">
             <a-space>
-              <a @click="handleEdit(record)">编辑</a>
-              <a-divider type="vertical" />
-              <a @click="handleDelete(record)">删除</a>
-              <a-divider type="vertical" />
-              <a @click="handleResetPassword(record)">重置密码</a>
+              <a-button size="small" type="link" @click="handleEdit(record)">
+                <template #icon>
+                  <edit-outlined/>
+                </template>
+                编辑
+              </a-button>
+              <a-button size="small" style="color: red;" type="link" @click="handleDelete(record)">
+                <template #icon>
+                  <delete-outlined/>
+                </template>
+                删除
+              </a-button>
+              <a-button size="small" style="color: #1890ff;" type="link" @click="handleResetPassword(record)">
+                <template #icon>
+                  <key-outlined/>
+                </template>
+                重置密码
+              </a-button>
             </a-space>
           </template>
         </template>
@@ -126,7 +139,7 @@
     </div>
     <UserForm
       :open="open"
-      :title="title"
+      :is-edit="isEdit"
       :userData="currentUser"
       :roleOptions="roleOptions"
       ref="UserFormRef"
@@ -137,32 +150,25 @@
     <!-- </a-card> -->
   </div>
 </template>
-  
-  <script setup>
-  import {message, Modal} from "ant-design-vue";
-  import {
-    DeleteOutlined,
-    ExclamationCircleOutlined,
-    PlusOutlined,
-    ReloadOutlined,
-    SearchOutlined,
-  } from "@ant-design/icons-vue";
-  import UserForm from "./components/UserForm.vue";
-  import {
-    batchDeleteUser,
-    deleteUser,
-    getUserPage,
-    resetPassword,
-  } from "@/api/modules/user";
-  import {getRoleList} from "@/api/modules/role";
-  import {
-    handleDeletePagination,
-    handleSingleDeletePagination,
-  } from "@/utils/pagination";
 
-  const appStore = useAppStore();
+<script setup>
+import {message, Modal} from "ant-design-vue";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  ExclamationCircleOutlined,
+  KeyOutlined,
+  PlusOutlined,
+  ReloadOutlined,
+  SearchOutlined,
+} from "@ant-design/icons-vue";
+import UserForm from "./components/UserForm.vue";
+import {batchDeleteUser, deleteUser, getUserPage, resetPassword,} from "@/api/modules/user";
+import {getRoleList} from "@/api/modules/role";
+import {handleDeletePagination, handleSingleDeletePagination,} from "@/utils/pagination";
 
-  const tableContainerRef = ref(null);
+const appStore = useAppStore();
+const tableContainerRef = ref(null);
 
 // 查询参数
 const queryParams = reactive({
@@ -181,7 +187,7 @@ const tableConfig = reactive({
       dataIndex: "userId",
       key: "userId",
       width: 50,
-      visible: true,
+      visible: false,
     },
     {
       title: "用户名称",
@@ -230,14 +236,14 @@ const tableConfig = reactive({
       title: "最后登录ip",
       dataIndex: "loginIp",
       key: "loginIp",
-      width: 180,
+      width: 150,
       visible: true,
     },
     {
       title: "最后登录时间",
       dataIndex: "loginDate",
       key: "loginDate",
-      width: 180,
+      width: 150,
       visible: true,
     },
     {
@@ -245,7 +251,7 @@ const tableConfig = reactive({
       dataIndex: "action",
       key: "action",
       fixed: "right",
-      width: 220,
+      width: 240,
       visible: true,
     },
   ],
@@ -278,8 +284,12 @@ const selectedRowKeys = ref([]);
 
 // 弹窗相关
 const open = ref(false);
-const title = ref("添加用户");
-const currentUser = ref({}); // 当前选中的用户数据
+
+// 当前选中的用户数据
+const currentUser = ref({});
+
+// 是否编辑
+const isEdit = ref(false);  
 
 // 组件挂载时获取数据
 onMounted(() => {
@@ -337,8 +347,8 @@ const onSelectChange = (keys) => {
 
 // 新增用户
 const handleAdd = () => {
-  title.value = "添加用户";
   currentUser.value = {};
+  isEdit.value = false;
   setTimeout(() => {
     open.value = true;
   }, 100);
@@ -346,8 +356,8 @@ const handleAdd = () => {
 
 // 编辑用户
 const handleEdit = (record) => {
-  title.value = "修改用户";
-  currentUser.value = { ...record }; // 模拟角色数据
+  currentUser.value = {...record};
+  isEdit.value = true;
   setTimeout(() => {
     open.value = true;
   }, 100);

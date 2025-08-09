@@ -253,7 +253,7 @@
 
 <script setup>
 import {message} from 'ant-design-vue'
-import {updateUserInfo, updateUserPassword, updateUserAvatar} from '@/api/modules/user'
+import {updateUserInfo, updateUserPassword} from '@/api/modules/user'
 import router from '@/router'
 import {LOGIN_PATH} from '@/config'
 import {getCurrentUserLoginLog} from '@/api/modules/loginLog'
@@ -277,6 +277,9 @@ const loading = ref(false)
 // 用户信息
 const authStore = useAuthStore()
 const userInfo = ref({ ...authStore.userInfo })
+
+// 默认头像
+const defaultAvatar = ref('http://120.27.215.0:8081/files/970c267a-ada5-4096-a709-4489a16f885c.gif')
 
 // 用户表单
 const userFormRef = ref(null)

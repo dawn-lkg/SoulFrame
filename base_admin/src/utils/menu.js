@@ -1,9 +1,7 @@
-import { useRouter } from 'vue-router'
-import layout from '@/layout/index.vue'
-import noFound from '@/components/error/404.vue'
+import {useRouter} from 'vue-router'
 import empty from '@/components/common/empty.vue'
 import IFrame from '@/layout/iframe/index.vue'
-import { IFRAME_PATH } from '@/config'
+import {IFRAME_PATH} from '@/config'
 
 const modules = import.meta.glob('@/views/**/*.vue')
 
@@ -42,7 +40,8 @@ export const convertMenuTreeToRoutes = (data) => {
       meta: {
         title: item.menuName,
         icon: item.icon,
-        iframeUrl: generateIframeUrl(item)
+          iframeUrl: generateIframeUrl(item),
+          keepAlive: item.isCache === 1 // 添加缓存标识，根据后端返回的 isCache 字段判断
       }
     }
 
