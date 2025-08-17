@@ -21,10 +21,11 @@ html, body {
 }
 
 .common-container {
-  padding: 48px;
+  padding: 24px 36px 24px 36px;
   background: $component-bg;
   border-radius: $border-radius-lg;
-  min-height: calc(100vh - $header-height - 70px);
+  min-height: auto;
+  // min-height: calc(100vh - $header-height - 70px);
   transition: all $animation-duration-base;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   position: relative;
@@ -67,7 +68,7 @@ html, body {
   .search-form {
     padding: 16px;
     border-radius: $border-radius-base;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     transition: all 0.3s ease;
     animation: fadeInDown $animation-duration-slow ease-out;
     

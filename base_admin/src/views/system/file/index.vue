@@ -66,6 +66,7 @@
           :data-source="fileList"
           :loading="loading"
           :pagination="pagination"
+          :row-key="record => record.fileId"
           :row-selection="{ selectedRowKeys, onChange: onSelectChange }"
           :size="tableConfig.size"
           @change="handleTableChange"
@@ -167,12 +168,13 @@
 </template>
 
 <script setup>
-import {message} from 'ant-design-vue';
+import {message, Modal} from 'ant-design-vue';
 import {
   DeleteOutlined,
   DownloadOutlined,
   EditOutlined,
   EllipsisOutlined,
+  ExclamationCircleOutlined,
   EyeOutlined,
   ReloadOutlined,
   SearchOutlined,
@@ -181,10 +183,11 @@ import {
 } from '@ant-design/icons-vue';
 import {FILE_STATUS} from '@/config';
 import FileTypeIcon from './components/FileTypeIcon.vue';
-import {getFilePage, getFileUrl} from '@/api/modules/file';
+import {batchDeleteFiles, deleteFile, getFilePage, getFileUrl} from '@/api/modules/file';
 import UploadModal from './components/UploadModal.vue';
 import PreviewModal from './components/PreviewModal.vue';
 import ShareModal from './components/ShareModal.vue';
+import {handleDeletePagination, handleSingleDeletePagination} from '@/utils/pagination';
 
 // 状态
 const loading = ref(false);
@@ -441,8 +444,27 @@ const handleRename = (record) => {
 
 // 删除文件
 const handleDelete = (record) => {
-  message.success(`文件 ${record.fileName} 已删除`);
-  getFileList();
+  Modal.confirm({
+    title: "确认删除",
+    icon: () => h(ExclamationCircleOutlined),
+    content: `是否确认删除文件 "${record.fileName}" ？`,
+    okText: "确定",
+    cancelText: "取消",
+    onOk() {
+      return deleteFile(record.fileId)
+          .then((res) => {
+            message.success("删除成功");
+            return handleSingleDeletePagination(
+                fileList.value,
+                queryParams,
+                getFileList
+            );
+          })
+          .catch((error) => {
+            message.error(error.message || "删除失败，请重试");
+          });
+    },
+  });
 };
 
 // 批量删除
@@ -451,9 +473,30 @@ const handleBatchDelete = () => {
     message.warning('请选择要删除的文件');
     return;
   }
-  message.success(`已删除 ${selectedRowKeys.value.length} 个文件`);
-  selectedRowKeys.value = [];
-  getFileList();
+  const fileIds = selectedRowKeys.value;
+  Modal.confirm({
+    title: "确认删除",
+    icon: () => h(ExclamationCircleOutlined),
+    content: `是否确认删除选中的 ${fileIds.length} 个文件？`,
+    okText: "确定",
+    cancelText: "取消",
+    onOk() {
+      return batchDeleteFiles(fileIds)
+          .then((res) => {
+            message.success("批量删除成功");
+            selectedRowKeys.value = [];
+            return handleDeletePagination(
+                fileList.value,
+                fileIds,
+                queryParams,
+                getFileList
+            );
+          })
+          .catch((error) => {
+            message.error(error.message || "批量删除失败，请重试");
+          });
+    },
+  });
 };
 
 // 格式化文件大小

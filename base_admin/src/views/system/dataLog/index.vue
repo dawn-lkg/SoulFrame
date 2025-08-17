@@ -213,7 +213,6 @@ const columns = [
     title: '日志标题',
     dataIndex: 'title',
     key: 'title',
-    width: 120,
     visible: true,
   },
   {

@@ -322,6 +322,7 @@ const getList = () => {
 // 处理查询
 const handleQuery = () => {
   pagination.current = 1;
+  queryParams.pageNum = 1;
   getList();
 };
 

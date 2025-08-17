@@ -23,7 +23,7 @@ export function deleteFile(fileId) {
 
 // 批量删除文件
 export function batchDeleteFiles(fileIds) {
-    return request.post('/system/file/batchDelete', {fileIds})
+    return request.batchDel('/system/file/batch', fileIds)
 }
 
 // 获取文件url

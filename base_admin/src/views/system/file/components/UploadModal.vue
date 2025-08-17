@@ -52,6 +52,7 @@
 </template>
 
 <script setup>
+import {message} from 'ant-design-vue';
 import {CheckCircleOutlined, CloseCircleOutlined, InboxOutlined, LoadingOutlined} from '@ant-design/icons-vue';
 import {uploadFile} from '@/api/modules/file';
 

@@ -24,9 +24,10 @@
       <!-- 内容 -->
       <a-layout-content class="layout-content">
         <global-content />
+        <!-- 内容占位 -->
+        <div class="content-placeholder"></div>
       </a-layout-content>
     </a-layout>
-    <!-- <a-layout-footer :style="footerStyle">Footer</a-layout-footer> -->
     <setting-drawer />
     <menu-float-button @click="handleMenuDrawerOpen(true)"/>
     <menu-drawer v-model:open="menuDrawerOpen" @update:open="handleMenuDrawerOpen"/>
@@ -210,11 +211,15 @@ window.addEventListener('resize', handleResize)
 
   .layout-content {
     margin: $content-padding $content-padding 0;
+    min-height: calc($content-height - 24px);
     // padding-bottom: 24px;
     // background: $component-bg;
     border-radius: $border-radius-base;
-    min-height: calc(100vh - $header-height - 60px);
     transition: all $animation-duration-base;
+
+    .content-placeholder {
+      height: 40px;
+    }
   }
 
   :deep(.ant-layout) {

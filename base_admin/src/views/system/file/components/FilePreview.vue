@@ -250,10 +250,10 @@
 <script setup>
 import {
   DownloadOutlined,
-  FullscreenOutlined,
   FullscreenExitOutlined,
-  PlusOutlined,
+  FullscreenOutlined,
   MinusOutlined,
+  PlusOutlined,
   ReloadOutlined,
   SoundOutlined,
 } from "@ant-design/icons-vue";
@@ -284,6 +284,13 @@ const excelData = ref([]);
 
 // Word预览内容
 const wordContent = ref("");
+
+// 图片拖动相关
+const isDragging = ref(false);
+const dragStartX = ref(0);
+const dragStartY = ref(0);
+const imageOffsetX = ref(0);
+const imageOffsetY = ref(0);
 
 // 全屏相关
 const isFullscreen = ref(false);
@@ -327,22 +334,66 @@ const handleMouseMove = () => {
 // 图片缩放相关
 const imageScale = ref(1);
 const zoomIn = () => {
-  imageScale.value = Math.min(imageScale.value + 0.2, 5); // 增大缩放步长和最大值
+  const oldScale = imageScale.value;
+  imageScale.value = Math.min(imageScale.value + 0.2, 5);
+
+  // 保持缩放中心点
+  maintainZoomCenter(oldScale, imageScale.value);
   applyImageScale();
-  showControls(); // 重置隐藏计时器
+  showControls();
 };
+
 const zoomOut = () => {
-  imageScale.value = Math.max(imageScale.value - 0.2, 0.2); // 增大缩放步长，允许更小的缩放
+  const oldScale = imageScale.value;
+  imageScale.value = Math.max(imageScale.value - 0.2, 0.2);
+
+  // 保持缩放中心点
+  maintainZoomCenter(oldScale, imageScale.value);
   applyImageScale();
-  showControls(); // 重置隐藏计时器
+  showControls();
 };
+
 const resetZoom = () => {
   imageScale.value = 1;
-  imageOffsetX.value = 0; // 重置偏移量
+  imageOffsetX.value = 0;
   imageOffsetY.value = 0;
   applyImageScale();
-  showControls(); // 重置隐藏计时器
+  showControls();
 };
+
+// 保持缩放中心点（按钮缩放使用）
+const maintainZoomCenter = (oldScale, newScale) => {
+  if (oldScale === newScale) return;
+
+  // 获取图片容器
+  const container = document.querySelector('.image-preview-wrapper');
+  if (!container) return;
+
+  // 获取容器的中心点
+  const containerRect = container.getBoundingClientRect();
+  const centerX = containerRect.width / 2;
+  const centerY = containerRect.height / 2;
+
+  // 使用统一的中心点缩放逻辑
+  maintainZoomCenterAtPoint(oldScale, newScale, centerX, centerY, containerRect.width, containerRect.height);
+};
+
+// 统一的中心点缩放逻辑
+const maintainZoomCenterAtPoint = (oldScale, newScale, centerX, centerY, containerWidth, containerHeight) => {
+  if (oldScale === newScale) return;
+
+  // 计算缩放比例变化
+  const scaleFactor = newScale / oldScale;
+
+  // 计算中心点相对于图片中心的偏移
+  const relativeX = centerX - containerWidth / 2;
+  const relativeY = centerY - containerHeight / 2;
+
+  // 调整偏移量，使指定中心点保持不变
+  imageOffsetX.value = imageOffsetX.value * scaleFactor - (relativeX * (scaleFactor - 1)) / oldScale;
+  imageOffsetY.value = imageOffsetY.value * scaleFactor - (relativeY * (scaleFactor - 1)) / oldScale;
+};
+
 const applyImageScale = () => {
   // 添加缩放比例提示
   message.info(`缩放比例: ${Math.round(imageScale.value * 100)}%`, 0.5);
@@ -632,29 +683,21 @@ const handleWheel = (event) => {
       imageScale.value = Math.min(imageScale.value + 0.1, 5);
     }
 
-    // 如果缩放比例发生变化，调整偏移量以保持鼠标位置不变
+    // 如果缩放比例发生变化，按照鼠标位置进行缩放
     if (oldScale !== imageScale.value) {
       // 获取鼠标相对于图片容器的位置
       const rect = event.currentTarget.getBoundingClientRect();
       const mouseX = event.clientX - rect.left;
       const mouseY = event.clientY - rect.top;
 
-      // 计算缩放比例变化
-      const scaleFactor = imageScale.value / oldScale;
-
-      // 调整偏移量，使鼠标位置下的点保持不变
-      const offsetX = mouseX / oldScale;
-      const offsetY = mouseY / oldScale;
-
-      imageOffsetX.value = imageOffsetX.value - (offsetX * (scaleFactor - 1));
-      imageOffsetY.value = imageOffsetY.value - (offsetY * (scaleFactor - 1));
+      // 使用统一的中心点缩放逻辑
+      maintainZoomCenterAtPoint(oldScale, imageScale.value, mouseX, mouseY, rect.width, rect.height);
     }
 
     applyImageScale();
     showControls(); // 重置隐藏计时器
   }
 };
-
 
 // 加载Excel文件内容
 const loadExcelContent = async () => {
@@ -827,12 +870,6 @@ onBeforeUnmount(() => {
   }
 });
 
-// 图片拖动相关
-const isDragging = ref(false);
-const dragStartX = ref(0);
-const dragStartY = ref(0);
-const imageOffsetX = ref(0);
-const imageOffsetY = ref(0);
 
 // 图片样式计算属性
 const imageStyle = computed(() => {
