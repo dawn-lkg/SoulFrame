@@ -8,6 +8,11 @@
         menu_type, visible, status, perms, icon, create_time
         remark
     </sql>
+    <delete id="deleteMenuRoleByMenuId">
+        DELETE
+        FROM sys_role_menu
+        WHERE menu_id = #{menuId}
+    </delete>
 
     <select id="selectMenuVoByUserId" resultType="com.clm.system.domain.vo.MenuVO">
         SELECT DISTINCT sm.*

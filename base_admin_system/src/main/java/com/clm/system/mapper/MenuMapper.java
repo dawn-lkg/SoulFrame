@@ -56,7 +56,12 @@ public interface MenuMapper extends BaseMapper<Menu> {
      * @return 结果
      */
     int hasChildByMenuId(@Param("menuId") Long menuId);
-    
+
+    /**
+     * 删除菜单和角色关联
+     */
+    int deleteMenuRoleByMenuId(@Param("menuId") Long menuId);
+
     /**
      * 查询菜单使用数量
      * 

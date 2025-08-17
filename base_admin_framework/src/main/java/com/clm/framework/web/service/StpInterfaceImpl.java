@@ -32,8 +32,10 @@ public class StpInterfaceImpl implements StpInterface {
     private final MenuService menuService;
     private final RedisUtils redisUtils;
 
+
     @Override
     public List<String> getPermissionList(Object loginId, String loginType) {
+        log.debug("获取用户权限 userId: {}", loginId);
         String userId = String.valueOf(loginId);
         String key = RedisKeyConstants.getFullKey(RedisKeyConstants.Auth.USER_PERMS_PREFIX, userId);
         

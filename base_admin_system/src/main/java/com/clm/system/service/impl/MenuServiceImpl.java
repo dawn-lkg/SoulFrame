@@ -123,12 +123,14 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     public boolean deleteMenu(Long menuId) {
         // 校验是否存在子菜单
         if (baseMapper.hasChildByMenuId(menuId) > 0) {
-            throw new BaseException("存在子菜单，不允许删除", HttpCodeEnum.BAD_REQUEST.getCode());
+            throw new BaseException("菜单存在子菜单", HttpCodeEnum.BAD_REQUEST.getCode());
         }
         
         // 校验是否已分配角色
         if (baseMapper.checkMenuExistRole(menuId) > 0) {
-            throw new BaseException("菜单已分配角色，不允许删除", HttpCodeEnum.BAD_REQUEST.getCode());
+            if (baseMapper.deleteMenuRoleByMenuId(menuId) <= 0) {
+                throw new BaseException("删除失败", HttpCodeEnum.BAD_REQUEST.getCode());
+            }
         }
         
         return removeById(menuId);
