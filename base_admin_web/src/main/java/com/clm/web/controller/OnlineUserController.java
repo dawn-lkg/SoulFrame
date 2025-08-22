@@ -59,6 +59,14 @@ public class OnlineUserController extends BaseController {
         return success();
     }
 
+    @Operation(summary = "获取在线用户数量")
+    @GetMapping("/count")
+    @Log(businessType = BusinessType.QUERY)
+    public Result<Long> count() {
+        long count = onlineUserService.getOnlineUserCount();
+        return success(count);
+    }
+
     @GetMapping(value = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter sse() {
         String username = LoginHelper.getUsername();

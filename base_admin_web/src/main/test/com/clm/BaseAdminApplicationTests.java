@@ -3,15 +3,22 @@ package com.clm;
 import cn.dev33.satoken.secure.BCrypt;
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.date.Week;
+import com.clm.common.constants.RedisKeyConstants;
 import com.clm.common.core.domain.entity.BeanMethod;
 import com.clm.common.utils.CommonUtils;
 import com.clm.common.utils.PasswordUtils;
+import com.clm.common.utils.RedisUtils;
 import com.clm.framework.config.properties.TimerTaskPackProperties;
+import com.clm.system.domain.dto.MonitorDataDTO;
+import com.clm.system.domain.param.PerformanceMetricsParam;
 import com.clm.system.domain.param.VisitingStatisticParam;
+import com.clm.system.domain.vo.PerformanceMetricsDayVO;
 import com.clm.system.domain.vo.VisitingRangeDataVO;
 import com.clm.system.mapper.MenuMapper;
 import com.clm.system.mapper.OperLogMapper;
 import com.clm.system.service.MenuService;
+import com.clm.system.service.PerformanceMetricsService;
 import com.clm.system.service.RoleService;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
@@ -32,6 +39,12 @@ class BaseAdminApplicationTests {
 
     @Resource
     private RoleService roleService;
+
+    @Resource
+    private RedisUtils redisUtils;
+
+    @Resource
+    private PerformanceMetricsService performanceMetricsService;
 
     // Object类的默认方法集合
     private static final Set<String> OBJECT_METHODS = new HashSet<>(Arrays.asList(
@@ -118,6 +131,40 @@ class BaseAdminApplicationTests {
         String endTime = DateUtil.date().toString("yyyy-MM-dd HH");
         String startTime = DateUtil.date().offset(DateField.HOUR, -24).toString("yyyy-MM-dd HH");
         List<VisitingRangeDataVO> list = operLogMapper.getVisitingCountRange(new VisitingStatisticParam(startTime, endTime));
+        System.out.println(list);
+    }
+
+    @Test
+    void test7() {
+        List<MonitorDataDTO> monitorDataDTOS = redisUtils.lRange(RedisKeyConstants.Monitor.CPU_USAGE, 0, -1, MonitorDataDTO.class);
+        System.out.println(monitorDataDTOS);
+    }
+
+    @Test
+    void test8() {
+//        LocalDateTime localDateTime = LocalDate.now()
+//                .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+//                .atStartOfDay();
+//        System.out.println(localDateTime);
+//        LocalDateTime localDateTime1 = LocalDate.now()
+//                .with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+//                .plusDays(1)
+//                .atStartOfDay();
+//        System.out.println(localDateTime1);
+//        Date weekStart = DateUtil.beginOfWeek(DateUtil.date());
+//        Date weekEndPlusOne = DateUtil.endOfWeek(DateUtil.date());
+//        System.out.println(DateUtil.format(weekStart, "yyyy-MM-dd HH:mm:ss"));
+//        System.out.println(DateUtil.format(weekEndPlusOne, "yyyy-MM-dd HH:mm:ss"));
+
+        Week currentWeek = DateUtil.dayOfWeekEnum(DateUtil.date());
+        int dayOfWeek = DateUtil.dayOfWeek(DateUtil.date());
+        System.out.println("当前是：" + currentWeek.toChinese());
+        System.out.println("当前是星期：" + dayOfWeek);
+    }
+
+    @Test
+    void test9() {
+        List<PerformanceMetricsDayVO> list = performanceMetricsService.selectPerformanceMetricsWeek(new PerformanceMetricsParam());
         System.out.println(list);
     }
 }

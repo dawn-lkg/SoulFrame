@@ -14,5 +14,4 @@ import org.springframework.context.annotation.Import;
 @MapperScan(basePackages = {"com.clm.quartz.mapper"})
 @Import(SpringUtils.class)
 public class QuartzConfig {
-
 } 

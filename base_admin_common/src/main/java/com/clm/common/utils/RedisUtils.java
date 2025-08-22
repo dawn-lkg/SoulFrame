@@ -328,6 +328,18 @@ public class RedisUtils {
     }
 
     /**
+     * 获取List缓存的内容
+     *
+     * @param key   键
+     * @param start 开始位置
+     * @param end   结束位置 0到-1代表所有值
+     * @return List
+     */
+    public <T> List<T> lRange(String key, long start, long end, Class<T> clazz) {
+        return ObjectConvertUtils.convertList(lRange(key, start, end), clazz);
+    }
+
+    /**
      * 获取List缓存的长度
      *
      * @param key 键
@@ -919,5 +931,38 @@ public class RedisUtils {
         if (keys != null && !keys.isEmpty()) {
             redisTemplate.delete(keys);
         }
+    }
+
+    /**
+     * 入队 - 向队列尾部添加元素
+     *
+     * @param key     队列键名
+     * @param value   元素值
+     * @param timeout 过期时间
+     * @param unit    时间单位
+     */
+    public void enqueue(String key, Object value, long timeout, TimeUnit unit) {
+        redisTemplate.opsForList().rightPush(key, value);
+        redisTemplate.expire(key, timeout, unit);
+    }
+
+    /**
+     * 出队 - 从队列头部移除并返回元素
+     *
+     * @param key 队列键名
+     * @return 队列头部元素
+     */
+    public Object dequeue(String key) {
+        return redisTemplate.opsForList().leftPop(key);
+    }
+
+    /**
+     * 获取队列大小
+     *
+     * @param key 队列键名
+     * @return 队列长度
+     */
+    public long size(String key) {
+        return redisTemplate.opsForList().size(key);
     }
 }

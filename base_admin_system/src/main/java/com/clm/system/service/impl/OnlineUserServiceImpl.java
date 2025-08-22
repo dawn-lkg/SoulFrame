@@ -83,6 +83,12 @@ public class OnlineUserServiceImpl implements OnlineUserService {
     }
 
     @Override
+    public long getOnlineUserCount() {
+        Set<String> keys = redisUtils.keys(ONLINE_USER_KEY_PREFIX + "*");
+        return keys.size();
+    }
+
+    @Override
     public boolean forceLogout(String userId) {
         if (Objects.isNull(userId)) {
             return false;

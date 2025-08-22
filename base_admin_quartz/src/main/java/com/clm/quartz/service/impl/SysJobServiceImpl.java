@@ -14,11 +14,12 @@ import com.clm.quartz.util.CronUtils;
 import com.clm.quartz.util.ScheduleConstants;
 import com.clm.quartz.util.ScheduleUtils;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.quartz.JobDataMap;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,13 +29,16 @@ import java.util.List;
  * 定时任务调度信息 服务实现类
  */
 @Service
+@RequiredArgsConstructor
 public class SysJobServiceImpl extends ServiceImpl<SysJobMapper, SysJob> implements SysJobService {
 
-    @Autowired
-    private Scheduler scheduler;
+    private final Scheduler scheduler;
 
-    @Autowired
-    private SysJobMapper jobMapper;
+    private final SysJobMapper jobMapper;
+
+    @Value("${timer-task.enable:true}")
+    private boolean enable;
+
 
     /**
      * 项目启动时，初始化定时器
@@ -42,6 +46,9 @@ public class SysJobServiceImpl extends ServiceImpl<SysJobMapper, SysJob> impleme
     @PostConstruct
     public void init() throws SchedulerException {
         scheduler.clear();
+        if (!enable) {
+            return;
+        }
         List<SysJob> jobList = jobMapper.selectList(null);
         for (SysJob job : jobList) {
             ScheduleUtils.createScheduleJob(scheduler, job);

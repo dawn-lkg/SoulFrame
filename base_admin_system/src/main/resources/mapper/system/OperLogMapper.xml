@@ -83,8 +83,15 @@
     </select>
     <select id="getVisitingCountRange" resultType="com.clm.system.domain.vo.VisitingRangeDataVO">
         SELECT
-        CONCAT(LPAD(seq.h, 2, '0'), ':00') AS `time`,
-        COALESCE(stat.count, 0) AS count
+        time_seq.time AS time,
+        COALESCE(data.count, 0) AS count
+        FROM (
+        SELECT
+        DATE_FORMAT(
+        DATE_ADD(#{param.startTime}, INTERVAL seq.h HOUR),
+        '%H:00'
+        ) AS time,
+        DATE_ADD(#{param.startTime}, INTERVAL seq.h HOUR) AS sort_time
         FROM (
         SELECT 0 AS h UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL
         SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL
@@ -93,20 +100,22 @@
         SELECT 16 UNION ALL SELECT 17 UNION ALL SELECT 18 UNION ALL SELECT 19 UNION ALL
         SELECT 20 UNION ALL SELECT 21 UNION ALL SELECT 22 UNION ALL SELECT 23
         ) seq
+        WHERE DATE_ADD(#{param.startTime}, INTERVAL seq.h HOUR) &lt;= #{param.endTime}
+        ) time_seq
         LEFT JOIN (
         SELECT
-        HOUR(oper_time) AS h,
+        DATE_FORMAT(oper_time, '%H:00') AS time,
         COUNT(DISTINCT CONCAT(oper_ip, user_agent)) AS count
         FROM sys_oper_log
         <where>
             <if test="param.startTime!=null and param.endTime!=null">
-                AND oper_time>= #{param.startTime}
-                AND oper_time&lt;= #{param.endTime}
+                AND oper_time >= #{param.startTime}
+                AND oper_time &lt;= #{param.endTime}
             </if>
         </where>
-        GROUP BY h
-        ) stat ON stat.h = seq.h
-        ORDER BY seq.h;
+        GROUP BY DATE_FORMAT(oper_time, '%H:00')
+        ) data ON time_seq.time = data.time
+        ORDER BY time_seq.sort_time
     </select>
 
     <update id="cleanOperLog">

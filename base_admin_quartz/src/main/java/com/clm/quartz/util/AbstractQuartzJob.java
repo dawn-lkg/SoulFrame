@@ -32,9 +32,9 @@ public abstract class AbstractQuartzJob implements Job {
         try {
             before(context, sysJob);
             if (sysJob != null) {
-                log.info("任务准备执行  - ：{}", sysJob.getJobName());
+//                log.info("任务准备执行  - ：{}", sysJob.getJobName());
                 doExecute(context, sysJob);
-                log.info("任务执行完毕  - ：{} 总共耗时：{} 毫秒", sysJob.getJobName(), System.currentTimeMillis() - threadLocal.get().getTime());
+//                log.info("任务执行完毕  - ：{} 总共耗时：{} 毫秒", sysJob.getJobName(), System.currentTimeMillis() - threadLocal.get().getTime());
             }
             after(context, sysJob, null);
         } catch (Exception e) {
@@ -72,6 +72,7 @@ public abstract class AbstractQuartzJob implements Job {
             sysJobLog.setJobName(sysJob.getJobName());
             sysJobLog.setJobGroup(sysJob.getJobGroup());
             sysJobLog.setInvokeTarget(sysJob.getInvokeTarget());
+            sysJobLog.setJobId(sysJob.getJobId());
             sysJobLog.setStartTime(startTime);
             sysJobLog.setStopTime(new Date());
             sysJobLog.setCreateTime(new Date());

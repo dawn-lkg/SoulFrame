@@ -1,7 +1,11 @@
 package com.clm.quartz.service.impl;
 
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.clm.quartz.domain.entity.SysJobLog;
+import com.clm.quartz.domain.param.SysJobLogParam;
 import com.clm.quartz.mapper.SysJobLogMapper;
 import com.clm.quartz.service.SysJobLogService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +20,28 @@ public class SysJobLogServiceImpl extends ServiceImpl<SysJobLogMapper, SysJobLog
     @Autowired
     private SysJobLogMapper jobLogMapper;
 
-    /**
-     * 清空任务日志
-     */
     @Override
     public void cleanJobLog() {
         jobLogMapper.cleanJobLog();
     }
-} 
+
+    @Override
+    public Page<SysJobLog> selectPage(SysJobLogParam param) {
+        return jobLogMapper.selectPage(new Page<>(param.getPageNum(), param.getPageSize()), query(param));
+    }
+
+    @Override
+    public void clearJobLog(Long jobId) {
+        remove(new LambdaQueryWrapper<SysJobLog>().eq(SysJobLog::getJobId, jobId));
+    }
+
+    public LambdaQueryWrapper<SysJobLog> query(SysJobLogParam param) {
+        LambdaQueryWrapper<SysJobLog> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(StrUtil.isNotBlank(param.getJobName()), SysJobLog::getJobName, param.getJobName());
+        queryWrapper.eq(param.getJobId() != null, SysJobLog::getJobId, param.getJobId());
+        queryWrapper.eq(param.getStatus() != null, SysJobLog::getStatus, param.getStatus());
+        queryWrapper.like(StrUtil.isNotBlank(param.getJobGroup()), SysJobLog::getJobGroup, param.getJobGroup());
+        queryWrapper.orderByDesc(SysJobLog::getCreateTime);
+        return queryWrapper;
+    }
+}

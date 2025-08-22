@@ -22,7 +22,7 @@ mybatis-plus:
     # 打印sql语句,调试用
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   sql-log:
-    print-sql: false
+    print-sql: true
     min-time: 0
     slow-sql-time: 1000
     very-slow-sql-time: 5000

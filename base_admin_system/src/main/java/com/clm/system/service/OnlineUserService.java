@@ -21,6 +21,13 @@ public interface OnlineUserService {
      * @return 在线用户列表
      */
     List<OnlineUser> listOnlineUsers(OnlineUserQueryParam param);
+
+    /**
+     * 获取在线用户数量
+     *
+     * @return 在线用户数量
+     */
+    long getOnlineUserCount();
     
     /**
      * 强制退出用户

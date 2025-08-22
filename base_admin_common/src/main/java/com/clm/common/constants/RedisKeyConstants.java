@@ -80,6 +80,14 @@ public class RedisKeyConstants {
         public static final String JVM_INFO = "monitor:jvm:info";
         /** 访问统计 */
         public static final String ACCESS_STATS = "monitor:access:stats";
+        /**
+         * CPU使用率
+         */
+        public static final String CPU_USAGE = "monitor:cpu:usage";
+        /**
+         * 内存使用率
+         */
+        public static final String MEM_USAGE = "monitor:mem:usage";
     }
 
     /**

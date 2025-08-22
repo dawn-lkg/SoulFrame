@@ -9,5 +9,9 @@ org:
 
 # 定时任务包位置
 timer-task:
+  enable: false
   pack:
     - com.clm.web.timerTask
+
+
+

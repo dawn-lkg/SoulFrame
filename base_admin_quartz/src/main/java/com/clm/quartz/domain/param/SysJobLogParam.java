@@ -1,29 +1,19 @@
-package com.clm.quartz.domain.entity;
+package com.clm.quartz.domain.param;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.clm.common.core.domain.BasePageParam;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 定时任务调度日志表
+ * @author 陈黎明
+ * @since 2025-03-08
  */
+
 @Data
 @EqualsAndHashCode(callSuper = false)
-@TableName("sys_job_log")
-public class SysJobLog implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * 任务日志ID
-     */
-    @TableId(type = IdType.AUTO)
-    private Long jobLogId;
+public class SysJobLogParam extends BasePageParam {
 
     /**
      * 任务名称
@@ -74,4 +64,4 @@ public class SysJobLog implements Serializable {
      * 任务id
      */
     private Long jobId;
-} 
+}

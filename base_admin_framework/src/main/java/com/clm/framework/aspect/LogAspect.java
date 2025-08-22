@@ -100,7 +100,6 @@ public class LogAspect {
             // 获取当前登录用户
             Long userId = StpUtil.getLoginIdAsLong();
             LoginUser loginUser = LoginHelper.getLoginUser();
-            log.info("handleLog: userId={}, loginUser={}", userId, loginUser);
 
             // 构建操作日志对象
             OperLog operLog = new OperLog();

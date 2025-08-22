@@ -26,7 +26,7 @@ public class JobInvokeUtil {
         String methodName = getMethodName(invokeTarget);
         String methodParams = getMethodParams(invokeTarget);
 
-        log.info("准备执行任务: bean={}, method={}, params={}", beanName, methodName, methodParams);
+//        log.info("准备执行任务: bean={}, method={}, params={}", beanName, methodName, methodParams);
 
         if (StrUtil.isEmpty(beanName)) {
             log.error("调用目标bean名称为空");

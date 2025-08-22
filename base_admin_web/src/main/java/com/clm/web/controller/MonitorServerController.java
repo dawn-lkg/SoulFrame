@@ -3,6 +3,7 @@ package com.clm.web.controller;
 import com.clm.common.core.controller.BaseController;
 import com.clm.common.core.domain.Result;
 import com.clm.common.core.domain.server.Cpu;
+import com.clm.common.core.domain.server.Mem;
 import com.clm.common.enums.BusinessType;
 import com.clm.framework.annotation.Log;
 import com.clm.system.domain.entity.Server;
@@ -47,12 +48,20 @@ public class MonitorServerController extends BaseController {
     @Log(businessType = BusinessType.QUERY)
     @Operation(summary = "获取内存信息")
     @GetMapping("/mem")
-    public Result<Server> getMemInfo() {
+    public Result<Mem> getMemInfo() {
         Server server = new Server();
         SystemInfo systemInfo = new SystemInfo();
         HardwareAbstractionLayer hardware = systemInfo.getHardware();
         server.setMemInfo(hardware.getMemory());
-        return success(server);
+        return success(server.getMem());
+    }
+
+    @Log(businessType = BusinessType.QUERY)
+    @Operation(summary = "获取运行时长")
+    @GetMapping("/runTime")
+    public Result<String> getRunTime() {
+        Server server = new Server();
+        return success(server.getJvm().getRunHourTime());
     }
 
 

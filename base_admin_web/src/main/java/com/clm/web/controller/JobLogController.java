@@ -1,17 +1,21 @@
 package com.clm.web.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.clm.common.core.controller.BaseController;
+import com.clm.common.core.domain.Result;
+import com.clm.common.enums.BusinessType;
+import com.clm.framework.annotation.Log;
 import com.clm.quartz.domain.entity.SysJobLog;
+import com.clm.quartz.domain.param.SysJobLogParam;
 import com.clm.quartz.service.SysJobLogService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 调度日志操作处理
@@ -20,72 +24,25 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/monitor/jobLog")
-public class JobLogController {
+public class JobLogController extends BaseController {
 
     @Resource
     private SysJobLogService jobLogService;
 
-    /**
-     * 查询定时任务调度日志列表
-     */
-    @GetMapping("/list")
-    public Map<String, Object> list(@RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
-                                    @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
-                                    SysJobLog sysJobLog) {
-        Page<SysJobLog> page = new Page<>(pageNum, pageSize);
-
-        LambdaQueryWrapper<SysJobLog> queryWrapper = new LambdaQueryWrapper<>();
-        if (sysJobLog.getJobName() != null && !sysJobLog.getJobName().isEmpty()) {
-            queryWrapper.like(SysJobLog::getJobName, sysJobLog.getJobName());
-        }
-        if (sysJobLog.getJobGroup() != null && !sysJobLog.getJobGroup().isEmpty()) {
-            queryWrapper.eq(SysJobLog::getJobGroup, sysJobLog.getJobGroup());
-        }
-        if (sysJobLog.getStatus() != null && !sysJobLog.getStatus().isEmpty()) {
-            queryWrapper.eq(SysJobLog::getStatus, sysJobLog.getStatus());
-        }
-
-        Page<SysJobLog> jobLogPage = jobLogService.page(page, queryWrapper);
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("rows", jobLogPage.getRecords());
-        result.put("total", jobLogPage.getTotal());
-        return result;
+    @Log(businessType = BusinessType.QUERY)
+    @Operation(summary = "分页查询定时任务调度日志")
+    @GetMapping("/page")
+    public Result<Page<SysJobLog>> page(SysJobLogParam param) {
+        Page<SysJobLog> page = jobLogService.selectPage(param);
+        return success(page);
     }
 
-    /**
-     * 根据调度编号获取详细信息
-     */
-    @GetMapping(value = "/{jobLogId}")
-    public SysJobLog getInfo(@PathVariable Long jobLogId) {
-        return jobLogService.getById(jobLogId);
-    }
-
-    /**
-     * 删除定时任务调度日志
-     */
-    @DeleteMapping("/{jobLogIds}")
-    public Map<String, Object> remove(@PathVariable Long[] jobLogIds) {
-        Map<String, Object> result = new HashMap<>();
-
-        boolean success = jobLogService.removeByIds(Arrays.asList(jobLogIds));
-
-        result.put("code", success ? 200 : 500);
-        result.put("msg", success ? "操作成功" : "操作失败");
-        return result;
-    }
-
-    /**
-     * 清空定时任务调度日志
-     */
+    @Log(businessType = BusinessType.CLEAN)
+    @Operation(summary = "清空定时任务调度日志")
     @DeleteMapping("/clean")
-    public Map<String, Object> clean() {
-        Map<String, Object> result = new HashMap<>();
-
-        jobLogService.cleanJobLog();
-
-        result.put("code", 200);
-        result.put("msg", "操作成功");
-        return result;
+    public Result<?> clean(Long jobId) {
+        jobLogService.clearJobLog(jobId);
+        return success();
     }
+
 } 

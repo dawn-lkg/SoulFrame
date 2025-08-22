@@ -115,6 +115,16 @@ public class Jvm {
     }
 
     /**
+     * JDK运行时间指定
+     */
+    public String getRunHourTime() {
+        Date nowDate = new Date();
+        Date startDate = DateUtil.parse(getStartTime());
+        String formatBetween = DateUtil.formatBetween(nowDate, startDate, BetweenFormatter.Level.HOUR);
+        return formatBetween;
+    }
+
+    /**
      * 运行参数
      */
     public String getInputArgs() {

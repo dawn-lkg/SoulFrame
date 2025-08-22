@@ -202,8 +202,8 @@ public class OperLogServiceImpl extends ServiceImpl<OperLogMapper, OperLog> impl
         CompletableFuture<Long> lastMonthCountFuture = CompletableFuture.supplyAsync(() -> baseMapper.getVisitingCount(new VisitingStatisticParam(6)));
         // 访问图表
         CompletableFuture<List<VisitingRangeDataVO>> rangeDataFuture = CompletableFuture.supplyAsync(() -> {
-            String endTime = DateUtil.date().toString("yyyy-MM-dd HH");
-            String startTime = DateUtil.date().offset(DateField.HOUR, -24).toString("yyyy-MM-dd HH");
+            String endTime = DateUtil.date().offset(DateField.HOUR, 2).toString("yyyy-MM-dd HH");
+            String startTime = DateUtil.date().offset(DateField.HOUR, -23).toString("yyyy-MM-dd HH");
             return baseMapper.getVisitingCountRange(new VisitingStatisticParam(startTime, endTime));
         });
         // 所有访问
@@ -224,6 +224,7 @@ public class OperLogServiceImpl extends ServiceImpl<OperLogMapper, OperLog> impl
             visitingStatisticVO.setVisitsThisMonthCount(Math.toIntExact(thisMonthCount));
             visitingStatisticVO.setVisitsLastMonthCount(Math.toIntExact(lastMonthCount));
         } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
             log.error("获取访问统计数据失败");
         }
         return visitingStatisticVO;
