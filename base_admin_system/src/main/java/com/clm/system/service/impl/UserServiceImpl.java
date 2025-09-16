@@ -16,6 +16,7 @@ import com.clm.common.utils.ServletUtils;
 import com.clm.system.domain.dto.UserDTO;
 import com.clm.system.domain.param.UserQueryParam;
 import com.clm.system.domain.vo.UserPageVO;
+import com.clm.system.domain.vo.UserSelectVO;
 import com.clm.system.domain.vo.UserVO;
 import com.clm.system.mapper.UserMapper;
 import com.clm.system.service.ConfigService;
@@ -56,7 +57,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public IPage<UserPageVO> getUserPage(UserQueryParam param) {
-        LoginUser loginUser = LoginHelper.getLoginUser();
         Page<UserPageVO> page = new Page<>(param.getPageNum(), param.getPageSize());
         IPage<UserPageVO> userPage = baseMapper.selectUserPage(page, param);
         if (userPage.getRecords().isEmpty()) {
@@ -274,5 +274,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (!update) {
             throw new BaseException("更新头像失败", HttpCodeEnum.ERROR.getCode());
         }
+    }
+
+    @Override
+    public List<UserSelectVO> getSelectUserList(UserQueryParam param) {
+        return baseMapper.selectSelectUserList(param);
     }
 }

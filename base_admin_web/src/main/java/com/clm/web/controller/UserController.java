@@ -10,6 +10,7 @@ import com.clm.system.domain.dto.PasswordDTO;
 import com.clm.system.domain.dto.UserDTO;
 import com.clm.system.domain.param.UserQueryParam;
 import com.clm.system.domain.vo.UserPageVO;
+import com.clm.system.domain.vo.UserSelectVO;
 import com.clm.system.domain.vo.UserVO;
 import com.clm.system.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -120,6 +121,13 @@ public class UserController extends BaseController {
     public Result<?> resetPassword(@Schema(description = "用户ID") @PathVariable Long userId) {
         userService.resetPassword(userId);
         return success();
+    }
+
+    @Operation(summary = "获取用户下拉列表")
+    @Log(businessType = BusinessType.QUERY)
+    @GetMapping("/select")
+    public Result<List<UserSelectVO>> select(@Valid UserQueryParam param) {
+        return success(userService.getSelectUserList(param));
     }
 }
 

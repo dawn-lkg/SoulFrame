@@ -2,9 +2,8 @@ import {computed, onUnmounted, ref, shallowRef} from 'vue'
 import {getSSEClient} from './sseClient'
 import {useAuthStore} from '@/stores/auth'
 
-const authStore = useAuthStore()
-
 export function useSSE(url, options = {}) {
+    const authStore = useAuthStore()
     const {
         immediate = true,
         transform,
@@ -62,7 +61,6 @@ export function useSSE(url, options = {}) {
                     if (event?.event === 'heartbeat') {
                         return
                     }
-                    console.log("message", message, event)
 
                     lastMessage.value = message
 
@@ -72,7 +70,7 @@ export function useSSE(url, options = {}) {
                         data.value = [message]
                     }
 
-                    options.onMessage?.(message, event)
+                    options.onMessage?.(message, event?.event)
                 },
 
                 onError: (err) => {

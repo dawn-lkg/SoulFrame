@@ -39,7 +39,7 @@
         <javax.servlet.version>4.0.1</javax.servlet.version>
         <easyexcel.version>3.1.5</easyexcel.version>
         <oshi.version>6.4.0</oshi.version>
-
+        <spring-boot.version>3.2.0</spring-boot.version>
     </properties>
 
     <parent>
@@ -190,6 +190,13 @@
                 <groupId>com.github.oshi</groupId>
                 <artifactId>oshi-core</artifactId>
                 <version>${oshi.version}</version>
+            </dependency>
+
+            <!-- WebSocket -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-websocket</artifactId>
+                <version>${spring-boot.version}</version>
             </dependency>
 
 

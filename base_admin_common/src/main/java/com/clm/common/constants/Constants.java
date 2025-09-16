@@ -46,6 +46,11 @@ public interface Constants {
      */
     String DICT_NORMAL = "0";
 
+    /**
+     * 登录用户 redis key
+     */
+    public static final String SEC_WEBSOCKET_PROTOCOL_HEADER = "sec-websocket-protocol";
+
     // Object类的默认方法集合
     Set<String> OBJECT_METHODS = new HashSet<>(Arrays.asList(
             "equals", "hashCode", "toString", "getClass", "notify", "notifyAll", "wait"

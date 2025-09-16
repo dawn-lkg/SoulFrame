@@ -28,3 +28,5 @@ router:
     - /auth/login
     - /auth/captcha
     - /system/config/configGroup
+    - /ws/**
+    - /error

@@ -83,7 +83,6 @@ const generateIframeUrl = (item) => {
       url += `&${key}=${query[key]}`
     })
   }
-  console.log(url);
 
   return url
 }

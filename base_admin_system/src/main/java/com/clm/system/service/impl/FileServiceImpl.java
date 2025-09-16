@@ -183,6 +183,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
                 storageType = "local";
             }
 
+
             // 创建文件记录
             File fileEntity = new File();
             fileEntity.setFileName(fileName);
@@ -206,7 +207,8 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
             fileEntity.setDownloadCount(0);
             fileEntity.setViewCount(0);
             fileEntity.setDescription(uploadDTO.getDescription());
-            fileEntity.setFileUrl(getFileUrl(fileEntity));
+            String fileUrl = getFileUrl(fileEntity);
+            fileEntity.setFileUrl(fileUrl.substring(0, fileUrl.indexOf("?")));
 
             if (mimeType != null && mimeType.startsWith("image/")) {
                 BufferedImage bufferedImage = ImageIO.read(file.getInputStream());

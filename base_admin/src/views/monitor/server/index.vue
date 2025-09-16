@@ -117,9 +117,9 @@
               <div class="chart-title">内存使用率</div>
               <a-progress
                 type="dashboard"
-                :percent="serverInfo?.mem?.used"
+                :percent="serverInfo?.mem?.usage"
                 :format="percent => `${percent}%`"
-                :stroke-color="getStatusColor(serverInfo?.mem?.used)"
+                :stroke-color="getStatusColor(serverInfo?.mem?.usage)"
               />
             </div>
           </a-col>

@@ -138,7 +138,42 @@ public enum HttpCodeEnum {
     /**
      * 验证码错误
      */
-    CAPTCHA_ERROR(421, "验证码错误");
+    CAPTCHA_ERROR(421, "验证码错误"),
+
+    /**
+     * 部门名称已存在
+     */
+    DEPT_NAME_EXIST(430, "部门名称已存在"),
+
+    /**
+     * 父部门不存在
+     */
+    PARENT_DEPT_NOT_EXIST(431, "父部门不存在"),
+
+    /**
+     * 部门不存在
+     */
+    DEPT_NOT_EXIST(432, "部门不存在"),
+
+    /**
+     * 父部门不能是自己
+     */
+    PARENT_DEPT_CANNOT_BE_SELF(433, "父部门不能是自己"),
+
+    /**
+     * 父部门不能是自己的子部门
+     */
+    PARENT_DEPT_CANNOT_BE_CHILD(434, "父部门不能是自己的子部门"),
+
+    /**
+     * 存在子部门，不允许删除
+     */
+    DEPT_EXIST_CHILD(435, "存在子部门，不允许删除"),
+
+    /**
+     * 部门存在用户，不允许删除
+     */
+    DEPT_EXIST_USER(436, "部门存在用户，不允许删除");
 
     private final int code;
     private final String message;

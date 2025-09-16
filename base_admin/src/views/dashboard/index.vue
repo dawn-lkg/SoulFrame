@@ -1,9 +1,86 @@
 <template>
   <div class="dashboard-container">
     <div class="dashboard-background"></div>
-    <!-- 顶部信息卡片 -->
+
+    <!-- 新建/编辑待办对话框 -->
+    <a-modal
+        v-model:visible="todoModalVisible"
+        :confirmLoading="todoModalLoading"
+        :title="'新建待办'"
+        @cancel="handleTodoModalCancel"
+        @ok="handleTodoModalOk"
+    >
+      <a-form
+          ref="todoFormRef"
+          :label-col="{ span: 4 }"
+          :model="todoFormState"
+          :rules="todoFormRules"
+          :wrapper-col="{ span: 20 }"
+      >
+        <a-form-item label="标题" name="title">
+          <a-input v-model:value="todoFormState.title" placeholder="请输入待办标题"/>
+        </a-form-item>
+        <a-form-item label="内容" name="content">
+          <a-textarea v-model:value="todoFormState.content" :rows="4" placeholder="请输入待办内容"/>
+        </a-form-item>
+        <a-form-item label="截止时间" name="deadline">
+          <a-date-picker
+              v-model:value="todoFormState.deadline"
+              format="YYYY-MM-DD HH:mm:ss"
+              placeholder="请选择截止时间"
+              show-time
+              style="width: 100%"
+              value-format="YYYY-MM-DD HH:mm:ss"
+          />
+        </a-form-item>
+        <a-form-item label="优先级" name="priority">
+          <a-radio-group v-model:value="todoFormState.priority">
+            <a-radio value="high">高</a-radio>
+            <a-radio value="medium">中</a-radio>
+            <a-radio value="low">低</a-radio>
+          </a-radio-group>
+        </a-form-item>
+      </a-form>
+    </a-modal>
+
+    <!-- 待办详情预览对话框 -->
+    <!-- <a-modal
+      v-model:visible="todoDetailVisible"
+      title="待办详情"
+      :footer="null"
+      width="500px"
+    >
+      <div v-if="currentTodoDetail" class="todo-detail">
+        <div class="todo-detail-header">
+          <h3>{{ currentTodoDetail.content }}</h3>
+          <a-tag :color="getPriorityColor(currentTodoDetail.priority)">{{ currentTodoDetail.priority }}</a-tag>
+        </div>
+        
+        <div class="todo-detail-info">
+          <p v-if="currentTodoDetail.description"><strong>描述：</strong>{{ currentTodoDetail.description || '无' }}</p>
+          <p><strong>截止时间：</strong>{{ currentTodoDetail.deadline || '无' }}</p>
+          <p><strong>状态：</strong>{{ currentTodoDetail.completed ? '已完成' : '未完成' }}</p>
+        </div>
+        
+        <div class="todo-detail-actions">
+          <a-space>
+            <a-button 
+              :type="currentTodoDetail.completed ? 'default' : 'primary'"
+              @click="handleTodoStatusChange(currentTodoDetail)"
+            >
+              {{ currentTodoDetail.completed ? '标为未完成' : '标为已完成' }}
+            </a-button>
+            <a-button type="primary" @click="handleTodoEdit(currentTodoDetail)">编辑</a-button>
+            <a-button danger @click="handleTodoDelete(currentTodoDetail)">删除</a-button>
+          </a-space>
+        </div>
+      </div>
+    </a-modal> -->
+
+    
+
+    
     <a-row :gutter="[24, 24]" class="top-section">
-      <!-- 欢迎和天气卡片 -->
       <a-col :lg="8" :md="12" :sm="24" :xs="24">
         <a-card class="welcome-card dashboard-card">
           <div class="card-decoration"></div>
@@ -27,7 +104,6 @@
         </a-card>
       </a-col>
 
-      <!-- 每日一言卡片 -->
       <a-col :lg="8" :md="12" :sm="24" :xs="24">
         <a-card :bordered="false" class="dashboard-card daily-quote-card" title="每日一言">
           <template #extra>
@@ -103,36 +179,39 @@
               <div class="todo-stat-label">总计</div>
             </div>
           </div>
-          <a-list :data-source="todoList" class="todo-list" size="small">
+          <a-list :data-source="todoList" :loading="todoStore.loading" class="todo-list" size="small">
             <template #renderItem="{ item }">
-              <a-list-item class="todo-item">
-                <a-checkbox
-                    :checked="item.completed"
-                    @change="(e) => toggleTodo(item.id, e.target.checked)"
-                >
+              <a-list-item class="todo-item" @click="viewTodoDetail(item)">
                   <span :class="{ 'completed': item.completed }">{{ item.content }}</span>
-                </a-checkbox>
                 <template #actions>
                   <a-tag :color="getPriorityColor(item.priority)">{{ item.priority }}</a-tag>
-                  <a-button size="small" type="text" @click="deleteTodo(item.id)">
+                  <a-button size="small" type="text" @click.stop="deleteTodo(item.id)">
                     <DeleteOutlined/>
                   </a-button>
                 </template>
               </a-list-item>
             </template>
+            <template #empty>
+              <div class="empty-todo">
+                <p>暂无待办事项</p>
+                <a-button type="link" @click="handleAddTodo">添加待办</a-button>
+              </div>
+            </template>
           </a-list>
         </a-card>
       </a-col>
 
-      <!-- 系统公告 -->
+      <!-- 通知公告 -->
       <a-col :lg="8" :md="12" :xs="24">
-        <a-card :bordered="false" class="dashboard-card announcement-card" title="系统公告">
+        <a-card :bordered="false" class="dashboard-card announcement-card" title="通知">
           <template #extra>
             <a-dropdown>
               <template #overlay>
                 <a-menu>
-                  <a-menu-item key="all">全部公告</a-menu-item>
-                  <a-menu-item key="important">重要公告</a-menu-item>
+                  <a-menu-item key="1">系统通知</a-menu-item>
+                  <a-menu-item key="2">安全通知</a-menu-item>
+                  <a-menu-item key="3">重要通知</a-menu-item>
+                  <a-menu-item key="4">其他通知</a-menu-item>
                 </a-menu>
               </template>
               <a-button size="small" type="link">
@@ -165,9 +244,9 @@
         </a-card>
       </a-col>
 
-      <!-- 系统消息 -->
+      <!-- 消息中心 -->
       <a-col :lg="8" :md="24" :xs="24">
-        <a-card :bordered="false" class="dashboard-card message-card" title="系统消息">
+        <a-card :bordered="false" class="dashboard-card message-card" title="消息中心">
           <template #extra>
             <a-button size="small" type="link" @click="markAllRead">全部已读</a-button>
           </template>
@@ -179,10 +258,11 @@
                     <a-list-item-meta>
                       <template #avatar>
                         <a-badge v-if="!item.read" dot>
-                          <a-avatar :icon="getMessageIcon(item.type)"
+                          <a-avatar
+                              :src="item.avatar"
                                     :style="{ backgroundColor: getMessageColor(item.type) }"/>
                         </a-badge>
-                        <a-avatar v-else :icon="getMessageIcon(item.type)"
+                        <a-avatar v-else :src="item.avatar"
                                   :style="{ backgroundColor: getMessageColor(item.type) }"/>
                       </template>
                       <template #title>{{ item.title }}</template>
@@ -208,10 +288,12 @@
                     <a-list-item-meta>
                       <template #avatar>
                         <a-badge v-if="!item.read" dot>
-                          <a-avatar :icon="getMessageIcon(item.type)"
+                          <a-avatar
+                              :src="item.avatar"
                                     :style="{ backgroundColor: getMessageColor(item.type) }"/>
                         </a-badge>
-                        <a-avatar v-else :icon="getMessageIcon(item.type)"
+                        <a-avatar v-else
+                                  :src="item.avatar"
                                   :style="{ backgroundColor: getMessageColor(item.type) }"/>
                       </template>
                       <template #title>{{ item.title }}</template>
@@ -231,13 +313,17 @@
         </a-card>
       </a-col>
     </a-row>
+
+    <TodoDetail v-model:visible="todoDetailVisible" :data="currentTodoDetail" @delete="handleTodoDelete"
+                @edit="handleTodoEdit" @success="todoStore.fetchTodoList()"/>
   </div>
 </template>
 
 <script setup>
 import {computed, onMounted, onUnmounted, ref} from 'vue';
 import {useRouter} from 'vue-router';
-import {message} from 'ant-design-vue';
+import {message, Modal} from 'ant-design-vue';
+import {useTodoStore, useNotificationStore, useMessageStore} from '@/stores';
 import {
   AreaChartOutlined,
   BellOutlined,
@@ -258,8 +344,11 @@ import {
   UserOutlined,
   WarningOutlined
 } from '@ant-design/icons-vue';
+import TodoDetail from "../system/todo/components/TodoDetail.vue";
 
 const router = useRouter();
+const notificationStore = useNotificationStore();
+const messageStore = useMessageStore();
 
 // 用户信息
 const userInfo = ref({
@@ -312,78 +401,113 @@ const systemStatus = ref({
   uptime: 72
 });
 
+// 初始化待办存储
+const todoStore = useTodoStore();
+
 // 待办事项
-const todoList = ref([
-  {id: 1, content: '完成系统更新', completed: false, priority: '高'},
-  {id: 2, content: '审核新用户申请', completed: false, priority: '中'},
-  {id: 3, content: '准备周报', completed: true, priority: '中'},
-  {id: 4, content: '备份数据库', completed: false, priority: '高'},
-  {id: 5, content: '更新文档', completed: false, priority: '低'}
-]);
+const todoList = computed(() => {
+  return todoStore.todoList.map(item => ({
+    id: item.id,
+    content: item.title,
+    completed: item.status === 'completed',
+    priority: getPriorityText(item.priority)
+  }));
+});
 
-// 系统公告
-const announcements = ref([
-  {
-    id: 1,
-    title: '系统升级通知',
-    content: '系统将于本周六凌晨2:00-4:00进行升级维护，请提前做好准备。',
-    date: '2024-06-10',
-    publisher: '系统管理员',
-    important: true
-  },
-  {
-    id: 2,
-    title: '新功能上线',
-    content: '数据分析模块已更新，新增多维度图表展示功能。',
-    date: '2024-06-08',
-    publisher: '产品部',
-    important: false
-  },
-  {
-    id: 3,
-    title: '安全更新提醒',
-    content: '请所有用户及时修改密码，确保账号安全。',
-    date: '2024-06-05',
-    publisher: '安全部',
-    important: true
-  }
-]);
+// 待办表单相关
+const todoModalVisible = ref(false);
+const todoModalLoading = ref(false);
+const todoFormRef = ref();
+const todoFormState = reactive({
+  title: '',
+  content: '',
+  deadline: null,
+  priority: 'medium'
+});
 
-// 系统消息
-const allMessages = ref([
-  {
-    id: 1,
-    title: '登录提醒',
-    content: '您的账号刚刚在新设备上登录',
-    time: '10分钟前',
-    read: false,
-    type: 'warning'
-  },
-  {
-    id: 2,
-    title: '任务完成',
-    content: '数据库备份任务已完成',
-    time: '30分钟前',
-    read: true,
-    type: 'success'
-  },
-  {
-    id: 3,
-    title: '系统通知',
-    content: '您有3个待处理的工单',
-    time: '1小时前',
-    read: false,
-    type: 'info'
-  },
-  {
-    id: 4,
-    title: '安全警告',
-    content: '检测到异常登录尝试',
-    time: '2小时前',
-    read: false,
-    type: 'warning'
+// 待办详情相关
+const todoDetailVisible = ref(false);
+const currentTodoDetail = ref(null);
+
+// 表单验证规则
+const todoFormRules = {
+  title: [
+    {required: true, message: '请输入待办标题', trigger: 'blur'},
+    {max: 50, message: '标题不能超过50个字符', trigger: 'blur'}
+  ],
+  content: [
+    {required: true, message: '请输入待办内容', trigger: 'blur'},
+    {max: 500, message: '内容不能超过500个字符', trigger: 'blur'}
+  ],
+  deadline: [
+    {required: true, message: '请选择截止时间', trigger: 'change'}
+  ],
+  priority: [
+    {required: true, message: '请选择优先级', trigger: 'change'}
+  ]
+};
+
+// 格式化时间函数
+const formatTimeAgo = (time) => {
+  if (!time) return '';
+
+  const now = new Date();
+  const messageTime = new Date(time);
+  const diffMs = now - messageTime;
+  const diffMins = Math.floor(diffMs / (1000 * 60));
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffMins < 60) {
+    return `${diffMins}分钟前`;
+  } else if (diffHours < 24) {
+    return `${diffHours}小时前`;
+  } else if (diffDays < 30) {
+    return `${diffDays}天前`;
+  } else {
+    return messageTime.toLocaleDateString();
   }
-]);
+};
+
+// 系统公告 - 使用通知功能
+const announcements = computed(() => {
+  // 将通知数据转换为公告格式
+  return notificationStore.notifications.map(item => ({
+    id: item.id,
+    title: item.title,
+    content: item.content,
+    date: formatTimeAgo(item.time),
+    publisher: item.sender || '系统',
+    important: item.type === '2', // 安全提醒类型标记为重要
+    color: item.color
+  }));
+});
+
+// 系统消息 - 使用消息功能
+const allMessages = computed(() => {
+  // 将消息数据转换为系统消息格式
+  return messageStore.messages.map(item => ({
+    id: item.id,
+    title: item.title || item.sender,
+    content: item.content,
+    time: formatTimeAgo(item.time),
+    read: item.read,
+    type: getMessageTypeFromContent(item.content),
+    avatar: item.avatar,
+    sender: item.sender
+  }));
+});
+
+// 根据消息内容判断消息类型
+const getMessageTypeFromContent = (content) => {
+  if (content.includes('警告') || content.includes('异常') || content.includes('错误')) {
+    return 'warning';
+  } else if (content.includes('完成') || content.includes('成功')) {
+    return 'success';
+  } else {
+    return 'info';
+  }
+};
 
 // 未读消息
 const unreadMessages = computed(() => {
@@ -474,6 +598,20 @@ const refreshDailyQuote = async () => {
   }
 };
 
+// 获取优先级文本
+const getPriorityText = (priority) => {
+  switch (priority) {
+    case 'high':
+      return '高';
+    case 'medium':
+      return '中';
+    case 'low':
+      return '低';
+    default:
+      return '中';
+  }
+};
+
 // 获取优先级颜色
 const getPriorityColor = (priority) => {
   switch (priority) {
@@ -541,41 +679,155 @@ const getProgressColor = (percent) => {
   }
 };
 
-// 切换待办事项状态
-const toggleTodo = (id, checked) => {
-  const todo = todoList.value.find(item => item.id === id);
-  if (todo) {
-    todo.completed = checked;
-    message.success(checked ? '已完成任务' : '已恢复任务');
+// 删除待办事项
+const deleteTodo = async (id) => {
+  // 获取待办项信息
+  const todoItem = todoList.value.find(item => item.id === id);
+  const title = todoItem ? todoItem.content : '此待办事项';
+
+  Modal.confirm({
+    title: '删除待办',
+    content: `确定要删除"${title}"吗？此操作不可恢复。`,
+    okText: '确认删除',
+    okType: 'danger',
+    cancelText: '取消',
+    async onOk() {
+      try {
+        await todoStore.deleteTodo(id);
+        message.success('删除成功');
+      } catch (error) {
+        message.error('删除失败: ' + error.message);
+      }
+    }
+  });
+};
+
+// 显示添加待办弹窗
+const handleAddTodo = () => {
+  // 重置表单
+  todoFormState.title = '';
+  todoFormState.content = '';
+  todoFormState.deadline = null;
+  todoFormState.priority = 'medium';
+
+  // 显示弹窗
+  todoModalVisible.value = true;
+};
+
+// 查看待办详情
+const viewTodoDetail = (item) => {
+  // 获取完整的待办信息
+  todoStore.getTodoDetail(item.id).then(detail => {
+    // 如果获取到详情，使用详情，否则使用列表中的简要信息
+    currentTodoDetail.value = detail || {
+      ...item,
+      description: '',
+      deadline: '未设置'
+    };
+    todoDetailVisible.value = true;
+  }).catch(error => {
+    console.error('获取待办详情失败:', error);
+    // 如果获取详情失败，使用列表中的简要信息
+    currentTodoDetail.value = {
+      ...item,
+      description: '',
+      deadline: '未设置'
+    };
+    todoDetailVisible.value = true;
+  });
+};
+
+
+// 编辑待办
+const handleTodoEdit = (todo) => {
+  // 关闭详情弹窗
+  todoDetailVisible.value = false;
+
+  // 填充表单数据
+  todoFormState.title = todo.content;
+  todoFormState.content = todo.description || '';
+  todoFormState.deadline = todo.deadline;
+  todoFormState.priority = todo.priority === '高' ? 'high' :
+      todo.priority === '中' ? 'medium' : 'low';
+
+  // 显示编辑弹窗
+  setTimeout(() => {
+    todoModalVisible.value = true;
+  }, 300);
+};
+
+// 删除待办
+const handleTodoDelete = (todo) => {
+  todoDetailVisible.value = false;
+  deleteTodo(todo.id);
+};
+
+// 处理待办弹窗确认
+const handleTodoModalOk = async () => {
+  try {
+    // 表单验证
+    await todoFormRef.value.validate();
+
+    todoModalLoading.value = true;
+
+    // 检查截止时间是否已过
+    const now = new Date();
+    const deadline = new Date(todoFormState.deadline);
+
+    if (deadline < now) {
+      // 显示警告但允许继续
+      await new Promise(resolve => {
+        message.warning('您设置的截止时间已过，请确认是否继续？', 3, resolve);
+      });
+    }
+
+    const data = {
+      title: todoFormState.title,
+      content: todoFormState.content,
+      deadline: todoFormState.deadline,
+      priority: todoFormState.priority
+    };
+
+    // 创建待办
+    await todoStore.createTodo(data);
+
+    // 成功提示
+    message.success('待办创建成功');
+
+    todoModalVisible.value = false;
+  } catch (error) {
+    console.error('表单验证失败或操作失败:', error);
+    if (error.message) {
+      message.error(`创建失败: ${error.message}`);
+    }
+  } finally {
+    todoModalLoading.value = false;
   }
 };
 
-// 删除待办事项
-const deleteTodo = (id) => {
-  todoList.value = todoList.value.filter(item => item.id !== id);
-  message.success('删除成功');
-};
-
-// 添加待办事项
-const handleAddTodo = () => {
-  message.info('添加待办功能开发中...');
+// 处理待办弹窗取消
+const handleTodoModalCancel = () => {
+  todoModalVisible.value = false;
 };
 
 // 标记消息为已读
-const markAsRead = (id) => {
-  const msg = allMessages.value.find(item => item.id === id);
-  if (msg) {
-    msg.read = true;
+const markAsRead = async (id) => {
+  try {
+    await messageStore.markAsRead(id);
     message.success('已标记为已读');
+  } catch (error) {
+    message.error('标记已读失败: ' + error.message);
   }
 };
 
 // 标记所有消息为已读
-const markAllRead = () => {
-  allMessages.value.forEach(msg => {
-    msg.read = true;
-  });
-  message.success('全部标记为已读');
+const markAllRead = async () => {
+  try {
+    await messageStore.markAllAsRead();
+    message.success('全部标记为已读');
+  } catch (error) {
+    message.error('标记全部已读失败: ' + error.message);
+  }
 };
 
 // 处理快捷操作
@@ -607,6 +859,13 @@ onMounted(() => {
 
   // 初始化每日一言
   refreshDailyQuote();
+
+  // 获取待办事项数据
+  todoStore.fetchTodoList();
+
+  // 初始化通知和消息数据
+  notificationStore.init();
+  messageStore.init();
 
   // 这里可以添加获取天气、系统状态等API调用
 });
@@ -1103,6 +1362,7 @@ onUnmounted(() => {
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   transition: all 0.3s;
   border-radius: 6px;
+  cursor: pointer;
 }
 
 .todo-item:hover {
@@ -1368,6 +1628,14 @@ onUnmounted(() => {
 .dark-mode .status-item:hover {
   background-color: rgba(255, 255, 255, 0.02);
 }
+
+.empty-todo {
+  text-align: center;
+  padding: 20px 0;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+
 
 .dark-mode .refresh-btn:hover {
   background-color: rgba(255, 255, 255, 0.05);

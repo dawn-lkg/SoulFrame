@@ -119,6 +119,7 @@
         <template v-else-if="isVideo">
           <div class="video-preview-wrapper">
             <video
+                ref="videoRef"
                 :src="previewUrl"
                 class="preview-video"
                 controls
@@ -225,21 +226,17 @@
     <div v-if="!isFullscreen" class="file-info">
       <a-card :bordered="false" size="small">
         <a-descriptions :column="2" size="small">
-          <a-descriptions-item label="文件名">{{
-              file.originalName
-            }}
+          <a-descriptions-item label="文件名"
+          >{{ file.originalName }}
           </a-descriptions-item>
-          <a-descriptions-item label="文件类型">{{
-              fileTypeText
-            }}
+          <a-descriptions-item label="文件类型"
+          >{{ fileTypeText }}
           </a-descriptions-item>
-          <a-descriptions-item label="文件大小">{{
-              formatFileSize(file.fileSize)
-            }}
+          <a-descriptions-item label="文件大小"
+          >{{ formatFileSize(file.fileSize) }}
           </a-descriptions-item>
-          <a-descriptions-item label="上传时间">{{
-              file.createTime
-            }}
+          <a-descriptions-item label="上传时间"
+          >{{ file.createTime }}
           </a-descriptions-item>
         </a-descriptions>
       </a-card>
@@ -263,13 +260,21 @@ import {message} from "ant-design-vue";
 import axios from "axios";
 import * as XLSX from "xlsx";
 import * as mammoth from "mammoth";
+import {watch} from "vue";
 
 const props = defineProps({
   file: {
     type: Object,
     required: true,
   },
+  visible: {
+    type: Boolean,
+    required: true,
+  },
 });
+
+// 视频引用
+const videoRef = ref(null);
 
 // 文本内容和加载状态
 const textContent = ref("");
@@ -366,7 +371,7 @@ const maintainZoomCenter = (oldScale, newScale) => {
   if (oldScale === newScale) return;
 
   // 获取图片容器
-  const container = document.querySelector('.image-preview-wrapper');
+  const container = document.querySelector(".image-preview-wrapper");
   if (!container) return;
 
   // 获取容器的中心点
@@ -375,11 +380,25 @@ const maintainZoomCenter = (oldScale, newScale) => {
   const centerY = containerRect.height / 2;
 
   // 使用统一的中心点缩放逻辑
-  maintainZoomCenterAtPoint(oldScale, newScale, centerX, centerY, containerRect.width, containerRect.height);
+  maintainZoomCenterAtPoint(
+      oldScale,
+      newScale,
+      centerX,
+      centerY,
+      containerRect.width,
+      containerRect.height
+  );
 };
 
 // 统一的中心点缩放逻辑
-const maintainZoomCenterAtPoint = (oldScale, newScale, centerX, centerY, containerWidth, containerHeight) => {
+const maintainZoomCenterAtPoint = (
+    oldScale,
+    newScale,
+    centerX,
+    centerY,
+    containerWidth,
+    containerHeight
+) => {
   if (oldScale === newScale) return;
 
   // 计算缩放比例变化
@@ -390,8 +409,12 @@ const maintainZoomCenterAtPoint = (oldScale, newScale, centerX, centerY, contain
   const relativeY = centerY - containerHeight / 2;
 
   // 调整偏移量，使指定中心点保持不变
-  imageOffsetX.value = imageOffsetX.value * scaleFactor - (relativeX * (scaleFactor - 1)) / oldScale;
-  imageOffsetY.value = imageOffsetY.value * scaleFactor - (relativeY * (scaleFactor - 1)) / oldScale;
+  imageOffsetX.value =
+      imageOffsetX.value * scaleFactor -
+      (relativeX * (scaleFactor - 1)) / oldScale;
+  imageOffsetY.value =
+      imageOffsetY.value * scaleFactor -
+      (relativeY * (scaleFactor - 1)) / oldScale;
 };
 
 const applyImageScale = () => {
@@ -405,9 +428,9 @@ const applyImageScale = () => {
   }
 
   // 更新鼠标样式
-  const img = document.querySelector('.preview-image');
+  const img = document.querySelector(".preview-image");
   if (img) {
-    img.style.cursor = imageScale.value > 1 ? 'move' : 'default';
+    img.style.cursor = imageScale.value > 1 ? "move" : "default";
   }
 };
 
@@ -496,7 +519,6 @@ const isWord = computed(() => {
 const previewUrl = computed(() => {
   return props.file.fileUrl || "";
 });
-
 
 // 判断文件类型
 const isImage = computed(() => fileType.value === "image");
@@ -691,7 +713,14 @@ const handleWheel = (event) => {
       const mouseY = event.clientY - rect.top;
 
       // 使用统一的中心点缩放逻辑
-      maintainZoomCenterAtPoint(oldScale, imageScale.value, mouseX, mouseY, rect.width, rect.height);
+      maintainZoomCenterAtPoint(
+          oldScale,
+          imageScale.value,
+          mouseX,
+          mouseY,
+          rect.width,
+          rect.height
+      );
     }
 
     applyImageScale();
@@ -787,6 +816,16 @@ const loadTextContent = async () => {
   }
 };
 
+// 监听可见性变化
+watch(() => props.visible, (newVisible) => {
+  if (!newVisible) {
+    if (isVideo.value) {
+      videoRef.value.pause();
+      videoRef.value.currentTime = 0;
+    }
+  }
+});
+
 // 监听文件变化和预览方法变化
 watch(
     () => props.file,
@@ -817,6 +856,15 @@ watch(
         }
         if (isImage.value) {
           resetZoom();
+        }
+      } else {
+        console.log(isVideo.value);
+
+        if (isVideo.value) {
+          console.log(isVideo);
+
+          videoRef.value.pause();
+          videoRef.value.currentTime = 0;
         }
       }
     },
@@ -870,12 +918,11 @@ onBeforeUnmount(() => {
   }
 });
 
-
 // 图片样式计算属性
 const imageStyle = computed(() => {
   return {
     transform: `scale(${imageScale.value}) translate(${imageOffsetX.value}px, ${imageOffsetY.value}px)`,
-    cursor: imageScale.value > 1 ? 'move' : 'default'
+    cursor: imageScale.value > 1 ? "move" : "default",
   };
 });
 
@@ -885,7 +932,7 @@ const startDrag = (event) => {
     isDragging.value = true;
     dragStartX.value = event.clientX;
     dragStartY.value = event.clientY;
-    event.target.style.cursor = 'grabbing';
+    event.target.style.cursor = "grabbing";
   }
 };
 
@@ -910,7 +957,7 @@ const stopDrag = (event) => {
   if (isDragging.value) {
     isDragging.value = false;
     if (event && event.target) {
-      event.target.style.cursor = imageScale.value > 1 ? 'move' : 'default';
+      event.target.style.cursor = imageScale.value > 1 ? "move" : "default";
     }
   }
 };
@@ -1183,7 +1230,7 @@ const stopDrag = (event) => {
       }
     }
   }
-  
+
   .file-info {
     margin-top: 20px;
   }

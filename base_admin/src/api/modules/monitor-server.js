@@ -12,5 +12,10 @@ export const getCpuMonitorInfo = () => {
 
 // 获取内存监控信息
 export const getMemoryMonitorInfo = () => {
-  return request.get('/monitor/server/memory')
+    return request.get('/monitor/server/mem')
+}
+
+// 获取运行时长
+export const getServerRunTime = () => {
+    return request.get('/monitor/server/runTime')
 }

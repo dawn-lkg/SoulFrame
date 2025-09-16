@@ -6,6 +6,7 @@ import com.clm.common.core.domain.entity.User;
 import com.clm.system.domain.dto.UserDTO;
 import com.clm.system.domain.param.UserQueryParam;
 import com.clm.system.domain.vo.UserPageVO;
+import com.clm.system.domain.vo.UserSelectVO;
 import com.clm.system.domain.vo.UserVO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -105,5 +106,13 @@ public interface UserService extends IService<User> {
      * @param file 文件
      */
     void updateAvatar(MultipartFile file);
+
+    /**
+     * 获取用户下拉列表
+     *
+     * @param param 查询参数
+     * @return 用户下拉列表
+     */
+    List<UserSelectVO> getSelectUserList(UserQueryParam param);
 }
 

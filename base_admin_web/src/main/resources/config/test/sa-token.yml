@@ -34,3 +34,5 @@ router:
     - /swagger-resources/**
     - /system/config/configGroup
     - /quartz/**
+    - /ws/**
+    - /error

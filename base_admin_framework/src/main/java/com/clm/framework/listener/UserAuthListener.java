@@ -46,7 +46,7 @@ public class UserAuthListener implements SaTokenListener {
     @Override
     public void doLogin(String s, Object o, String s1, SaLoginModel saLoginModel) {
         log.debug("用户登录成功，loginId={}, token={}", o, s1);
-        sseTemplate.broadcast(SseConstant.ONLINE_USER_EVENT, UUID.randomUUID());
+        sseTemplate.broadcast(SseConstant.ONLINE_USER_EVENT, SseConstant.ONLINE_USER_EVENT, UUID.randomUUID());
     }
 
     /**
@@ -57,7 +57,7 @@ public class UserAuthListener implements SaTokenListener {
         log.debug("用户注销，loginId={}, token={}", loginId, tokenValue);
         // 删除在线用户信息
         onlineUserService.forceLogout(String.valueOf(loginId));
-        sseTemplate.broadcast(SseConstant.ONLINE_USER_EVENT, UUID.randomUUID());
+        sseTemplate.broadcast(SseConstant.ONLINE_USER_EVENT, SseConstant.ONLINE_USER_EVENT, UUID.randomUUID());
     }
 
     /**
@@ -68,7 +68,7 @@ public class UserAuthListener implements SaTokenListener {
         log.debug("用户被踢下线，loginId={}, token={}", loginId, tokenValue);
         // 删除在线用户信息
         onlineUserService.forceLogout(String.valueOf(loginId));
-        sseTemplate.broadcast(SseConstant.ONLINE_USER_EVENT, System.currentTimeMillis());
+        sseTemplate.broadcast(SseConstant.ONLINE_USER_EVENT, SseConstant.ONLINE_USER_EVENT, System.currentTimeMillis());
     }
 
     /**
@@ -79,7 +79,7 @@ public class UserAuthListener implements SaTokenListener {
         log.debug("用户被顶下线，loginId={}, token={}", loginId, tokenValue);
         // 删除在线用户信息
         onlineUserService.forceLogout(String.valueOf(loginId));
-        sseTemplate.broadcast(SseConstant.ONLINE_USER_EVENT, System.currentTimeMillis());
+        sseTemplate.broadcast(SseConstant.ONLINE_USER_EVENT, SseConstant.ONLINE_USER_EVENT, System.currentTimeMillis());
     }
 
     /**

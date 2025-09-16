@@ -47,6 +47,15 @@
           </a-select-option>
         </a-select>
       </a-form-item>
+      <a-form-item label="部门" name="deptId">
+        <a-tree-select
+            v-model:value="form.deptId"
+            :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+            :fieldNames="{ label: 'title', value: 'id', key: 'id' }"
+            :tree-data="deptList"
+            placeholder="请选择部门"
+        />
+      </a-form-item>
       <a-form-item label="状态" name="status">
         <DictRadio v-model:value="form.status" dict-type="sys_user_status"/>
       </a-form-item>
@@ -74,6 +83,10 @@ const props = defineProps({
   isEdit: {
     type: Boolean,
     default: false,
+  },
+  deptList: {
+    type: Array,
+    default: () => [],
   }
 });
 

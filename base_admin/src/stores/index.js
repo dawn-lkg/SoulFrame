@@ -5,6 +5,9 @@ import {useAuthStore} from './auth'
 import {useConfigStore} from './config'
 import {useDictStore} from './dict'
 import {useThemeStore} from './theme'
+import {useNotificationStore} from './notification'
+import {useMessageStore} from './message'
+import {useTodoStore} from './todo'
 
 const pinia = createPinia()
 
@@ -15,7 +18,10 @@ export {
     useAuthStore,
     useConfigStore,
     useDictStore,
-    useThemeStore
+    useThemeStore,
+    useNotificationStore,
+    useMessageStore,
+    useTodoStore
 }
 
 export default pinia

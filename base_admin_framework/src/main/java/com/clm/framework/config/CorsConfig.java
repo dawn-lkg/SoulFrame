@@ -30,10 +30,21 @@ public class CorsConfig {
 
     private CorsConfiguration buildConfig() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.addAllowedOrigin(CorsConfiguration.ALL);
+        // 允许特定域名，而不是使用通配符
+        corsConfiguration.addAllowedOriginPattern("http://localhost:*");
+        corsConfiguration.addAllowedOriginPattern("https://localhost:*");
+        corsConfiguration.addAllowedOriginPattern("http://127.0.0.1:*");
+        corsConfiguration.addAllowedOriginPattern("https://127.0.0.1:*");
+        corsConfiguration.addAllowedOriginPattern("http://120.27.215.0:*");
+
+//        corsConfiguration.addAllowedOrigin(CorsConfiguration.ALL);
+        
         corsConfiguration.addAllowedHeader(CorsConfiguration.ALL);
         corsConfiguration.addAllowedMethod(CorsConfiguration.ALL);
         corsConfiguration.addExposedHeader(CorsConfiguration.ALL);
+
+        // 允许携带凭据
+        corsConfiguration.setAllowCredentials(true);
         corsConfiguration.setMaxAge(3600L);
         return corsConfiguration;
     }

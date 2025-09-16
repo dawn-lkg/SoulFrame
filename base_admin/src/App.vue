@@ -1,9 +1,12 @@
 <script setup>
-import { inject } from 'vue'
+import {inject, onMounted, watch} from 'vue'
 import { useAppStore } from '@/stores/app'
+import {useAuthStore} from '@/stores/auth'
 
 const appStore = useAppStore()
+const authStore = useAuthStore()
 const locale = inject('antLocale')
+
 </script>
 
 <template>

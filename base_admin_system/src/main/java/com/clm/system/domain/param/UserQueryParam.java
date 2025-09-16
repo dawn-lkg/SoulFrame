@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.List;
+
 /**
  * 用户查询参数
  *
@@ -45,4 +47,10 @@ public class UserQueryParam extends BasePageParam {
      */
     @Schema(description = "部门ID")
     private Long deptId;
+
+    /**
+     * 部门id列表
+     */
+    @Schema(description = "部门id列表")
+    private List<Long> deptIds;
 } 

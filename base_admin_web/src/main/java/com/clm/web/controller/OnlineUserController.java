@@ -5,6 +5,7 @@ import com.clm.common.core.domain.Result;
 import com.clm.common.enums.BusinessType;
 import com.clm.common.security.LoginHelper;
 import com.clm.framework.annotation.Log;
+import com.clm.sse.SseConstant;
 import com.clm.sse.SseTemplate;
 import com.clm.system.domain.entity.OnlineUser;
 import com.clm.system.domain.param.OnlineUserQueryParam;
@@ -70,6 +71,6 @@ public class OnlineUserController extends BaseController {
     @GetMapping(value = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter sse() {
         String username = LoginHelper.getUsername();
-        return sseTemplate.connect(username);
+        return sseTemplate.connect(SseConstant.ONLINE_USER_EVENT, username);
     }
 } 

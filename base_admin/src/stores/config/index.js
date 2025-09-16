@@ -30,7 +30,6 @@ export const useConfigStore = defineStore('config', {
             this.systemConfig.loginTitle = config['sys.loginTitle']
             this.systemConfig.loginSubTitle = config['sys.loginSubTitle']
             this.systemConfig.footer = config['sys.footer']
-            console.log(this.systemConfig)
         }
     },
     persist: true

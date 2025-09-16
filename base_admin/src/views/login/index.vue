@@ -102,7 +102,7 @@ import {
   UserOutlined,
   WechatOutlined
 } from '@ant-design/icons-vue'
-import { message } from 'ant-design-vue'
+import {message, notification} from 'ant-design-vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getCaptcha } from '@/api/modules/auth'
 import { useAuthStore } from '@/stores/auth'
@@ -198,7 +198,11 @@ const handleSubmit = async () => {
     })
 
     handleRememberPassword()
-    message.success('登录成功')
+    notification.success({
+      message: '登录成功',
+      description: '欢迎回来，祝您工作顺利！',
+      duration: 1,
+    })
 
     // 跳转到来源页面或首页
     const redirect = route.query.redirect || '/'

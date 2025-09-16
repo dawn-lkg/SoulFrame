@@ -2,11 +2,12 @@
   <div class="table-tool">
     <a-space>
       <a-tooltip title="刷新">
-        <Icon name="ReloadOutlined" size="18" @click="emitRefresh" class="table-tool-icon" />
+        <Icon v-if="showButtons.includes('refresh')" class="table-tool-icon" name="ReloadOutlined" size="18"
+              @click="emitRefresh"/>
       </a-tooltip>
       <a-dropdown>
-      <a-tooltip title="密度">
-          <Icon name="ColumnHeightOutlined" size="18" class="table-tool-icon" />
+        <a-tooltip title="密度">
+          <Icon v-if="showButtons.includes('density')" class="table-tool-icon" name="ColumnHeightOutlined" size="18"/>
         </a-tooltip>
         <template #overlay>
           <a-menu :selectedKeys="[tableSize]" @click="$emit('update:tableSize', $event.key)">
@@ -17,7 +18,7 @@
         </template>
       </a-dropdown>
       <a-popover title="列设置" placement="bottom" trigger="click">
-        <template #content>
+        <template v-if="showButtons.includes('column')" #content>
             <div v-for="column in tableColumns" :key="column.dataIndex" >
             <a-checkbox :checked="column.visible" @change="handleColumnVisible(column)">
                 {{ column.title }}
@@ -25,12 +26,13 @@
         </div>
         </template>
         <a-tooltip title="设置">
-        <Icon name="SettingOutlined" size="18" class="table-tool-icon" />
+          <Icon v-if="showButtons.includes('column')" class="table-tool-icon" name="SettingOutlined" size="18"/>
       </a-tooltip>
       </a-popover>
       
       <a-tooltip :title="isFull ? '退出全屏' : '全屏'">
-        <Icon :name="isFull ? 'FullscreenExitOutlined' : 'FullscreenOutlined'" size="18" class="table-tool-icon" @click="handleFullScreen" />
+        <Icon v-if="showButtons.includes('fullscreen')" :name="isFull ? 'FullscreenExitOutlined' : 'FullscreenOutlined'" class="table-tool-icon"
+              size="18" @click="handleFullScreen"/>
       </a-tooltip>
     </a-space>
   </div>
@@ -54,6 +56,11 @@ const props = defineProps({
   fullScreenElement: {
     type: Object,
   },
+  //展示的按钮
+  showButtons: {
+    type: Array,
+    default: () => ['refresh', 'density', 'column', 'fullscreen']
+  }
 })
 
 // 全屏

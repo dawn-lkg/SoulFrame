@@ -6,7 +6,7 @@
       width="800px"
       @cancel="handleCancel"
   >
-    <file-preview :file="file"/>
+    <file-preview :file="file" :visible="visible"/>
   </a-modal>
 </template>
 

@@ -8,6 +8,10 @@
   </head>
   <body>
     <div id="app"></div>
+    <script>
+        // 为部分依赖提供浏览器端 global 兼容
+        window.global = window
+    </script>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

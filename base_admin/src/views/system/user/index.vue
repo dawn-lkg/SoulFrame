@@ -1,153 +1,187 @@
 <template>
-  <div class="common-container">
-    <!-- <a-card :bordered="false"> -->
-    <!-- 搜索区域 -->
-    <a-form
-      layout="inline"
-      :model="queryParams"
-      @finish="handleQuery"
-      class="search-form"
-    >
-      <a-form-item label="用户名称" name="userName">
-        <a-input
-          v-model:value="queryParams.userName"
-          placeholder="请输入用户名称"
-          allow-clear
-        />
-      </a-form-item>
-      <a-form-item label="手机号码" name="phone">
-        <a-input
-          v-model:value="queryParams.phone"
-          placeholder="请输入手机号码"
-          allow-clear
-        />
-      </a-form-item>
-      <a-form-item label="状态" name="status">
-        <DictSelect
-            dictType="sys_user_status"
-          v-model:value="queryParams.status"
-          placeholder="用户状态"
-          allow-clear
-          style="width: 200px"
-        />
-      </a-form-item>
-      <a-form-item>
-        <a-space>
-          <a-button type="primary" html-type="submit">
-            <template #icon>
-              <SearchOutlined />
+  <div>
+    <a-row :gutter="16">
+      <a-col v-if="deptList.length > 0" :lg="4" :md="6" :sm="24" :span="4" :xl="4" :xs="24">
+        <div class="common-container dept-tree-container">
+          <a-tree v-model:expandedKeys="expandedRowKeys" v-model:selectedKeys="selectedDeptKeys"
+                  :default-expanded-all="true" :field-names="{ title: 'title', value: 'id', key: 'id' }"
+                  :loading="deptLoading"
+                  :tree-data="deptList" @select="handleDeptSelect">
+            <template #title="{ title, userCount }">
+              <span class="dept-tree-node">
+                <span class="dept-name">{{ title }}</span>
+                <span v-if="userCount !== undefined" class="dept-count">({{ userCount }})</span>
+              </span>
             </template>
-            搜索
-          </a-button>
-          <a-button @click="resetQuery">
-            <template #icon>
-              <ReloadOutlined />
-            </template>
-            重置
-          </a-button>
-        </a-space>
-      </a-form-item>
-    </a-form>
-
-    <div class="common-table-container" ref="tableContainerRef">
-      <!-- 操作按钮区域 -->
-      <div class="action-buttons">
-        <a-space>
-          <a-button type="primary" @click="handleAdd">
-            <template #icon>
-              <PlusOutlined />
-            </template>
-            新增
-          </a-button>
-          <a-button
-            type="danger"
-            :disabled="selectedRowKeys.length === 0"
-            @click="handleBatchDelete"
+          </a-tree>
+        </div>
+      </a-col>
+      <a-col :lg="deptList.length > 0 ? 20 : 24" :md="deptList.length > 0 ? 18 : 24" :sm="24" :span="deptList.length > 0 ? 20 : 24"
+             :xl="deptList.length > 0 ? 20 : 24" :xs="24">
+        <div class="common-container">
+          <!-- 搜索区域 -->
+          <a-form
+              :model="queryParams"
+              class="search-form"
+              layout="inline"
+              @finish="handleQuery"
           >
-            <template #icon>
-              <DeleteOutlined />
-            </template>
-            批量删除
-          </a-button>
-        </a-space>
-        <!-- 表格工具 -->
-        <TableTool
-          @refresh="getList"
-          v-model:tableSize="tableConfig.size"
-          :tableColumns="tableConfig.columns"
-          :fullScreenElement="tableContainerRef"
-        />
-      </div>
+            <a-form-item label="用户名称" name="userName">
+              <a-input
+                  v-model:value="queryParams.userName"
+                  allow-clear
+                  placeholder="请输入用户名称"
+              />
+            </a-form-item>
+            <a-form-item label="手机号码" name="phone">
+              <a-input
+                  v-model:value="queryParams.phone"
+                  allow-clear
+                  placeholder="请输入手机号码"
+              />
+            </a-form-item>
+            <a-form-item label="状态" name="status">
+              <DictSelect
+                  v-model:value="queryParams.status"
+                  allow-clear
+                  dictType="sys_user_status"
+                  placeholder="用户状态"
+                  style="width: 200px"
+              />
+            </a-form-item>
+            <a-form-item>
+              <a-space>
+                <a-button html-type="submit" type="primary">
+                  <template #icon>
+                    <SearchOutlined/>
+                  </template>
+                  搜索
+                </a-button>
+                <a-button @click="resetQuery">
+                  <template #icon>
+                    <ReloadOutlined/>
+                  </template>
+                  重置
+                </a-button>
+              </a-space>
+            </a-form-item>
+          </a-form>
 
-      <!-- 表格区域 -->
-      <a-table
-        :columns="tableColumns"
-        :data-source="userList"
-        :row-key="(record) => record.userId"
-        :size="tableConfig.size"
-        :pagination="{
-          total: pagination.total,
-          current: queryParams.pageNum,
-          pageSize: queryParams.pageSize,
-          showSizeChanger: true,
-          showQuickJumper: true,
-          showTotal: (total) => `共 ${total} 条`,
-        }"
-        :loading="loading"
-        :row-selection="{
-          selectedRowKeys: selectedRowKeys,
-          onChange: onSelectChange,
-        }"
-        @change="handleTableChange"
-        :scroll="{ x: 1300 }"
-      >
-        <template #bodyCell="{ column, record }">
-          <template v-if="column.dataIndex === 'status'">
-            <a-tag :color="record.status === '0' ? 'green' : 'red'">
-              {{ record.status === "0" ? "正常" : "停用" }}
-            </a-tag>
-          </template>
-          <template v-else-if="column.dataIndex === 'sex'">
-            <!-- {{ record.sex === "0" ? "男" : "女" }} -->
-            <DictTag :value="record.sex" dictType="sys_user_sex"/>
-          </template>
-          <template v-else-if="column.dataIndex === 'action'">
-            <a-space>
-              <a-button size="small" type="link" @click="handleEdit(record)">
-                <template #icon>
-                  <edit-outlined/>
-                </template>
-                编辑
-              </a-button>
-              <a-button size="small" style="color: red;" type="link" @click="handleDelete(record)">
-                <template #icon>
-                  <delete-outlined/>
-                </template>
-                删除
-              </a-button>
-              <a-button size="small" style="color: #1890ff;" type="link" @click="handleResetPassword(record)">
-                <template #icon>
-                  <key-outlined/>
-                </template>
-                重置密码
-              </a-button>
-            </a-space>
-          </template>
-        </template>
-      </a-table>
-      <!-- 引入用户表单组件 -->
-    </div>
-    <UserForm
-      :open="open"
-      :is-edit="isEdit"
-      :userData="currentUser"
-      :roleOptions="roleOptions"
-      ref="UserFormRef"
-      @update:open="open = $event"
-      @success="handleFormSuccess"
-    />
+          <div ref="tableContainerRef" class="common-table-container">
+            <!-- 操作按钮区域 -->
+            <div class="action-buttons">
+              <a-space>
+                <a-button type="primary" @click="handleAdd">
+                  <template #icon>
+                    <PlusOutlined/>
+                  </template>
+                  新增
+                </a-button>
+                <a-button
+                    :disabled="selectedRowKeys.length === 0"
+                    type="danger"
+                    @click="handleBatchDelete"
+                >
+                  <template #icon>
+                    <DeleteOutlined/>
+                  </template>
+                  批量删除
+                </a-button>
+              </a-space>
+              <!-- 表格工具 -->
+              <TableTool
+                  v-model:tableSize="tableConfig.size"
+                  :fullScreenElement="tableContainerRef"
+                  :tableColumns="tableConfig.columns"
+                  @refresh="getList"
+              />
+            </div>
 
-    <!-- </a-card> -->
+            <!-- 表格区域 -->
+            <a-table
+                :columns="tableColumns"
+                :data-source="userList"
+                :loading="loading"
+                :pagination="{
+                total: pagination.total,
+                current: queryParams.pageNum,
+                pageSize: queryParams.pageSize,
+                showSizeChanger: true,
+                showQuickJumper: true,
+                showTotal: (total) => `共 ${total} 条`,
+              }"
+                :row-key="(record) => record.userId"
+                :row-selection="{
+                selectedRowKeys: selectedRowKeys,
+                onChange: onSelectChange,
+              }"
+                :scroll="{ x: 1300 }"
+                :size="tableConfig.size"
+                @change="handleTableChange"
+            >
+              <template #bodyCell="{ column, record }">
+                <template v-if="column.dataIndex === 'status'">
+                  <a-tag :color="record.status === '0' ? 'green' : 'red'">
+                    {{ record.status === "0" ? "正常" : "停用" }}
+                  </a-tag>
+                </template>
+                <template v-else-if="column.dataIndex === 'sex'">
+                  <!-- {{ record.sex === "0" ? "男" : "女" }} -->
+                  <DictTag :value="record.sex" dictType="sys_user_sex"/>
+                </template>
+                <template v-else-if="column.dataIndex === 'action'">
+                  <a-space>
+                    <a-button
+                        size="small"
+                        type="link"
+                        @click="handleEdit(record)"
+                    >
+                      <template #icon>
+                        <edit-outlined/>
+                      </template>
+                      编辑
+                    </a-button>
+                    <a-button
+                        size="small"
+                        style="color: red"
+                        type="link"
+                        @click="handleDelete(record)"
+                    >
+                      <template #icon>
+                        <delete-outlined/>
+                      </template>
+                      删除
+                    </a-button>
+                    <a-button
+                        size="small"
+                        style="color: #1890ff"
+                        type="link"
+                        @click="handleResetPassword(record)"
+                    >
+                      <template #icon>
+                        <key-outlined/>
+                      </template>
+                      重置密码
+                    </a-button>
+                  </a-space>
+                </template>
+              </template>
+            </a-table>
+            <!-- 引入用户表单组件 -->
+          </div>
+          <UserForm
+              ref="UserFormRef"
+              :deptList="deptList"
+              :is-edit="isEdit"
+              :open="open"
+              :roleOptions="roleOptions"
+              :userData="currentUser"
+              @success="handleFormSuccess"
+              @update:open="open = $event"
+          />
+        </div>
+      </a-col>
+    </a-row>
   </div>
 </template>
 
@@ -163,9 +197,18 @@ import {
   SearchOutlined,
 } from "@ant-design/icons-vue";
 import UserForm from "./components/UserForm.vue";
-import {batchDeleteUser, deleteUser, getUserPage, resetPassword,} from "@/api/modules/user";
+import {
+  batchDeleteUser,
+  deleteUser,
+  getUserPage,
+  resetPassword,
+} from "@/api/modules/user";
 import {getRoleList} from "@/api/modules/role";
-import {handleDeletePagination, handleSingleDeletePagination,} from "@/utils/pagination";
+import {
+  handleDeletePagination,
+  handleSingleDeletePagination,
+} from "@/utils/pagination";
+import {deptSelect as getDeptListApi} from "@/api/modules/dept";
 
 const appStore = useAppStore();
 const tableContainerRef = ref(null);
@@ -175,6 +218,7 @@ const queryParams = reactive({
   userName: "",
   phone: "",
   status: undefined,
+  deptIds: "",
   pageNum: 1,
   pageSize: 10,
 });
@@ -279,6 +323,9 @@ const pagination = reactive({
 // 加载状态
 const loading = ref(false);
 
+// 部门加载状态
+const deptLoading = ref(false);
+
 // 选中的行
 const selectedRowKeys = ref([]);
 
@@ -289,12 +336,22 @@ const open = ref(false);
 const currentUser = ref({});
 
 // 是否编辑
-const isEdit = ref(false);  
+const isEdit = ref(false);
+
+// 部门列表
+const deptList = ref([]);
+
+// 展开的行
+const expandedRowKeys = ref([]);
+
+// 选中的部门节点
+const selectedDeptKeys = ref([]);
 
 // 组件挂载时获取数据
 onMounted(() => {
   getList();
   getRoles();
+  getDeptList();
 });
 
 // 获取角色列表
@@ -319,6 +376,25 @@ const getList = () => {
     });
 };
 
+// 获取部门列表
+const getDeptList = () => {
+  deptLoading.value = true;
+  getDeptListApi().then((data) => {
+    expandedRowKeys.value = flattenDeptList(data).map((item) => item.id);
+    deptList.value = data;
+    console.log(expandedRowKeys.value);
+
+  }).finally(() => {
+    deptLoading.value = false;
+  });
+};
+
+// 数据扁平化
+const flattenDeptList = (deptList) => {
+  return deptList.map((item) => {
+    return [item, ...flattenDeptList(item.children)];
+  }).flat();
+};
 // 处理查询
 const handleQuery = () => {
   pagination.current = 1;
@@ -330,7 +406,10 @@ const handleQuery = () => {
 const resetQuery = () => {
   queryParams.username = "";
   queryParams.phone = "";
+  queryParams.deptIds = "";
   queryParams.status = undefined;
+  // 清除树选择状态
+  selectedDeptKeys.value = [];
   handleQuery();
 };
 
@@ -435,8 +514,64 @@ const handleResetPassword = (record) => {
       message.error(error.message || "重置密码失败，请重试");
     });
 };
+
+// 选择部门
+const handleDeptSelect = (selectedKeys, info) => {
+  queryParams.deptIds = getAllDeptIds([info.node]).join(",");
+  getList();
+};
+
+//获取所有deptIds
+const getAllDeptIds = (detpList) => {
+  return detpList.map((item) => {
+    return [item.id, ...getAllDeptIds(item.children)];
+  }).flat();
+};
 </script>
 
 <style lang="scss" scoped>
+.dept-tree-container {
+  height: 100%;
+  min-height: 300px;
+  overflow: auto;
+
+  // 响应式样式
+  @media (max-width: 768px) {
+    max-height: 300px;
+    margin-bottom: 16px;
+  }
+
+  // 树节点样式优化
+  :deep(.ant-tree) {
+    .ant-tree-node-content-wrapper {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+      display: inline-block;
+    }
+  }
+}
+
+// 部门树节点样式
+.dept-tree-node {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+
+  .dept-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .dept-count {
+    margin-left: 8px;
+    color: #8c8c8c;
+    font-size: 12px;
+  }
+}
 </style>
 

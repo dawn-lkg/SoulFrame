@@ -5,6 +5,7 @@
       <GlobalBreadcrumb v-if="themeStore.layoutConfig.showBreadcrumb" />
     </div>
     <div class="header-right">
+      <MessageCenter/>
       <ThemeMode />
       <SettingButton />
       <user-avatar />
@@ -18,6 +19,7 @@ import GlobalBreadcrumb from './components/global-breadcrumb.vue';
 import SettingButton from './components/setting-button.vue';
 import ThemeMode from './components/theme-mode.vue';
 import userAvatar from './components/user-avatar.vue';
+import MessageCenter from './components/message-center.vue';
 import {useAppStore, useThemeStore} from "@/stores";
 
 const themeStore = useThemeStore();

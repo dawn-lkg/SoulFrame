@@ -66,5 +66,9 @@ export async function updateUserAvatar(data) {
 }
 
 
+// 用户下拉选择
+export async function userSelect(params) {
+    return request.get('/system/user/select', {params})
+}
 
 

@@ -68,10 +68,16 @@
         />
 
       </a-form-item>
+      <a-form-item v-if="form.menuType !== 'F'" label="是否显示" name="visible">
+        <a-radio-group v-model:value="form.visible">
+          <a-radio value="0">显示</a-radio>
+          <a-radio value="1">隐藏</a-radio>
+        </a-radio-group>
+      </a-form-item>
       <a-form-item v-if="form.menuType === 'C'" label="是否缓存" name="isCache">
         <a-radio-group v-model:value="form.isCache">
-          <a-radio :value="1">缓存</a-radio>
-          <a-radio :value="0">不缓存</a-radio>
+          <a-radio :value="0">缓存</a-radio>
+          <a-radio :value="1">不缓存</a-radio>
         </a-radio-group>
       </a-form-item>
     </a-form>

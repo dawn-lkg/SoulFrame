@@ -75,12 +75,15 @@ declare global {
   const useDictStore: typeof import('./stores/index.js')['useDictStore']
   const useId: typeof import('vue')['useId']
   const useLink: typeof import('vue-router')['useLink']
+    const useMessageStore: typeof import('./stores/index.js')['useMessageStore']
   const useModel: typeof import('vue')['useModel']
+    const useNotificationStore: typeof import('./stores/index.js')['useNotificationStore']
   const useRoute: typeof import('vue-router')['useRoute']
   const useRouter: typeof import('vue-router')['useRouter']
   const useSlots: typeof import('vue')['useSlots']
   const useTemplateRef: typeof import('vue')['useTemplateRef']
   const useThemeStore: typeof import('./stores/index.js')['useThemeStore']
+    const useTodoStore: typeof import('./stores/index.js')['useTodoStore']
   const watch: typeof import('vue')['watch']
   const watchEffect: typeof import('vue')['watchEffect']
   const watchPostEffect: typeof import('vue')['watchPostEffect']
@@ -167,12 +170,15 @@ declare module 'vue' {
     readonly useDictStore: UnwrapRef<typeof import('./stores/index.js')['useDictStore']>
     readonly useId: UnwrapRef<typeof import('vue')['useId']>
     readonly useLink: UnwrapRef<typeof import('vue-router')['useLink']>
+      readonly useMessageStore: UnwrapRef<typeof import('./stores/index.js')['useMessageStore']>
     readonly useModel: UnwrapRef<typeof import('vue')['useModel']>
+      readonly useNotificationStore: UnwrapRef<typeof import('./stores/index.js')['useNotificationStore']>
     readonly useRoute: UnwrapRef<typeof import('vue-router')['useRoute']>
     readonly useRouter: UnwrapRef<typeof import('vue-router')['useRouter']>
     readonly useSlots: UnwrapRef<typeof import('vue')['useSlots']>
     readonly useTemplateRef: UnwrapRef<typeof import('vue')['useTemplateRef']>
     readonly useThemeStore: UnwrapRef<typeof import('./stores/index.js')['useThemeStore']>
+      readonly useTodoStore: UnwrapRef<typeof import('./stores/index.js')['useTodoStore']>
     readonly watch: UnwrapRef<typeof import('vue')['watch']>
     readonly watchEffect: UnwrapRef<typeof import('vue')['watchEffect']>
     readonly watchPostEffect: UnwrapRef<typeof import('vue')['watchPostEffect']>

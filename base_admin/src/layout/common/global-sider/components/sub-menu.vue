@@ -1,6 +1,6 @@
 <template>
   <template v-for="item in menuList" :key="item.menuId">
-    <a-sub-menu v-if="item.menuType==='M'" :key="item.path" class="custom-submenu">
+    <a-sub-menu v-if="item.menuType==='M'&&item.visible==='0'" :key="item.path" class="custom-submenu">
       <template #icon>
         <Icon :name="item.icon" class="menu-icon"/>
       </template>
@@ -9,7 +9,8 @@
       </template>
       <subMenu :menuList="item.children" />
     </a-sub-menu>
-    <a-menu-item v-if="item.menuType==='C'" :key="item.path" class="custom-menu-item" @click="handleClickMenu(item)">
+    <a-menu-item v-if="item.menuType==='C'&&item.visible==='0'" :key="item.path" class="custom-menu-item"
+                 @click="handleClickMenu(item)">
       <template #icon>
         <Icon :name="item.icon" class="menu-icon"/>
       </template>
@@ -41,10 +42,7 @@ const handleClickMenu = (item) => {
 </script>
 
 <style lang="scss" scoped>
-// 导入全局菜单样式，但不使用@extend
 @use '@/styles/theme/menu';
-
-// 特定组件样式，使用直接类名而不是@extend
 :deep(.custom-menu-item),
 :deep(.custom-submenu .ant-menu-submenu-title) {
   padding-left: 12px !important;

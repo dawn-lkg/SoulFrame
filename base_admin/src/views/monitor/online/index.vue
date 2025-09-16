@@ -299,7 +299,7 @@ const handleBatchForceLogout = () => {
 onMounted(async () => {
   getList();
   const {lastMessage, disconnect} = useSSE("/system/online/sse", {
-    keepAlive: false // 只保留最新数据
+    keepAlive: false 
   });
   disconnect.value = disconnect
   watch(lastMessage, (v) => {

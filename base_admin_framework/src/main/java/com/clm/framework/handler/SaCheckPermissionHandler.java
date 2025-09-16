@@ -40,18 +40,6 @@ public class SaCheckPermissionHandler implements SaAnnotationHandlerInterface<Sa
                 stpLogic.checkPermissionOr(permissionArray);
             }
         } catch (NotPermissionException e) {
-//            // Start------------以下是自定义代码-------
-//            if (LoginUtils.isSuperAdmin())
-//                return;
-//            // End------------以上是自定义代码-------
-//            // 权限认证校验未通过，再开始角色认证校验
-//            for (String role : orRole) {
-//                String[] rArr = SaFoxUtil.convertStringToArray(role);
-//                // 某一项 role 认证通过，则可以提前退出了，代表通过
-//                if (stpLogic.hasRoleAnd(rArr)) {
-//                    return;
-//                }
-//            }
             throw e;
         }
     }
