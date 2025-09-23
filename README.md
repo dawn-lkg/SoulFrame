@@ -191,7 +191,7 @@ base_admin/                     # 前端项目根目录
 ### 后端启动
 \\\ash
 # 1. 克隆项目
-git clone https://github.com/dawn-lkg/base_admin.git
+git clone https://github.com/dawn-lkg/SoulFrame
 
 # 2. 导入数据库
 mysql -u root -p < docs/sql/base_admin.sql
