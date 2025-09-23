@@ -17,7 +17,6 @@ Base Admin 是一个功能完善、架构清晰的企业级后台管理系统。
 
 ###  技术特性
 - **现代化技术栈**: Spring Boot 3.x + Vue 3.x + JavaScript
-- **微服务架构**: 模块化设计，支持独立部署和扩展
 - **权限认证**: 基于 Sa-Token 的 RBAC 权限控制
 - **接口文档**: 集成 Knife4j，自动生成 API 文档
 - **数据持久化**: MyBatis-Plus + MySQL，支持多数据源
@@ -62,75 +61,9 @@ Base Admin 是一个功能完善、架构清晰的企业级后台管理系统。
 
 ##  项目结构
 
-### 后端结构
-\\\
-base_admin/
- base_admin_common/          # 公共模块
-    core/                   # 核心功能
-       domain/             # 核心领域对象
-       web/                # Web 核心配置
-       utils/              # 核心工具类
-    constants/              # 常量定义
-    enums/                  # 枚举类
-    exception/              # 异常处理
-    security/               # 安全相关
-    task/                   # 任务相关
-    utils/                  # 工具类
- base_admin_system/          # 系统模块
-    domain/                 # 领域对象
-       entity/             # 实体类
-       dto/                # 数据传输对象
-       vo/                 # 视图对象
-    service/                # 业务服务
-       impl/               # 服务实现
-       interface/          # 服务接口
-    mapper/                 # 数据访问层
-    enums/                  # 系统枚举
-    constants/              # 系统常量
- base_admin_framework/       # 框架模块
-    config/                 # 配置类
-       security/           # 安全配置
-       redis/              # Redis 配置
-       database/           # 数据库配置
-       swagger/            # API 文档配置
-    aspect/                 # 切面编程
-       log/                # 日志切面
-       security/           # 安全切面
-    interceptor/            # 拦截器
-    handler/                # 处理器
-    listener/               # 监听器
-    annotation/             # 自定义注解
-    exception/              # 异常处理
-    web/                    # Web 相关
- base_admin_web/             # Web 模块
-    controller/             # 控制器
-       system/             # 系统管理控制器
-       monitor/            # 监控控制器
-       common/             # 通用控制器
-    config/                 # Web 配置
-       swagger/            # API 文档配置
-       security/           # 安全配置
-       cors/               # 跨域配置
-    timerTask/              # 定时任务
- base_admin_quartz/          # 定时任务模块
-    config/                 # 任务配置
-       scheduler/          # 调度器配置
-       job/                # 任务配置
-    domain/                 # 任务领域对象
-       entity/             # 任务实体
-       dto/                # 任务 DTO
-    service/                # 任务服务
-       impl/               # 服务实现
-       interface/          # 服务接口
-    mapper/                 # 任务数据访问
-    util/                   # 任务工具类
- base_admin_sse/             # 消息推送模块
-    SseTemplate.java        # SSE 模板类
-    SseConstant.java        # SSE 常量
-    SseAutoConfiguration.java # SSE 自动配置
-    SseProperties.java      # SSE 属性配置
- docs/                       # 项目文档
-\\\
+base_admin/ ├── base_admin_common/ # 公共模块 │ ├── core/ # 核心功能 │ │ ├── domain/ # 核心领域对象 │ │ ├── web/ # Web 核心配置 │ │ └── utils/ # 核心工具类 │ ├── constants/ # 常量定义 │ ├── enums/ # 枚举类 │ ├── exception/ # 异常处理 │ ├── security/ # 安全相关 │ ├── task/ # 任务相关 │ └── utils/ # 工具类 ├── base_admin_system/ # 系统模块 │ ├── domain/ # 领域对象 │ │ ├── entity/ # 实体类 │ │ ├── dto/ # 数据传输对象 │ │ └── vo/ # 视图对象 │ ├── service/ # 业务服务 │ │ ├── impl/ # 服务实现 │ │ └── interface/ # 服务接口 │ ├── mapper/ # 数据访问层 │ ├── enums/ # 系统枚举 │ └── constants/ # 系统常量 ├── base_admin_framework/ # 框架模块 │ ├── config/ # 配置类 │ │ ├── security/ # 安全配置 │ │ ├── redis/ # Redis 配置 │ │ ├── database/ # 数据库配置 │ │ └── swagger/ # API 文档配置 │ ├── aspect/ # 切面编程 │ │ ├── log/ # 日志切面 │ │ └── security/ # 安全切面 │ ├── interceptor/ # 拦截器 │ ├── handler/ # 处理器 │ ├── listener/ # 监听器 │ ├── annotation/ # 自定义注解 │ ├── exception/ # 异常处理 │ └── web/ # Web 相关 ├── base_admin_web/ # Web 模块 │ ├── controller/ # 控制器 │ │ ├── system/ # 系统管理控制器 │ │ ├── monitor/ # 监控控制器 │ │ └── common/ # 通用控制器 │ ├── config/ # Web 配置 │ │ ├── swagger/ # API 文档配置 │ │ ├── security/ # 安全配置 │ │ └── cors/ # 跨域配置 │ └── timerTask/ # 定时任务 ├── base_admin_quartz/ # 定时任务模块 │ ├── config/ # 任务配置 │ │ ├── scheduler/ # 调度器配置 │ │ └── job/ # 任务配置 │ ├── domain/ # 任务领域对象 │ │ ├── entity/ # 任务实体 │ │ └── dto/ # 任务 DTO │ ├── service/ # 任务服务 │ │ ├── impl/ # 服务实现 │ │ └── interface/ # 服务接口 │ ├── mapper/ # 任务数据访问 │ └── util/ # 任务工具类 ├── base_admin_sse/ # 消息推送模块 │ ├── SseTemplate.java # SSE 模板类 │ ├── SseConstant.java # SSE 常量 │ ├── SseAutoConfiguration.java # SSE 自动配置 │ └── SseProperties.java # SSE 属性配置 └── docs/ # 项目文档
+
+
 
 ### 前端结构
 \\\
