@@ -7,6 +7,7 @@
     <div class="header-right">
       <MessageCenter/>
       <ThemeMode />
+      <Github/>
       <SettingButton />
       <user-avatar />
     </div>
@@ -20,6 +21,7 @@ import SettingButton from './components/setting-button.vue';
 import ThemeMode from './components/theme-mode.vue';
 import userAvatar from './components/user-avatar.vue';
 import MessageCenter from './components/message-center.vue';
+import Github from './components/github.vue';
 import {useAppStore, useThemeStore} from "@/stores";
 
 const themeStore = useThemeStore();
