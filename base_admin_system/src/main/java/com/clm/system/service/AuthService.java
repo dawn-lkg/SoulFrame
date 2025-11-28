@@ -2,9 +2,11 @@ package com.clm.system.service;
 
 import cn.dev33.satoken.stp.SaTokenInfo;
 import com.clm.common.core.domain.model.LoginBody;
+import com.clm.common.core.domain.model.LoginBody2;
 import com.clm.system.domain.entity.UserInfo;
 import com.clm.system.domain.vo.CaptchaVo;
 import com.clm.system.domain.vo.MenuVO;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -38,4 +40,12 @@ public interface AuthService {
      * @return 路由
      */
     List<MenuVO> getRouter();
+
+    /**
+     * 无验证码登录
+     *
+     * @param loginBody 登录信息
+     * @return token
+     */
+    SaTokenInfo login2(@Valid LoginBody2 loginBody);
 }

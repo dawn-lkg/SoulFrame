@@ -78,7 +78,7 @@ public class UserController extends BaseController {
 
     @Operation(summary = "更新头像")
     @Log(businessType = BusinessType.UPDATE)
-    @PutMapping("/updateAvatar")
+    @PostMapping("/updateAvatar")
     public Result<?> updateAvatar(MultipartFile file) {
         userService.updateAvatar(file);
         return success();

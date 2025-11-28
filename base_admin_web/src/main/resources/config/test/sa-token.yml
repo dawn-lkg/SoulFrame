@@ -26,6 +26,7 @@ sa-token:
 router:
   whitelist:
     - /auth/login
+    - /auth/login2
     - /auth/captcha
     - /doc.html
     - /webjars/**
@@ -36,3 +37,4 @@ router:
     - /quartz/**
     - /ws/**
     - /error
+    - /blog/**

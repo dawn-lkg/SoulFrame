@@ -16,6 +16,7 @@
         <module>base_admin_framework</module>
         <module>base_admin_sse</module>
         <module>base_admin_quartz</module>
+        <module>base_admin_blog</module>
     </modules>
 
 

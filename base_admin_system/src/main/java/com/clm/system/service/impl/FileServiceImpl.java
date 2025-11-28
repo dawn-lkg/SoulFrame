@@ -145,7 +145,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
         if (fileVO == null) {
             return null;
         }
-        return fileVO.getFileUrl();
+        return fileVO.getFileUrl().substring(0, fileVO.getFileUrl().indexOf("?"));
     }
 
     @Override

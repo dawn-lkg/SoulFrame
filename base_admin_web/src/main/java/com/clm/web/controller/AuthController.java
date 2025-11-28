@@ -5,6 +5,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.clm.common.core.controller.BaseController;
 import com.clm.common.core.domain.Result;
 import com.clm.common.core.domain.model.LoginBody;
+import com.clm.common.core.domain.model.LoginBody2;
 import com.clm.common.enums.BusinessType;
 import com.clm.framework.annotation.Log;
 import com.clm.system.domain.entity.UserInfo;
@@ -36,6 +37,12 @@ public class AuthController extends BaseController {
     @PostMapping("/login")
     public Result<SaTokenInfo> login(@RequestBody @Valid LoginBody loginBody){
         return success(authService.login(loginBody));
+    }
+
+    @Operation(summary = "无验证码登录")
+    @PostMapping("/login2")
+    public Result<SaTokenInfo> login2(@RequestBody @Valid LoginBody2 loginBody) {
+        return success(authService.login2(loginBody));
     }
 
     @Operation(summary = "登出")
