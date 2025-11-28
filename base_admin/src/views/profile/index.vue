@@ -9,6 +9,8 @@
             <div class="upload-avatar">
               <a-upload
                 name="avatar"
+                :before-upload="beforeUpload"
+                :custom-request="handleAvatarUpload"
                 :show-upload-list="false"
               >
                 <a-button type="link">更换头像</a-button>
@@ -36,7 +38,7 @@
       <!-- 右侧内容区域 -->
       <a-col :span="18">
         <a-card>
-          <a-tabs v-model:activeKey="activeTab">
+          <a-tabs v-model:active-key="activeTab">
             <!-- 基本资料 -->
             <a-tab-pane key="basic" tab="基本资料">
             <a-card>
@@ -253,7 +255,7 @@
 
 <script setup>
 import {message} from 'ant-design-vue'
-import {updateUserInfo, updateUserPassword} from '@/api/modules/user'
+import {updateUserInfo, updateUserPassword, updateUserAvatar} from '@/api/modules/user'
 import router from '@/router'
 import {LOGIN_PATH} from '@/config'
 import {getCurrentUserLoginLog} from '@/api/modules/loginLog'
@@ -420,32 +422,38 @@ onMounted(async () => {
 
 // 头像上传前校验
 const beforeUpload = (file) => {
-  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
+  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/gif'
   if (!isJpgOrPng) {
     message.error('只能上传JPG或PNG格式的图片!')
+    return false
   }
   const isLt2M = file.size / 1024 / 1024 < 2
   if (!isLt2M) {
     message.error('图片大小不能超过2MB!')
+    return false
   }
-  return isJpgOrPng && isLt2M
+  return true
 }
 
-// 处理头像上传变化
-const handleAvatarChange = (info) => {
-  if (info.file.status === 'uploading') {
-    return
-  }
-  if (info.file.status === 'done') {
+// 处理头像上传（使用 customRequest 避免重复上传）
+const handleAvatarUpload = async ({file, onSuccess, onError}) => {
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    // 调用上传接口
+    const result = await updateUserAvatar(formData)
+    
     // 上传成功，更新头像
-    if (info.file.response.code === 200) {
-      userInfo.value.avatar = info.file.response.data
-      message.success('头像更新成功')
-    } else {
-      message.error(info.file.response.msg || '头像上传失败')
-    }
-  } else if (info.file.status === 'error') {
-    message.error('头像上传失败')
+    userInfo.value.avatar = result
+    await authStore.getUserInfo()
+    Object.assign(userInfo.value, userForm.value)
+
+    message.success('头像更新成功')
+    onSuccess(result)
+  } catch (error) {
+    message.error(error.message || '头像上传失败')
+    onError(error)
   }
 }
 

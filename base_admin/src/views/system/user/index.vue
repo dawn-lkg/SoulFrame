@@ -1,8 +1,62 @@
 <template>
   <div>
+    <!-- 小屏幕显示部门树按钮 -->
+    <div v-if="deptList.length > 0" class="mobile-dept-trigger">
+      <a-button type="primary" @click="deptDrawerVisible = true">
+        <template #icon>
+          <AppstoreOutlined/>
+        </template>
+        选择部门
+      </a-button>
+      <a-tag v-if="selectedDeptKeys.length > 0" closable color="blue" @close="handleResetDept">
+        已选择部门
+      </a-tag>
+    </div>
+
+    <!-- 部门树抽屉 - 小屏幕使用 -->
+    <a-drawer
+        v-model:visible="deptDrawerVisible"
+        class="dept-drawer"
+        placement="left"
+        title="选择部门"
+        width="280"
+    >
+      <a-tree
+          v-model:expandedKeys="expandedRowKeys"
+          v-model:selectedKeys="selectedDeptKeys"
+          :default-expanded-all="true"
+          :field-names="{ title: 'title', value: 'id', key: 'id' }"
+          :loading="deptLoading"
+          :tree-data="deptList"
+          @select="handleDeptSelectFromDrawer"
+      >
+        <template #title="{ title, userCount }">
+          <span class="dept-tree-node">
+            <span class="dept-name">{{ title }}</span>
+            <span v-if="userCount !== undefined" class="dept-count">({{ userCount }})</span>
+          </span>
+        </template>
+      </a-tree>
+      <template #footer>
+        <a-space>
+          <a-button @click="handleResetDept">重置</a-button>
+          <a-button type="primary" @click="deptDrawerVisible = false">确定</a-button>
+        </a-space>
+      </template>
+    </a-drawer>
+
     <a-row :gutter="16">
-      <a-col v-if="deptList.length > 0" :lg="4" :md="6" :sm="24" :span="4" :xl="4" :xs="24">
+      <!-- 部门树 - 小屏幕隐藏 -->
+      <a-col v-if="deptList.length > 0" :lg="4" :md="6" :sm="0" :span="4" :xl="4" :xs="0" class="dept-tree-col">
         <div class="common-container dept-tree-container">
+          <div class="dept-tree-header">
+            <h4>部门列表</h4>
+            <a-button size="small" type="text" @click="handleResetDept">
+              <template #icon>
+                <ReloadOutlined/>
+              </template>
+            </a-button>
+          </div>
           <a-tree v-model:expandedKeys="expandedRowKeys" v-model:selectedKeys="selectedDeptKeys"
                   :default-expanded-all="true" :field-names="{ title: 'title', value: 'id', key: 'id' }"
                   :loading="deptLoading"
@@ -16,6 +70,8 @@
           </a-tree>
         </div>
       </a-col>
+
+      <!-- 主内容区 - 响应式宽度 -->
       <a-col :lg="deptList.length > 0 ? 20 : 24" :md="deptList.length > 0 ? 18 : 24" :sm="24" :span="deptList.length > 0 ? 20 : 24"
              :xl="deptList.length > 0 ? 20 : 24" :xs="24">
         <div class="common-container">
@@ -188,6 +244,7 @@
 <script setup>
 import {message, Modal} from "ant-design-vue";
 import {
+  AppstoreOutlined,
   DeleteOutlined,
   EditOutlined,
   ExclamationCircleOutlined,
@@ -347,6 +404,9 @@ const expandedRowKeys = ref([]);
 // 选中的部门节点
 const selectedDeptKeys = ref([]);
 
+// 部门抽屉显示状态
+const deptDrawerVisible = ref(false);
+
 // 组件挂载时获取数据
 onMounted(() => {
   getList();
@@ -411,6 +471,23 @@ const resetQuery = () => {
   // 清除树选择状态
   selectedDeptKeys.value = [];
   handleQuery();
+};
+
+// 重置部门选择
+const handleResetDept = () => {
+  selectedDeptKeys.value = [];
+  queryParams.deptIds = "";
+  handleQuery();
+  message.success('已重置部门筛选');
+};
+
+// 从抽屉选择部门
+const handleDeptSelectFromDrawer = (selectedKeys, info) => {
+  handleDeptSelect(selectedKeys, info);
+  // 选择后自动关闭抽屉
+  setTimeout(() => {
+    deptDrawerVisible.value = false;
+  }, 300);
 };
 
 // 表格变化事件
@@ -530,26 +607,105 @@ const getAllDeptIds = (detpList) => {
 </script>
 
 <style lang="scss" scoped>
+// 移动端部门选择触发器
+.mobile-dept-trigger {
+  display: none;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  // 小屏幕显示
+  @media (max-width: 768px) {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .ant-btn {
+    flex-shrink: 0;
+  }
+
+  .ant-tag {
+    margin: 0;
+  }
+}
+
+// 部门抽屉样式
+:deep(.dept-drawer) {
+  .ant-drawer-body {
+    padding: 16px;
+  }
+
+  .ant-drawer-footer {
+    border-top: 1px solid #f0f0f0;
+    padding: 12px 16px;
+  }
+}
+
+// 部门树列 - 响应式隐藏
+.dept-tree-col {
+  // 在小屏幕时隐藏
+  @media (max-width: 768px) {
+    display: none !important;
+  }
+}
+
 .dept-tree-container {
   height: 100%;
-  min-height: 300px;
+  min-height: 400px;
+  max-height: calc(100vh - 200px);
   overflow: auto;
+  display: flex;
+  flex-direction: column;
 
-  // 响应式样式
-  @media (max-width: 768px) {
-    max-height: 300px;
-    margin-bottom: 16px;
+  // 部门树头部
+  .dept-tree-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    margin: -24px -36px 16px;
+    background: linear-gradient(to right, rgba(24, 144, 255, 0.05), transparent);
+
+    h4 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: #262626;
+    }
   }
 
   // 树节点样式优化
   :deep(.ant-tree) {
+    flex: 1;
+    overflow: auto;
+    
     .ant-tree-node-content-wrapper {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       max-width: 100%;
       display: inline-block;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+      &:hover {
+        background-color: rgba(24, 144, 255, 0.08);
+      }
     }
+
+    .ant-tree-node-selected {
+      .ant-tree-node-content-wrapper {
+        background-color: rgba(24, 144, 255, 0.12) !important;
+      }
+    }
+  }
+
+  // 平板尺寸优化
+  @media (max-width: 992px) and (min-width: 769px) {
+    min-height: 350px;
   }
 }
 
