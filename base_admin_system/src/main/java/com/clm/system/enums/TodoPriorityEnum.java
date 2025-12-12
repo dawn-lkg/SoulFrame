@@ -1,12 +1,14 @@
 package com.clm.system.enums;
 
+import lombok.Getter;
+
 /**
  * 待办事项优先级枚举
  *
  * @author admin
  */
+@Getter
 public enum TodoPriorityEnum {
-
     /**
      * 低优先级
      */
@@ -95,16 +97,5 @@ public enum TodoPriorityEnum {
         return priority.getLabel();
     }
 
-    public String getCode() {
-        return code;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public String getValue() {
-        return value;
-    }
 }
 
