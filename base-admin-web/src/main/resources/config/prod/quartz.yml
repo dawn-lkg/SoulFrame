@@ -1,0 +1,43 @@
+org:
+  quartz:
+    scheduler:
+      instanceName: QuartzScheduler
+      instanceId: AUTO
+      skipUpdateCheck: true
+      jmx:
+        mbeanName: org.quartz:type=QuartzScheduler,name=QuartzScheduler
+    jobStore:
+      class: org.quartz.impl.jdbcjobstore.JobStoreTX
+      driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+      tablePrefix: QRTZ_
+      useProperties: false
+      misfireThreshold: 60000
+      clusterCheckinInterval: 20000
+      acquireTriggersWithinLock: true
+    threadPool:
+      class: org.quartz.simpl.SimpleThreadPool
+      threadCount: 10
+      threadPriority: 5
+      threadsInheritContextClassLoaderOfInitializingThread: true
+    dataSource:
+      default:
+        provider: hikaricp
+        connectionUrl: ${spring.datasource.url}
+        username: ${spring.datasource.username}
+        password: ${spring.datasource.password}
+        driverClassName: ${spring.datasource.driver-class-name}
+        maxConnections: 5
+        validationQuery: SELECT 1
+      idleWaitTime: 30000
+      dbRetryInterval: 15000
+      lockHandler:
+        class: org.quartz.impl.jdbcjobstore.StdRowLockSemaphore
+        # 设置锁超时时间为30秒
+        maxRetry: 5
+        retryDelay: 3000
+
+# 定时任务包位置
+timer-task:
+  enable: true
+  pack:
+    - com.clm.web.timerTask

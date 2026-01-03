@@ -2,6 +2,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.0</version>
+    </parent>
+
     <groupId>com.clm</groupId>
     <artifactId>base_admin</artifactId>
     <version>1.0-SNAPSHOT</version>
@@ -10,13 +16,13 @@
     <name>base_admin</name>
     <url>http://maven.apache.org</url>
     <modules>
-        <module>base_admin_web</module>
-        <module>base_admin_system</module>
-        <module>base_admin_common</module>
-        <module>base_admin_framework</module>
-        <module>base_admin_sse</module>
-        <module>base_admin_quartz</module>
-        <module>base_admin_blog</module>
+        <module>base-admin-web</module>
+        <module>base-admin-system</module>
+        <module>base-admin-common</module>
+        <module>base-admin-framework</module>
+        <module>base-admin-sse</module>
+        <module>base-admin-quartz</module>
+
     </modules>
 
 
@@ -40,37 +46,42 @@
         <javax.servlet.version>4.0.1</javax.servlet.version>
         <easyexcel.version>3.1.5</easyexcel.version>
         <oshi.version>6.4.0</oshi.version>
-        <spring-boot.version>3.2.0</spring-boot.version>
     </properties>
-
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.0</version>
-    </parent>
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>com.clm</groupId>
-                <artifactId>base_admin_common</artifactId>
+                <artifactId>base-admin-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.clm</groupId>
-                <artifactId>base_admin_framework</artifactId>
+                <artifactId>base-admin-framework</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.clm</groupId>
-                <artifactId>base_admin_system</artifactId>
+                <artifactId>base-admin-system</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.clm</groupId>
-                <artifactId>base_admin_web</artifactId>
+                <artifactId>base-admin-web</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.clm</groupId>
+                <artifactId>base-admin-quartz</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.clm</groupId>
+                <artifactId>base-admin-sse</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -240,7 +251,7 @@
         <pluginRepository>
             <id>aliyun-plugin</id>
             <name>aliyun plugin</name>
-            <url>httpss://maven.aliyun.com/repository/public</url>
+            <url>https://maven.aliyun.com/repository/public</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
