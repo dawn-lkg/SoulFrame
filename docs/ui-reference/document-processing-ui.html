@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能文档处理系统 - UI参考</title>
+    <link href="https://cdn.jsdelivr.net/npm/ant-design-vue@4/dist/reset.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+                'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: #f0f2f5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: #fff;
+            padding: 16px 24px;
+            margin-bottom: 24px;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: #1890ff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            background: #fff;
+            padding: 8px 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        }
+
+        .tab {
+            padding: 8px 20px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            background: #f0f2f5;
+            color: #1890ff;
+        }
+
+        .tab.active {
+            background: #1890ff;
+            color: #fff;
+        }
+
+        .content-panel {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .content-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 文档列表页面 */
+        .doc-list-panel {
+            background: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 12px;
+            flex: 1;
+            max-width: 600px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn:hover {
+            color: #1890ff;
+            border-color: #1890ff;
+        }
+
+        .btn-primary {
+            background: #1890ff;
+            color: #fff;
+            border-color: #1890ff;
+        }
+
+        .btn-primary:hover {
+            background: #40a9ff;
+        }
+
+        .filter-tags {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 4px 12px;
+            background: #f0f2f5;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tag.active {
+            background: #e6f7ff;
+            color: #1890ff;
+        }
+
+        .doc-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .doc-table th {
+            background: #fafafa;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 500;
+            color: #666;
+            font-size: 14px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .doc-table td {
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        .doc-table tr:hover {
+            background: #fafafa;
+        }
+
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #fff;
+            font-size: 12px;
+        }
+
+        .icon-pdf { background: #f5222d; }
+        .icon-doc { background: #1890ff; }
+        .icon-xls { background: #52c41a; }
+        .icon-img { background: #fa8c16; }
+
+        .doc-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .doc-name {
+            font-weight: 500;
+            color: #262626;
+        }
+
+        .doc-meta {
+            color: #8c8c8c;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .status-badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        .status-success { background: #f6ffed; color: #52c41a; }
+        .status-processing { background: #e6f7ff; color: #1890ff; }
+        .status-error { background: #fff2e8; color: #fa8c16; }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 4px 8px;
+            border: none;
+            background: transparent;
+            color: #1890ff;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .action-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* 文档预览页面 */
+        .preview-panel {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 24px;
+        }
+
+        .preview-main {
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        }
+
+        .preview-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: #fafafa;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .preview-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .preview-viewer {
+            height: 800px;
+            background: #525659;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .preview-canvas {
+            max-width: 100%;
+            max-height: 100%;
+            background: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .preview-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .info-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        }
+
+        .info-card h3 {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: #262626;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #8c8c8c;
+        }
+
+        .info-value {
+            color: #262626;
+            font-weight: 500;
+        }
+
+        /* 版本管理页面 */
+        .version-panel {
+            background: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        }
+
+        .version-timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .version-item {
+            position: relative;
+            padding: 16px;
+            margin-bottom: 16px;
+            background: #fafafa;
+            border-radius: 8px;
+            border: 1px solid #f0f0f0;
+        }
+
+        .version-item::before {
+            content: '';
+            position: absolute;
+            left: -22px;
+            top: 24px;
+            width: 12px;
+            height: 12px;
+            background: #1890ff;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 0 0 2px #1890ff;
+        }
+
+        .version-item::after {
+            content: '';
+            position: absolute;
+            left: -17px;
+            top: 36px;
+            width: 2px;
+            height: calc(100% + 16px);
+            background: #d9d9d9;
+        }
+
+        .version-item:last-child::after {
+            display: none;
+        }
+
+        .version-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .version-title {
+            font-weight: 500;
+            color: #262626;
+        }
+
+        .version-meta {
+            font-size: 12px;
+            color: #8c8c8c;
+            margin-bottom: 8px;
+        }
+
+        .version-desc {
+            font-size: 13px;
+            color: #595959;
+        }
+
+        /* OCR识别页面 */
+        .ocr-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .upload-area {
+            background: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        }
+
+        .upload-box {
+            border: 2px dashed #d9d9d9;
+            border-radius: 8px;
+            padding: 60px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 16px;
+        }
+
+        .upload-box:hover {
+            border-color: #1890ff;
+            background: #fafafa;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: #d9d9d9;
+            margin-bottom: 16px;
+        }
+
+        .result-area {
+            background: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        }
+
+        .result-text {
+            background: #fafafa;
+            border: 1px solid #f0f0f0;
+            border-radius: 6px;
+            padding: 16px;
+            min-height: 400px;
+            font-family: monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        /* 协同编辑页面 */
+        .collaborate-panel {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 24px;
+        }
+
+        .editor-area {
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        }
+
+        .editor-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: #fafafa;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .editor-container {
+            height: 600px;
+            padding: 24px;
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            overflow-y: auto;
+        }
+
+        .collab-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .online-users-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        }
+
+        .user-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            background: #fafafa;
+            border-radius: 6px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #1890ff;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #262626;
+        }
+
+        .user-status {
+            font-size: 12px;
+            color: #52c41a;
+        }
+
+        .lock-indicator {
+            padding: 8px 12px;
+            background: #fff7e6;
+            border: 1px solid #ffd591;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #fa8c16;
+            margin-top: 12px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 1200px) {
+            .preview-panel,
+            .ocr-panel,
+            .collaborate-panel {
+                grid-template-columns: 1fr;
+            }
+
+            .preview-sidebar,
+            .collab-sidebar {
+                order: -1;
+            }
+        }
+
+        /* 图标 */
+        .icon {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            fill: currentColor;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>
+                📄 智能文档处理系统
+            </h1>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <span style="color: #8c8c8c; font-size: 14px;">👤 管理员</span>
+                <button class="btn">退出</button>
+            </div>
+        </div>
+
+        <!-- 标签页 -->
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('list')">📋 文档列表</button>
+            <button class="tab" onclick="showTab('preview')">👁️ 文档预览</button>
+            <button class="tab" onclick="showTab('version')">🔄 版本管理</button>
+            <button class="tab" onclick="showTab('ocr')">🔍 OCR识别</button>
+            <button class="tab" onclick="showTab('collaborate')">👥 协同编辑</button>
+        </div>
+
+        <!-- 文档列表页面 -->
+        <div id="list" class="content-panel active">
+            <div class="doc-list-panel">
+                <div class="toolbar">
+                    <div class="search-box">
+                        <input type="text" class="search-input" placeholder="搜索文件名、标签...">
+                        <button class="btn">🔍 搜索</button>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-primary">⬆️ 上传文件</button>
+                        <button class="btn">📤 批量导出</button>
+                        <button class="btn">🗑️ 批量删除</button>
+                    </div>
+                </div>
+
+                <div class="filter-tags">
+                    <span class="tag active">全部</span>
+                    <span class="tag">图片</span>
+                    <span class="tag">文档</span>
+                    <span class="tag">视频</span>
+                    <span class="tag">PDF</span>
+                    <span class="tag">Excel</span>
+                    <span class="tag">其他</span>
+                </div>
+
+                <table class="doc-table">
+                    <thead>
+                        <tr>
+                            <th width="40">
+                                <input type="checkbox">
+                            </th>
+                            <th>文件信息</th>
+                            <th width="120">文件大小</th>
+                            <th width="150">上传时间</th>
+                            <th width="100">状态</th>
+                            <th width="200">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>
+                                <div class="doc-info">
+                                    <div class="file-icon icon-pdf">PDF</div>
+                                    <div>
+                                        <div class="doc-name">产品需求文档v2.0.pdf</div>
+                                        <div class="doc-meta">📄 25页 · 🏷️ 产品 · 👤 张三</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>2.5 MB</td>
+                            <td>2025-12-30 09:35</td>
+                            <td><span class="status-badge status-success">已转换</span></td>
+                            <td class="actions">
+                                <button class="action-btn">👁️ 预览</button>
+                                <button class="action-btn">⬇️ 下载</button>
+                                <button class="action-btn">🔄 版本</button>
+                                <button class="action-btn">✏️ 编辑</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>
+                                <div class="doc-info">
+                                    <div class="file-icon icon-doc">DOC</div>
+                                    <div>
+                                        <div class="doc-name">年度总结报告.docx</div>
+                                        <div class="doc-meta">📄 12页 · 🏷️ 报告 · 👤 李四</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>1.8 MB</td>
+                            <td>2025-12-29 14:20</td>
+                            <td><span class="status-badge status-processing">转换中</span></td>
+                            <td class="actions">
+                                <button class="action-btn">👁️ 预览</button>
+                                <button class="action-btn">⬇️ 下载</button>
+                                <button class="action-btn">🔄 版本</button>
+                                <button class="action-btn">✏️ 编辑</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>
+                                <div class="doc-info">
+                                    <div class="file-icon icon-xls">XLS</div>
+                                    <div>
+                                        <div class="doc-name">销售数据统计表.xlsx</div>
+                                        <div class="doc-meta">📊 5工作表 · 🏷️ 数据 · 👤 王五</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>856 KB</td>
+                            <td>2025-12-28 16:45</td>
+                            <td><span class="status-badge status-success">已转换</span></td>
+                            <td class="actions">
+                                <button class="action-btn">👁️ 预览</button>
+                                <button class="action-btn">⬇️ 下载</button>
+                                <button class="action-btn">🔄 版本</button>
+                                <button class="action-btn">✏️ 编辑</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>
+                                <div class="doc-info">
+                                    <div class="file-icon icon-img">IMG</div>
+                                    <div>
+                                        <div class="doc-name">合同扫描件.jpg</div>
+                                        <div class="doc-meta">🖼️ 3000x4000 · 🏷️ 合同 · 👤 赵六</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>3.2 MB</td>
+                            <td>2025-12-27 11:30</td>
+                            <td><span class="status-badge status-success">已识别</span></td>
+                            <td class="actions">
+                                <button class="action-btn">👁️ 预览</button>
+                                <button class="action-btn">⬇️ 下载</button>
+                                <button class="action-btn">🔍 OCR</button>
+                                <button class="action-btn">✏️ 编辑</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="margin-top: 24px; text-align: center; color: #8c8c8c; font-size: 14px;">
+                    共 46 个文件 · 第 1/5 页
+                    <button class="btn" style="margin-left: 12px;">上一页</button>
+                    <button class="btn">下一页</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 文档预览页面 -->
+        <div id="preview" class="content-panel">
+            <div class="preview-panel">
+                <div class="preview-main">
+                    <div class="preview-toolbar">
+                        <div class="preview-controls">
+                            <button class="btn">⬅️ 上一页</button>
+                            <span style="margin: 0 12px;">第 1 / 25 页</span>
+                            <button class="btn">➡️ 下一页</button>
+                        </div>
+                        <div class="preview-controls">
+                            <button class="btn">🔍 放大</button>
+                            <button class="btn">🔍 缩小</button>
+                            <button class="btn">↻ 旋转</button>
+                            <button class="btn">⬇️ 下载</button>
+                            <button class="btn">🖨️ 打印</button>
+                        </div>
+                    </div>
+                    <div class="preview-viewer">
+                        <div class="preview-canvas" style="width: 600px; height: 800px; background: #fff; padding: 40px;">
+                            <div style="text-align: center; padding-top: 200px;">
+                                <h2 style="color: #1890ff; margin-bottom: 20px;">📄 文档预览区域</h2>
+                                <p style="color: #8c8c8c;">PDF/Office 文档预览</p>
+                                <p style="color: #8c8c8c; font-size: 12px; margin-top: 12px;">
+                                    支持 PDF、Word、Excel、PPT 在线预览
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-sidebar">
+                    <div class="info-card">
+                        <h3>📋 文档信息</h3>
+                        <div class="info-item">
+                            <span class="info-label">文件名</span>
+                            <span class="info-value">产品需求文档.pdf</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">文件大小</span>
+                            <span class="info-value">2.5 MB</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">页数</span>
+                            <span class="info-value">25 页</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">创建时间</span>
+                            <span class="info-value">2025-12-30</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">上传者</span>
+                            <span class="info-value">张三</span>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>🏷️ 标签</h3>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px;">
+                            <span class="tag active">产品</span>
+                            <span class="tag">需求</span>
+                            <span class="tag">重要</span>
+                        </div>
+                        <button class="btn" style="width: 100%; margin-top: 12px;">+ 添加标签</button>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>📊 统计信息</h3>
+                        <div class="info-item">
+                            <span class="info-label">预览次数</span>
+                            <span class="info-value">156</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">下载次数</span>
+                            <span class="info-value">23</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">版本数</span>
+                            <span class="info-value">3</span>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>🔄 快捷操作</h3>
+                        <button class="btn btn-primary" style="width: 100%; margin-bottom: 8px;">
+                            🔍 OCR 识别
+                        </button>
+                        <button class="btn" style="width: 100%; margin-bottom: 8px;">
+                            ✏️ 协同编辑
+                        </button>
+                        <button class="btn" style="width: 100%; margin-bottom: 8px;">
+                            🔄 查看版本
+                        </button>
+                        <button class="btn" style="width: 100%;">
+                            🔗 分享链接
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 版本管理页面 -->
+        <div id="version" class="content-panel">
+            <div class="version-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h2>🔄 版本管理 - 产品需求文档.pdf</h2>
+                    <div>
+                        <button class="btn btn-primary">📤 创建新版本</button>
+                        <button class="btn" style="margin-left: 8px;">⚙️ 版本设置</button>
+                    </div>
+                </div>
+
+                <div class="version-timeline">
+                    <div class="version-item">
+                        <div class="version-header">
+                            <span class="version-title">版本 3.0 (当前版本)</span>
+                            <div class="actions">
+                                <button class="action-btn">📥 下载</button>
+                                <button class="action-btn">👁️ 预览</button>
+                                <button class="action-btn" style="color: #8c8c8c;">↩️ 回滚</button>
+                            </div>
+                        </div>
+                        <div class="version-meta">
+                            👤 张三 · 📅 2025-12-30 15:30 · 📦 2.5 MB
+                        </div>
+                        <div class="version-desc">
+                            更新了第三章节的需求内容，添加了新的用户故事地图，优化了产品架构图。
+                        </div>
+                    </div>
+
+                    <div class="version-item">
+                        <div class="version-header">
+                            <span class="version-title">版本 2.1</span>
+                            <div class="actions">
+                                <button class="action-btn">📥 下载</button>
+                                <button class="action-btn">👁️ 预览</button>
+                                <button class="action-btn">↩️ 回滚</button>
+                                <button class="action-btn">🔍 对比</button>
+                            </div>
+                        </div>
+                        <div class="version-meta">
+                            👤 李四 · 📅 2025-12-28 10:15 · 📦 2.3 MB
+                        </div>
+                        <div class="version-desc">
+                            修复了部分格式问题，补充了竞品分析部分的内容。
+                        </div>
+                    </div>
+
+                    <div class="version-item">
+                        <div class="version-header">
+                            <span class="version-title">版本 2.0</span>
+                            <div class="actions">
+                                <button class="action-btn">📥 下载</button>
+                                <button class="action-btn">👁️ 预览</button>
+                                <button class="action-btn">↩️ 回滚</button>
+                                <button class="action-btn">🔍 对比</button>
+                            </div>
+                        </div>
+                        <div class="version-meta">
+                            👤 张三 · 📅 2025-12-25 14:20 · 📦 2.1 MB
+                        </div>
+                        <div class="version-desc">
+                            大版本更新，重构了整体架构，新增了移动端需求章节。
+                        </div>
+                    </div>
+
+                    <div class="version-item">
+                        <div class="version-header">
+                            <span class="version-title">版本 1.0</span>
+                            <div class="actions">
+                                <button class="action-btn">📥 下载</button>
+                                <button class="action-btn">👁️ 预览</button>
+                                <button class="action-btn">↩️ 回滚</button>
+                            </div>
+                        </div>
+                        <div class="version-meta">
+                            👤 张三 · 📅 2025-12-20 09:00 · 📦 1.8 MB
+                        </div>
+                        <div class="version-desc">
+                            初始版本，包含基础需求和功能规划。
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 24px; padding: 16px; background: #e6f7ff; border: 1px solid #91d5ff; border-radius: 8px;">
+                    <strong style="color: #1890ff;">💡 提示：</strong>
+                    <span style="color: #595959; font-size: 14px;">
+                        系统会自动保留最近 10 个版本。如需保留更多版本，请在设置中调整。
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- OCR识别页面 -->
+        <div id="ocr" class="content-panel">
+            <div class="ocr-panel">
+                <div class="upload-area">
+                    <h2 style="margin-bottom: 24px;">🔍 OCR 文字识别</h2>
+                    
+                    <div class="upload-box">
+                        <div class="upload-icon">📸</div>
+                        <div style="font-size: 16px; color: #262626; margin-bottom: 8px;">
+                            点击或拖拽文件到此区域上传
+                        </div>
+                        <div style="font-size: 12px; color: #8c8c8c;">
+                            支持 JPG、PNG、PDF 格式，文件大小不超过 10MB
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;">
+                        <button class="btn btn-primary" style="width: 100%;">
+                            📷 从文件选择
+                        </button>
+                        <button class="btn" style="width: 100%;">
+                            📋 从文档库选择
+                        </button>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>⚙️ 识别设置</h3>
+                        <div class="info-item">
+                            <span class="info-label">识别语言</span>
+                            <select style="padding: 4px 8px; border: 1px solid #d9d9d9; border-radius: 4px;">
+                                <option>中英文混合</option>
+                                <option>简体中文</option>
+                                <option>英文</option>
+                            </select>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">识别模式</span>
+                            <select style="padding: 4px 8px; border: 1px solid #d9d9d9; border-radius: 4px;">
+                                <option>自动识别</option>
+                                <option>表格识别</option>
+                                <option>手写识别</option>
+                            </select>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">保存结果</span>
+                            <input type="checkbox" checked> 自动保存
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>📊 识别历史</h3>
+                        <div style="font-size: 13px; color: #8c8c8c; margin-top: 12px;">
+                            <div style="padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                                合同扫描件.jpg - 2025-12-30 14:20
+                            </div>
+                            <div style="padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                                名片照片.png - 2025-12-29 16:45
+                            </div>
+                            <div style="padding: 8px 0;">
+                                发票001.pdf - 2025-12-28 09:30
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="result-area">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h3>📝 识别结果</h3>
+                        <div>
+                            <button class="btn">📋 复制</button>
+                            <button class="btn" style="margin-left: 8px;">💾 保存</button>
+                            <button class="btn" style="margin-left: 8px;">⬇️ 导出</button>
+                        </div>
+                    </div>
+
+                    <div class="result-text">
+识别状态：等待上传文件...
+
+识别示例：
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+产品需求文档
+
+版本：2.0
+创建日期：2025年12月20日
+作者：张三
+
+一、项目概述
+本项目旨在开发一款智能文档处理系统...
+
+二、功能需求
+1. 文档预览
+   - 支持 PDF、Word、Excel 等格式
+   - 在线预览，无需下载
+   
+2. OCR 识别
+   - 图片文字识别
+   - PDF 文字提取
+   - 支持中英文混合识别
+
+3. 版本管理
+   - 自动保存历史版本
+   - 版本对比
+   - 一键回滚
+
+三、技术架构
+采用 Spring Boot + Vue 3 前后端分离架构...
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+识别精度：98.5%
+识别时间：2.3秒
+识别字数：1,234 字</div>
+
+                    <div style="margin-top: 16px; padding: 12px; background: #f6ffed; border: 1px solid #b7eb8f; border-radius: 6px;">
+                        <strong style="color: #52c41a;">✅ 识别完成</strong>
+                        <div style="font-size: 12px; color: #8c8c8c; margin-top: 4px;">
+                            识别准确率：98.5% · 耗时：2.3秒
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 协同编辑页面 -->
+        <div id="collaborate" class="content-panel">
+            <div class="collaborate-panel">
+                <div class="editor-area">
+                    <div class="editor-toolbar">
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn">📄 新建</button>
+                            <button class="btn">📂 打开</button>
+                            <button class="btn btn-primary">💾 保存</button>
+                            <button class="btn">⬇️ 导出</button>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn">🔒 请求编辑锁</button>
+                            <button class="btn">🔗 分享链接</button>
+                        </div>
+                    </div>
+                    <div class="editor-container">
+<span style="color: #8c8c8c;"># 产品需求文档 v2.0</span>
+
+<span style="color: #1890ff; font-weight: bold;">## 一、项目概述</span>
+
+本项目旨在开发一款<span style="background: #fff7e6; padding: 0 4px;">【正在编辑中...】</span>智能文档处理系统，
+支持文档预览、OCR识别、版本管理等功能。
+
+<span style="color: #1890ff; font-weight: bold;">## 二、核心功能</span>
+
+### 2.1 文档预览
+- ✅ 支持 PDF、Word、Excel、PPT 在线预览
+- ✅ 生成缩略图
+- ✅ 支持旋转、缩放、打印
+
+### 2.2 OCR 识别
+- ✅ 图片文字识别
+- ✅ PDF 文字提取
+- ✅ 支持中英文混合识别
+- ✅ 识别准确率达 98%+
+
+### 2.3 版本管理
+- ✅ 自动保存历史版本
+- ✅ 版本对比与回滚
+- ✅ 变更日志记录
+
+### 2.4 协同编辑
+- ✅ 实时在线编辑<span style="background: #e6f7ff; color: #1890ff; padding: 2px 8px; border-radius: 4px; margin-left: 8px; font-size: 12px;">李四正在编辑</span>
+- ✅ 编辑锁机制
+- ✅ 多人在线状态显示
+
+<span style="color: #1890ff; font-weight: bold;">## 三、技术架构</span>
+
+- 后端：Spring Boot 3.2 + MyBatis Plus
+- 前端：Vue 3 + Ant Design Vue
+- 文档处理：Apache POI + PDFBox
+- OCR：Tesseract
+- 协同：WebSocket
+
+<span style="color: #8c8c8c;">// 文档最后更新：2025-12-30 15:45</span>
+                    </div>
+                </div>
+
+                <div class="collab-sidebar">
+                    <div class="online-users-card">
+                        <h3>👥 在线用户 (3)</h3>
+                        <div class="user-list">
+                            <div class="user-item">
+                                <div class="user-avatar" style="background: #1890ff;">张</div>
+                                <div class="user-info">
+                                    <div class="user-name">张三 (我)</div>
+                                    <div class="user-status">● 正在编辑</div>
+                                </div>
+                            </div>
+                            <div class="user-item">
+                                <div class="user-avatar" style="background: #52c41a;">李</div>
+                                <div class="user-info">
+                                    <div class="user-name">李四</div>
+                                    <div class="user-status">● 在线</div>
+                                </div>
+                            </div>
+                            <div class="user-item">
+                                <div class="user-avatar" style="background: #fa8c16;">王</div>
+                                <div class="user-info">
+                                    <div class="user-name">王五</div>
+                                    <div class="user-status">● 查看中</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lock-indicator">
+                            🔒 当前编辑锁：张三持有
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>💬 实时聊天</h3>
+                        <div style="background: #fafafa; border-radius: 6px; padding: 12px; height: 200px; overflow-y: auto; font-size: 13px; margin-top: 12px;">
+                            <div style="margin-bottom: 8px;">
+                                <strong style="color: #1890ff;">李四：</strong>
+                                <span style="color: #595959;">第二章节需要补充</span>
+                                <div style="font-size: 11px; color: #8c8c8c;">15:42</div>
+                            </div>
+                            <div style="margin-bottom: 8px;">
+                                <strong style="color: #52c41a;">张三：</strong>
+                                <span style="color: #595959;">好的，我现在添加</span>
+                                <div style="font-size: 11px; color: #8c8c8c;">15:43</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 8px; margin-top: 12px;">
+                            <input type="text" class="search-input" placeholder="输入消息...">
+                            <button class="btn btn-primary">发送</button>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>📋 编辑历史</h3>
+                        <div style="font-size: 12px; color: #8c8c8c; margin-top: 12px;">
+                            <div style="padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                                15:45 - 张三修改了第二章
+                            </div>
+                            <div style="padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                                15:30 - 李四添加了新内容
+                            </div>
+                            <div style="padding: 8px 0;">
+                                15:20 - 王五查看了文档
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // 隐藏所有内容面板
+            document.querySelectorAll('.content-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            
+            // 显示选中的面板
+            document.getElementById(tabName).classList.add('active');
+            
+            // 更新标签样式
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // 添加一些交互效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 过滤标签点击效果
+            document.querySelectorAll('.filter-tags .tag').forEach(tag => {
+                tag.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-tags .tag').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // 模拟文件上传
+            const uploadBox = document.querySelector('.upload-box');
+            if (uploadBox) {
+                uploadBox.addEventListener('click', function() {
+                    alert('选择文件进行 OCR 识别...');
+                });
+            }
+
+            console.log('智能文档处理系统UI已加载完成');
+        });
+    </script>
+</body>
+</html>
+
